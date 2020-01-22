@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@smartwallet/sdk": "^1.1.0",
     "@truffle/hdwallet-provider": "1.0.26",
     "bip39": "3.0.2",
     "ethereumjs-tx": "2.1.1",

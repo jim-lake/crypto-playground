@@ -18,7 +18,7 @@ if (argv.length < 0) {
 const GAS_LIMIT_ETH = 0.0001;
 const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
-const contract_addr = "0x06012c8cf97bead5deae237070f9587f8e7a266d";
+const contract_addr = "0x2fb5d7dda4f1f20f974a0fdd547c38674e8d940c";
 
 const contract = new ethers.Contract(contract_addr,contract_abi,infuraProvider);
 const contract_interface = new ethers.utils.Interface(contract_abi);
@@ -40,7 +40,7 @@ async function getContractTx() {
     //console.log("tokens:",tokens);
     //console.log("");
 
-    const metadata = await contract.tokenURI(14706);
+    const metadata = await contract.tokenURI(19794);
     console.log("metadata:",metadata);
     console.log("");
 
