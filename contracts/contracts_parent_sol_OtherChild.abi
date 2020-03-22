@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"int256","name":"i","type":"int256"}],"payable":true,"stateMutability":"payable","type":"constructor"},{"constant":false,"inputs":[{"internalType":"int256","name":"i","type":"int256"}],"name":"inc","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]

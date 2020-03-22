@@ -25,3 +25,5 @@ yarn-error.log*
 
 *.orig
 package-lock.json
+.cachedb
+/eth_blocks/

@@ -19,7 +19,7 @@ const contract_addr = argv[0].toLowerCase();
 const is_erc721 = argv[1] === 'erc721';
 const is_erc20 = argv[1] === 'erc20';
 
-const LIMIT = 99;
+const LIMIT = 9999;
 const DAY = 24 * 60 * 60;
 const etherscanProvider = new ethers.providers.EtherscanProvider();
 
@@ -51,24 +51,20 @@ async function getContractStats() {
     let start_block = 0;
     for (let i = 0; i < LIMIT; i++) {
       console.log('');
-      console.error('fetch: addr:', contract_addr, 'start_block:', start_block);
-      const history = await etherscanProvider.getHistory(
+      console.error(
+        `fetch(${i}): addr:`,
         contract_addr,
-        start_block,
-        'latest'
+        'start_block:',
+        start_block
       );
+
+      const history = await _getHistory(contract_addr, start_block, 'latest');
       console.error('got:', history.length);
 
       let process_count = 0;
       if (history && history.length > 0) {
         history.forEach(tx => {
-          const {
-            hash: tx_hash,
-            data,
-            blockNumber,
-            timestamp,
-            value,
-          } = tx;
+          const { hash: tx_hash, data, blockNumber, timestamp, value } = tx;
           const to = tx.to && tx.to.toLowerCase();
           const from_addr = tx.from.toLowerCase();
 
@@ -92,11 +88,6 @@ async function getContractStats() {
             const v_f = parseFloat(value.toString());
             if (v_f > 0) {
               funding_total += v_f;
-              console.log(
-                'funding:',
-                v_f + '(wei)',
-                ethers.utils.formatEther(value) + '(eth)'
-              );
             }
 
             if (to !== null) {
@@ -168,26 +159,26 @@ async function getContractStats() {
     const live_count = mint_count - burn_count;
     const holder_count = Object.keys(token_holders).length;
 
-    console.log("----------------");
-    console.log("token stats:")
-    console.log("----------------");
-    console.log("minted:",mint_count);
-    console.log("burned:",burn_count);
-    console.log("live:",live_count);
-    console.log("transfers:",transfer_count);
-    console.log("");
-    console.log("mints/day:",mint_count/delta_days);
-    console.log("burns/day:",burn_count/delta_days);
-    console.log("transfers/day:",transfer_count/delta_days);
-    console.log("");
-    console.log("operator count:",Object.keys(operator_map).length);
-    console.log("live token count:",Object.keys(live_tokens).length);
-    console.log("token holders:",holder_count);
-    console.log("mint dests (players?):",Object.keys(mint_dests).length);
-    console.log("burners:",Object.keys(burners).length);
-    console.log("");
-    console.log("minters:",Object.keys(minters));
-    console.log("");
+    console.log('----------------');
+    console.log('token stats:');
+    console.log('----------------');
+    console.log('minted:', mint_count);
+    console.log('burned:', burn_count);
+    console.log('live:', live_count);
+    console.log('transfers:', transfer_count);
+    console.log('');
+    console.log('mints/day:', mint_count / delta_days);
+    console.log('burns/day:', burn_count / delta_days);
+    console.log('transfers/day:', transfer_count / delta_days);
+    console.log('');
+    console.log('operator count:', Object.keys(operator_map).length);
+    console.log('live token count:', Object.keys(live_tokens).length);
+    console.log('token holders:', holder_count);
+    console.log('mint dests (players?):', Object.keys(mint_dests).length);
+    console.log('burners:', Object.keys(burners).length);
+    console.log('');
+    console.log('minters:', Object.keys(minters));
+    console.log('');
   } catch (e) {
     console.error('threw:', e);
   }
@@ -262,7 +253,7 @@ function _parse721(tx) {
         console.log('unknown sighash:', sighash, 'data:', tx);
       }
     } else if (tx.data.length > 2) {
-      console.log('short data:', tx.data);
+      console.log('short data:', tx.data, tx);
     } else {
       //console.log("funding?",tx);
     }
@@ -327,8 +318,40 @@ function _customIdentify(data) {
         name: 'knightstory721_unknown1',
         args,
       };
+    } else if (sighash === '0x7004fb84') {
+      // invalid whatever from cryptokitties
+      ret = {
+        name: 'kitty_unknown_fail1',
+        args: [],
+      };
     }
   }
 
   return ret;
+}
+
+async function _getHistory(contract_addr, start_block, end_block) {
+  let ret;
+  for (let i = 0; i < 5; i++) {
+    try {
+      ret = await etherscanProvider.getHistory(
+        contract_addr,
+        start_block,
+        end_block
+      );
+    } catch (e) {
+      console.error('_getHistory: failed:', e);
+      console.error('_getHistory: sleeping');
+      await timeout(1000);
+      console.error('_getHistory: retry:', i + 1);
+    }
+    if (ret) {
+      break;
+    }
+  }
+  return ret;
+}
+
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
