@@ -7,7 +7,7 @@ const fs = require('fs');
 
 let list = [];
 
-argv.forEach(arg => {
+argv.forEach((arg) => {
   const hash = ethers.utils.id(arg);
   console.log('Arg:', arg, 'Hash:', hash);
   console.log('');

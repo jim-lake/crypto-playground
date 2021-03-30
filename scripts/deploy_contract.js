@@ -7,7 +7,7 @@ const fs = require('fs');
 const ethers = require('ethers');
 const { contract_addr, http_provider_url, chain } = require('./settings.js');
 
-const GAS_LIMIT_ETH = 0.01;
+const GAS_LIMIT_ETH = config.GAS_LIMIT_ETH;
 
 if (argv.length < 3) {
   console.error(
@@ -50,6 +50,7 @@ async function getDeployTx() {
     const ethUSD = await etherscanProvider.getEtherPrice();
     const gasUSD = ethUSD * gasEth;
 
+    console.error('gasPrice:', gasPrice / 1e9 + '(gwei)');
     console.error(
       'Gas Price in Eth:',
       gasEth + ' (eth)',

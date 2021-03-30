@@ -2,8 +2,9 @@ const Bip39 = require('bip39');
 const HDKey = require('ethereumjs-wallet/hdkey');
 const EthereumJsTx = require('ethereumjs-tx');
 const config = require('../config.json');
-const argv = process.argv.slice(2);
 const fs = require('fs');
+const { chain, common } = require('./settings');
+const argv = process.argv.slice(2);
 
 const mnemonic = config.SIGN_MNEMONIC;
 
@@ -47,16 +48,18 @@ if (address.toLowerCase() !== tx.from.toLowerCase()) {
   process.exit(-1);
 }
 
-const chain_opts = {
-  chain: tx.chain,
-};
+if (tx.chain !== chain) {
+  console.error('Error: tx.chain(' + tx.chain + ') !== chain(' + chain + ')');
+  process.exit(-2);
+}
 delete tx.chain;
 
-const ether_tx = new EthereumJsTx.Transaction(tx, chain_opts);
+const ether_tx = new EthereumJsTx.Transaction(tx, { common });
 console.error('Signing transaction:', tx);
 ether_tx.sign(private_key);
 console.error('');
 console.error('Signed Transaction:');
 console.error('');
+//console.error('ether_tx:', ether_tx);
 console.log(ether_tx.serialize().toString('hex'));
 console.error('');

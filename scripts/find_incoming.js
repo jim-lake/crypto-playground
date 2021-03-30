@@ -119,7 +119,7 @@ async function findIncoming() {
     };
     const results = await infuraProvider.getLogs(filter);
 
-    results.forEach(async tx => {
+    results.forEach(async (tx) => {
       const { transactionHash } = tx;
       console.log(tx);
       const args = event.decode(tx.data, tx.topics);

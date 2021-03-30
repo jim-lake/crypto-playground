@@ -63,7 +63,7 @@ async function getContractStats() {
 
       let process_count = 0;
       if (history && history.length > 0) {
-        history.forEach(tx => {
+        history.forEach((tx) => {
           const { hash: tx_hash, data, blockNumber, timestamp, value } = tx;
           const to = tx.to && tx.to.toLowerCase();
           const from_addr = tx.from.toLowerCase();
@@ -353,5 +353,5 @@ async function _getHistory(contract_addr, start_block, end_block) {
 }
 
 function timeout(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

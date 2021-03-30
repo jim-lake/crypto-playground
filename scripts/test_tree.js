@@ -132,13 +132,13 @@ async.eachLimit(
 
     lastStateRoot = b.header.stateRoot.toString('hex');
 
-    _runBlock({ block: b, block_number }, err => {
+    _runBlock({ block: b, block_number }, (err) => {
       const root_s = stateTrie.root.toString('hex');
       console.error('stateTrie.root:', root_s);
       done();
     });
   },
-  err => {
+  (err) => {
     const s = stateTrie.createReadStream();
     s.on('data', ({ key, value }) => {
       const account = new Account(value);
@@ -161,21 +161,21 @@ function _runBlock(params, done) {
   const { block, block_number } = params;
   async.series(
     [
-      done => {
+      (done) => {
         if (block_number === 0) {
           _runGenesis(done);
         } else {
           done();
         }
       },
-      done => {
+      (done) => {
         if (block_number > 0) {
           _rewardCoinbase(params, done);
         } else {
           done();
         }
       },
-      done => {
+      (done) => {
         _rewardUncles(block, done);
       },
     ],

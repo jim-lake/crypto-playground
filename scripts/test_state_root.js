@@ -134,7 +134,7 @@ async.eachLimit(
 
     blockchain.putBlock(
       b,
-      err => {
+      (err) => {
         if (err) {
           console.error('putBlock err:', err);
         }
@@ -143,7 +143,7 @@ async.eachLimit(
       block_number === 0
     );
   },
-  err => {
+  (err) => {
     console.error('');
     console.error('put blocks done');
     console.error('');
@@ -180,7 +180,7 @@ async.eachLimit(
           }
         });
       },
-      err => {
+      (err) => {
         console.error('runBlockchain err:', err);
       }
     );

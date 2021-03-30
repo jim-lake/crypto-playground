@@ -77,5 +77,5 @@ async function sendTx() {
 }
 
 function timeout(ms) {
-  return new Promise(res => setTimeout(res, ms));
+  return new Promise((res) => setTimeout(res, ms));
 }

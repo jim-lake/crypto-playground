@@ -13,6 +13,9 @@ if (argv.length < 3) {
   process.exit(-1);
 }
 
+const _origLog = console.log;
+console.log = console.error;
+
 const GAS_LIMIT_ETH = 0.01;
 const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
@@ -75,7 +78,7 @@ async function getContractTx() {
     const call_abi = contract_interface.functions[method].encode(call_args);
     const nonce = await infuraProvider.getTransactionCount(from_addr);
 
-    console.log(
+    _origLog(
       JSON.stringify(
         {
           from: from_addr,
