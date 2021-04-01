@@ -12,10 +12,17 @@ module.exports = {
   sokol: {
     DNC_CONTRACT: '',
     HTTP_PROVIDER: 'https://sokol.poa.network',
+    CHAIN_ID: 77,
   },
   kovan: {
     DNC_CONTRACT: '',
     HTTP_PROVIDER:
       'https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+  },
+  xdia: {
+    DNC_CONTRACT: '',
+    HTTP_PROVIDER: 'https://dai.poa.network',
+    CHAIN_ID: 100,
+    GAS_OVERRIDE: 1e9,
   },
 };

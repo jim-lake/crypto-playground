@@ -5,7 +5,8 @@ const config = require('../config.json');
 const argv = process.argv.slice(2);
 const fs = require('fs');
 const ethers = require('ethers');
-const { contract_addr, http_provider_url, chain } = require('./settings.js');
+const BigNumber = ethers.utils.BigNumber;
+const { contract_addr, http_provider_url, chain, gas_override } = require('./settings.js');
 
 const GAS_LIMIT_ETH = config.GAS_LIMIT_ETH;
 
@@ -27,6 +28,7 @@ console.error('Reading contract abi from path:', contract_abi_path);
 const contract_abi = JSON.parse(fs.readFileSync(contract_abi_path, 'utf8'));
 
 const web3 = new Web3(new Web3.providers.HttpProvider(http_provider_url));
+const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
 const contract_src = argv[2];
 const contract = new web3.eth.Contract(contract_abi);
@@ -42,15 +44,19 @@ async function getDeployTx() {
     };
     const deploy = contract.deploy(deploy_opts);
 
-    const gas = await deploy.estimateGas();
-    const gasPrice = await web3.eth.getGasPrice();
+    const gas = new BigNumber(await deploy.estimateGas());
+    const remoteGasPrice = await infuraProvider.getGasPrice();
+    const gasPrice = gas_override || remoteGasPrice;
+    const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
 
-    const gasEth = web3.utils.fromWei(new BN(gas).mul(new BN(gasPrice)));
     const etherscanProvider = new ethers.providers.EtherscanProvider();
     const ethUSD = await etherscanProvider.getEtherPrice();
     const gasUSD = ethUSD * gasEth;
 
-    console.error('gasPrice:', gasPrice / 1e9 + '(gwei)');
+    console.error(
+      'GasPrice: ' + web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)'
+    );
+
     console.error(
       'Gas Price in Eth:',
       gasEth + ' (eth)',
@@ -75,8 +81,8 @@ async function getDeployTx() {
         {
           from: contract_src,
           value: 0,
-          gas,
-          gasPrice,
+          gas: gas.toString(),
+          gasPrice: gasPrice.toString(),
           data,
           nonce,
           chain,

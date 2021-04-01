@@ -4,7 +4,7 @@ const config = require('../config.json');
 const web3 = require('web3');
 const fs = require('fs');
 const argv = process.argv.slice(2);
-const { chain, http_provider_url } = require('./settings.js');
+const { chain, http_provider_url, gas_override } = require('./settings.js');
 
 if (argv.length < 3) {
   console.log(
@@ -50,7 +50,8 @@ async function getContractTx() {
     const gas = await contract.estimate[method](...call_args, {
       from: from_addr,
     });
-    const gasPrice = await infuraProvider.getGasPrice();
+    const remoteGasPrice = await infuraProvider.getGasPrice();
+    const gasPrice = gas_override || remoteGasPrice;
     const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
 
     const etherscanProvider = new ethers.providers.EtherscanProvider();
