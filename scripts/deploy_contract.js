@@ -6,7 +6,12 @@ const argv = process.argv.slice(2);
 const fs = require('fs');
 const ethers = require('ethers');
 const BigNumber = ethers.utils.BigNumber;
-const { contract_addr, http_provider_url, chain, gas_override } = require('./settings.js');
+const {
+  contract_addr,
+  http_provider_url,
+  chain,
+  gas_override,
+} = require('./settings.js');
 
 const GAS_LIMIT_ETH = config.GAS_LIMIT_ETH;
 

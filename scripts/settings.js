@@ -24,7 +24,11 @@ const gas_override = chain_data.GAS_OVERRIDE;
 
 let common;
 if (chain_data.CHAIN_ID) {
-  const params = { name: chain, chainId: chain_data.CHAIN_ID, networkId: chain_data.CHAIN_ID };
+  const params = {
+    name: chain,
+    chainId: chain_data.CHAIN_ID,
+    networkId: chain_data.CHAIN_ID,
+  };
   common = Common.default.forCustomChain('mainnet', params, 'byzantium');
   console.error('custom chain id:', chain_data.CHAIN_ID);
 } else {
