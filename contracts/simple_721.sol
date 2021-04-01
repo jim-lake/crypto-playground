@@ -1,4 +1,6 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.8.3;
+
+// SPDX-License-Identifier: MIT
 
 library SafeMath {
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -124,10 +126,8 @@ library Roles {
   }
 }
 
-contract Context {
-  constructor() internal {}
-
-  function _msgSender() internal view returns (address payable) {
+abstract contract Context {
+  function _msgSender() internal view returns (address) {
     return msg.sender;
   }
 
@@ -137,7 +137,7 @@ contract Context {
   }
 }
 
-contract MinterRole is Context {
+abstract contract MinterRole is Context {
   using Roles for Roles.Role;
 
   event MinterAdded(address indexed account);
@@ -145,7 +145,7 @@ contract MinterRole is Context {
 
   Roles.Role private _minters;
 
-  constructor() internal {
+  constructor() {
     _addMinter(_msgSender());
   }
 
@@ -180,97 +180,11 @@ contract MinterRole is Context {
   }
 }
 
-contract ChainUpdaterRole is Context {
-  using Roles for Roles.Role;
-
-  event ChainUpdaterAdded(address indexed account);
-  event ChainUpdaterRemoved(address indexed account);
-
-  Roles.Role private _chainUpdaters;
-
-  constructor() internal {
-    _addChainUpdater(_msgSender());
-  }
-
-  modifier onlyChainUpdater() {
-    require(
-      isChainUpdater(_msgSender()),
-      'ChainUpdaterRole: caller does not have the ChainUpdater role'
-    );
-    _;
-  }
-
-  function isChainUpdater(address account) public view returns (bool) {
-    return _chainUpdaters.has(account);
-  }
-
-  function addChainUpdater(address account) public onlyChainUpdater {
-    _addChainUpdater(account);
-  }
-
-  function renounceChainUpdater() public {
-    _removeChainUpdater(_msgSender());
-  }
-
-  function _addChainUpdater(address account) internal {
-    _chainUpdaters.add(account);
-    emit ChainUpdaterAdded(account);
-  }
-
-  function _removeChainUpdater(address account) internal {
-    _chainUpdaters.remove(account);
-    emit ChainUpdaterRemoved(account);
-  }
-}
-
-contract ExtraUpdaterRole is Context {
-  using Roles for Roles.Role;
-
-  event ExtraUpdaterAdded(address indexed account);
-  event ExtraUpdaterRemoved(address indexed account);
-
-  Roles.Role private _extraUpdaters;
-
-  constructor() internal {
-    _addExtraUpdater(_msgSender());
-  }
-
-  modifier onlyExtraUpdater() {
-    require(
-      isExtraUpdater(_msgSender()),
-      'ExtraUpdaterRole: caller does not have the ExtraUpdater role'
-    );
-    _;
-  }
-
-  function isExtraUpdater(address account) public view returns (bool) {
-    return _extraUpdaters.has(account);
-  }
-
-  function addExtraUpdater(address account) public onlyExtraUpdater {
-    _addExtraUpdater(account);
-  }
-
-  function renounceExtraUpdater() public {
-    _removeExtraUpdater(_msgSender());
-  }
-
-  function _addExtraUpdater(address account) internal {
-    _extraUpdaters.add(account);
-    emit ExtraUpdaterAdded(account);
-  }
-
-  function _removeExtraUpdater(address account) internal {
-    _extraUpdaters.remove(account);
-    emit ExtraUpdaterRemoved(account);
-  }
-}
-
 interface IERC165 {
   function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-contract IERC721 is IERC165 {
+abstract contract IERC721 is IERC165 {
   event Transfer(
     address indexed from,
     address indexed to,
@@ -287,31 +201,40 @@ contract IERC721 is IERC165 {
     bool approved
   );
 
-  function balanceOf(address owner) public view returns (uint256 balance);
+  function balanceOf(address owner)
+    public
+    view
+    virtual
+    returns (uint256 balance);
 
-  function ownerOf(uint256 tokenId) public view returns (address owner);
+  function ownerOf(uint256 tokenId) public view virtual returns (address owner);
 
   function safeTransferFrom(
     address from,
     address to,
     uint256 tokenId
-  ) public;
+  ) public virtual;
 
   function transferFrom(
     address from,
     address to,
     uint256 tokenId
-  ) public;
+  ) public virtual;
 
-  function approve(address to, uint256 tokenId) public;
+  function approve(address to, uint256 tokenId) public virtual;
 
-  function getApproved(uint256 tokenId) public view returns (address operator);
+  function getApproved(uint256 tokenId)
+    public
+    view
+    virtual
+    returns (address operator);
 
-  function setApprovalForAll(address operator, bool _approved) public;
+  function setApprovalForAll(address operator, bool _approved) public virtual;
 
   function isApprovedForAll(address owner, address operator)
     public
     view
+    virtual
     returns (bool);
 
   function safeTransferFrom(
@@ -319,28 +242,33 @@ contract IERC721 is IERC165 {
     address to,
     uint256 tokenId,
     bytes memory data
-  ) public;
+  ) public virtual;
 }
 
-contract IERC721Receiver {
+abstract contract IERC721Receiver {
   function onERC721Received(
     address operator,
     address from,
     uint256 tokenId,
     bytes memory data
-  ) public returns (bytes4);
+  ) public virtual returns (bytes4);
 }
 
-contract ERC165 is IERC165 {
+abstract contract ERC165 is IERC165 {
   bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
 
   mapping(bytes4 => bool) private _supportedInterfaces;
 
-  constructor() internal {
+  constructor() {
     _registerInterface(_INTERFACE_ID_ERC165);
   }
 
-  function supportsInterface(bytes4 interfaceId) external view returns (bool) {
+  function supportsInterface(bytes4 interfaceId)
+    external
+    view
+    override
+    returns (bool)
+  {
     return _supportedInterfaces[interfaceId];
   }
 
@@ -366,24 +294,24 @@ contract ERC721 is Context, ERC165, IERC721 {
 
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
 
-  constructor() public {
+  constructor() {
     _registerInterface(_INTERFACE_ID_ERC721);
   }
 
-  function balanceOf(address owner) public view returns (uint256) {
+  function balanceOf(address owner) public view override returns (uint256) {
     require(owner != address(0), 'ERC721: balance query for the zero address');
 
     return _ownedTokensCount[owner].current();
   }
 
-  function ownerOf(uint256 tokenId) public view returns (address) {
+  function ownerOf(uint256 tokenId) public view override returns (address) {
     address owner = _tokenOwner[tokenId];
     require(owner != address(0), 'ERC721: owner query for nonexistent token');
 
     return owner;
   }
 
-  function approve(address to, uint256 tokenId) public {
+  function approve(address to, uint256 tokenId) public override {
     address owner = ownerOf(tokenId);
     require(to != owner, 'ERC721: approval to current owner');
 
@@ -396,13 +324,13 @@ contract ERC721 is Context, ERC165, IERC721 {
     emit Approval(owner, to, tokenId);
   }
 
-  function getApproved(uint256 tokenId) public view returns (address) {
+  function getApproved(uint256 tokenId) public view override returns (address) {
     require(_exists(tokenId), 'ERC721: approved query for nonexistent token');
 
     return _tokenApprovals[tokenId];
   }
 
-  function setApprovalForAll(address to, bool approved) public {
+  function setApprovalForAll(address to, bool approved) public override {
     require(to != _msgSender(), 'ERC721: approve to caller');
 
     _operatorApprovals[_msgSender()][to] = approved;
@@ -412,6 +340,7 @@ contract ERC721 is Context, ERC165, IERC721 {
   function isApprovedForAll(address owner, address operator)
     public
     view
+    override
     returns (bool)
   {
     return _operatorApprovals[owner][operator];
@@ -421,7 +350,7 @@ contract ERC721 is Context, ERC165, IERC721 {
     address from,
     address to,
     uint256 tokenId
-  ) public {
+  ) public override {
     //solhint-disable-next-line max-line-length
     require(
       _isApprovedOrOwner(_msgSender(), tokenId),
@@ -435,7 +364,7 @@ contract ERC721 is Context, ERC165, IERC721 {
     address from,
     address to,
     uint256 tokenId
-  ) public {
+  ) public override {
     safeTransferFrom(from, to, tokenId, '');
   }
 
@@ -444,7 +373,7 @@ contract ERC721 is Context, ERC165, IERC721 {
     address to,
     uint256 tokenId,
     bytes memory _data
-  ) public {
+  ) public override {
     require(
       _isApprovedOrOwner(_msgSender(), tokenId),
       'ERC721: transfer caller is not owner nor approved'
@@ -551,15 +480,19 @@ contract ERC721 is Context, ERC165, IERC721 {
   }
 }
 
-contract IERC721Metadata is IERC721 {
-  function name() external view returns (string memory);
+abstract contract IERC721Metadata is IERC721 {
+  function name() external view virtual returns (string memory);
 
-  function symbol() external view returns (string memory);
+  function symbol() external view virtual returns (string memory);
 
-  function tokenURI(uint256 tokenId) external view returns (string memory);
+  function tokenURI(uint256 tokenId)
+    external
+    view
+    virtual
+    returns (string memory);
 }
 
-contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
+abstract contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
   string private _name;
   string private _symbol;
   string private _baseURI;
@@ -567,22 +500,27 @@ contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
 
   bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
 
-  constructor(string memory name, string memory symbol) public {
-    _name = name;
-    _symbol = symbol;
+  constructor(string memory arg_name, string memory arg_symbol) {
+    _name = arg_name;
+    _symbol = arg_symbol;
 
     _registerInterface(_INTERFACE_ID_ERC721_METADATA);
   }
 
-  function name() external view returns (string memory) {
+  function name() external view override returns (string memory) {
     return _name;
   }
 
-  function symbol() external view returns (string memory) {
+  function symbol() external view override returns (string memory) {
     return _symbol;
   }
 
-  function tokenURI(uint256 tokenId) external view returns (string memory) {
+  function tokenURI(uint256 tokenId)
+    external
+    view
+    override
+    returns (string memory)
+  {
     require(
       _exists(tokenId),
       'ERC721Metadata: URI query for nonexistent token'
@@ -612,6 +550,14 @@ contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
 }
 
 contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
+  constructor(
+    string memory name,
+    string memory symbol,
+    string memory baseURI
+  ) ERC721Metadata(name, symbol) {
+    _setBaseURI(baseURI);
+  }
+
   function mintWithTokenURI(
     address to,
     uint256 tokenId,
@@ -620,91 +566,5 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
     _mint(to, tokenId);
     _setTokenURI(tokenId, tokenURI);
     return true;
-  }
-}
-
-contract ChainToken is ERC721MetadataMintable, ChainUpdaterRole {
-  event UpdateChainHash(uint256 indexed tokenId, bytes32 chainHash);
-
-  mapping(uint256 => bytes32) private _chainHash;
-
-  function _setChainHash(uint256 tokenId, bytes32 newChainHash) internal {
-    require(
-      _exists(tokenId),
-      'ERC721Metadata: ChainHash set of nonexistent token'
-    );
-    _chainHash[tokenId] = newChainHash;
-  }
-
-  function chainHash(uint256 tokenId) external view returns (bytes32) {
-    return _chainHash[tokenId];
-  }
-
-  function mintWithTokenURIChainHash(
-    address to,
-    uint256 tokenId,
-    string memory tokenURI,
-    bytes32 newChainHash
-  ) public onlyMinter returns (bool) {
-    mintWithTokenURI(to, tokenId, tokenURI);
-    _setChainHash(tokenId, newChainHash);
-    return true;
-  }
-
-  function updateChainHash(
-    uint256 tokenId,
-    bytes32[] memory hashList,
-    uint256 newIndex
-  ) public onlyChainUpdater returns (bool) {
-    require(
-      newIndex < hashList.length,
-      'ChainToken: newIndex must be less than hashList.length'
-    );
-
-    bytes32 oldHash = keccak256(abi.encodePacked(hashList));
-    require(
-      oldHash == _chainHash[tokenId],
-      'ChainToken: update doesnt match chain'
-    );
-    bytes32 newChainHash = hashList[newIndex];
-    _setChainHash(tokenId, newChainHash);
-
-    emit UpdateChainHash(tokenId, newChainHash);
-    return true;
-  }
-}
-
-contract ExtraDataToken is ERC721, ExtraUpdaterRole {
-  mapping(uint256 => mapping(string => string)) private _tokenExtraData;
-
-  function extraData(uint256 tokenId, string calldata key)
-    external
-    view
-    returns (string memory)
-  {
-    return _tokenExtraData[tokenId][key];
-  }
-
-  function setExtraData(
-    uint256 tokenId,
-    string memory key,
-    string memory value
-  ) public onlyExtraUpdater returns (bool) {
-    require(
-      _exists(tokenId),
-      'ExtraDataToken: ExtraData set of nonexistent token'
-    );
-    _tokenExtraData[tokenId][key] = value;
-    return true;
-  }
-}
-
-contract DankShip is ChainToken, ExtraDataToken {
-  constructor(
-    string memory name,
-    string memory symbol,
-    string memory baseURI
-  ) public ERC721Metadata(name, symbol) {
-    _setBaseURI(baseURI);
   }
 }

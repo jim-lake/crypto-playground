@@ -12,11 +12,11 @@ library SafeMath {
     return sub(a, b, 'SafeMath: subtraction overflow');
   }
 
-  function sub(uint256 a, uint256 b, string memory errorMessage)
-    internal
-    pure
-    returns (uint256)
-  {
+  function sub(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     require(b <= a, errorMessage);
     uint256 c = a - b;
 
@@ -41,11 +41,11 @@ library SafeMath {
     return div(a, b, 'SafeMath: division by zero');
   }
 
-  function div(uint256 a, uint256 b, string memory errorMessage)
-    internal
-    pure
-    returns (uint256)
-  {
+  function div(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     // Solidity only automatically asserts when dividing by 0
     require(b > 0, errorMessage);
     uint256 c = a / b;
@@ -58,11 +58,11 @@ library SafeMath {
     return mod(a, b, 'SafeMath: modulo by zero');
   }
 
-  function mod(uint256 a, uint256 b, string memory errorMessage)
-    internal
-    pure
-    returns (uint256)
-  {
+  function mod(
+    uint256 a,
+    uint256 b,
+    string memory errorMessage
+  ) internal pure returns (uint256) {
     require(b != 0, errorMessage);
     return a % b;
   }
@@ -74,16 +74,23 @@ library SafeMath {
 
 interface IERC20 {
   function totalSupply() external view returns (uint256);
+
   function balanceOf(address account) external view returns (uint256);
+
   function transfer(address recipient, uint256 amount) external returns (bool);
+
   function allowance(address owner, address spender)
     external
     view
     returns (uint256);
+
   function approve(address spender, uint256 amount) external returns (bool);
-  function transferFrom(address sender, address recipient, uint256 amount)
-    external
-    returns (bool);
+
+  function transferFrom(
+    address sender,
+    address recipient,
+    uint256 amount
+  ) external returns (bool);
 
   event Transfer(address indexed from, address indexed to, uint256 value);
   event Approval(address indexed owner, address indexed spender, uint256 value);
@@ -95,6 +102,7 @@ contract DailyTester {
   event DailyPickup(address indexed account, uint256 timestamp);
 
   constructor() public {}
+
   function() external payable {
     emit Payment(msg.sender, msg.value, block.timestamp);
   }
@@ -122,6 +130,7 @@ contract DailyTester {
   function saveLastUsed() public {
     emit LastUsed(msg.sender, block.timestamp);
   }
+
   function refundTester() public refundGasCost {
     uint256 last_time = _lastRefund[msg.sender];
     require(
@@ -139,10 +148,11 @@ contract DailyTester {
       'DailyTester: once per 2 minutes'
     );
     _lastPickup[msg.sender] = block.timestamp;
-    bool ret = IERC20(0xf220aF718A8d13CCE7f5A466722F2b5857cd4215).transfer(
-      msg.sender,
-      100 ether
-    );
+    bool ret =
+      IERC20(0xf220aF718A8d13CCE7f5A466722F2b5857cd4215).transfer(
+        msg.sender,
+        100 ether
+      );
     require(ret = true, 'DailyTester: Transfer failed');
     emit DailyPickup(msg.sender, block.timestamp);
   }

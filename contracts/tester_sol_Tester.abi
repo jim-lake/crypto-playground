@@ -1,1 +1,45 @@
-[{"inputs":[{"internalType":"int256","name":"f","type":"int256"}],"payable":true,"stateMutability":"payable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"constant":false,"inputs":[],"name":"getAndIncFoo","outputs":[{"internalType":"int256","name":"","type":"int256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getFoo","outputs":[{"internalType":"int256","name":"","type":"int256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"int256","name":"i","type":"int256"}],"name":"inc","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"int256","name":"i","type":"int256"}],"name":"incPayable","outputs":[],"payable":true,"stateMutability":"payable","type":"function"}]
+[
+  {
+    "inputs": [{ "internalType": "int256", "name": "f", "type": "int256" }],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "constructor"
+  },
+  { "payable": true, "stateMutability": "payable", "type": "fallback" },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "getAndIncFoo",
+    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getFoo",
+    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "internalType": "int256", "name": "i", "type": "int256" }],
+    "name": "inc",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "internalType": "int256", "name": "i", "type": "int256" }],
+    "name": "incPayable",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]
