@@ -32,7 +32,7 @@ if (chain_data.CHAIN_ID) {
   common = Common.default.forCustomChain('mainnet', params, 'byzantium');
   console.error('custom chain id:', chain_data.CHAIN_ID);
 } else {
-  common = new Common({ chain });
+  common = Common.default.forCustomChain(chain, {}, 'byzantium');
 }
 
 console.error('');

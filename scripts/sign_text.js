@@ -31,8 +31,19 @@ if (message_text === '-') {
 signText();
 
 async function signText() {
-  const flatSig = await ethersWallet.signMessage(message_text);
   console.error('Signing Address:', address);
+  let flagSig;
+  if (message_text.startsWith('0x')) {
+    const digest = ethers.utils.arrayify(message_text);
+    console.error('digest:', digest);
+    flatSig = ethers.utils.joinSignature(await ethersWallet.signingKey.signDigest(digest));
+  } else {
+    console.error('message_text:', message_text);
+    console.error('id(message_text):', ethers.utils.id(message_text));
+    console.error('id(Ethereum Signed Message:(message_text)):',  ethers.utils.id("\x19Ethereum Signed Message:\n" + message_text.length + message_text));
+    flatSig = await ethersWallet.signMessage(message_text);
+  }
+
   console.error('');
   console.error('Message Signature:');
   console.error('');
