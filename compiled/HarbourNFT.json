@@ -3,7 +3,16 @@
     "inputs": [
       { "internalType": "string", "name": "name", "type": "string" },
       { "internalType": "string", "name": "symbol", "type": "string" },
-      { "internalType": "string", "name": "baseURI", "type": "string" }
+      { "internalType": "string", "name": "baseURI", "type": "string" },
+      { "internalType": "string", "name": "argContractURI", "type": "string" },
+      {
+        "internalType": "address payable",
+        "name": "royaltyReceiver",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "royaltyAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "feeBps", "type": "uint256" },
+      { "internalType": "uint96", "name": "royaltyValue", "type": "uint96" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"

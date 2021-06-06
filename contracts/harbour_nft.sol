@@ -663,12 +663,23 @@ contract HarbourNFT is ERC721MetadataMintable {
   constructor(
     string memory name,
     string memory symbol,
-    string memory baseURI
+    string memory baseURI,
+    string memory argContractURI,
+    address payable royaltyReceiver,
+    uint256 royaltyAmount,
+    uint256 feeBps,
+    uint96 royaltyValue
   ) ERC721MetadataMintable(name, symbol, baseURI) {
     _registerInterface(_INTERFACE_ID_CONTRACT_URI);
     _registerInterface(_INTERFACE_ID_ERC2981);
     _registerInterface(_INTERFACE_ID_FEES);
     _registerInterface(_INTERFACE_ID_ROYALTIES);
+
+    _contractURI = argContractURI;
+    _royaltyReceiver = royaltyReceiver;
+    _royaltyAmount = royaltyAmount;
+    _feeBps = feeBps;
+    _royaltyValue = royaltyValue;
   }
 
   function setContractURI(string memory uri) public onlyAdmin {
