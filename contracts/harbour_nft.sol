@@ -561,9 +561,14 @@ abstract contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
   function tokenURI(uint256 tokenId)
     external
     view
+    virtual
     override
     returns (string memory)
   {
+    return _getTokenURI(tokenId);
+  }
+
+  function _getTokenURI(uint256 tokenId) internal view returns (string memory) {
     require(
       _exists(tokenId),
       'ERC721Metadata: URI query for nonexistent token'
@@ -593,6 +598,8 @@ abstract contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
 }
 
 contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
+  mapping(uint256 => uint256) private _tokenTokenMap;
+
   constructor(
     string memory name,
     string memory symbol,
@@ -604,10 +611,10 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
   function mintWithTokenURI(
     address to,
     uint256 tokenId,
-    string memory tokenURI
+    string memory _tokenURI
   ) public onlyMinter returns (bool) {
     _mint(to, tokenId);
-    _setTokenURI(tokenId, tokenURI);
+    _setTokenURI(tokenId, _tokenURI);
     return true;
   }
 
@@ -615,14 +622,29 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
     address to,
     uint256 startTokenId,
     uint256 count,
-    string memory tokenURI
+    string memory _tokenURI
   ) public onlyMinter returns (bool) {
     for (uint256 i = 0; i < count; i++) {
       uint256 tokenId = startTokenId + i;
       _mint(to, tokenId);
-      _setTokenURI(tokenId, tokenURI);
+      _tokenTokenMap[tokenId] = startTokenId;
     }
+    _setTokenURI(startTokenId, _tokenURI);
     return true;
+  }
+
+  function tokenURI(uint256 tokenId)
+    external
+    view
+    override
+    returns (string memory)
+  {
+    uint256 _baseTokenId = _tokenTokenMap[tokenId];
+    if (_baseTokenId == 0) {
+      return _getTokenURI(tokenId);
+    } else {
+      return _getTokenURI(_baseTokenId);
+    }
   }
 }
 
@@ -675,7 +697,7 @@ contract HarbourNFT is ERC721MetadataMintable {
 
   function royaltyInfo(
     uint256,
-    uint256,
+    uint256 _value,
     bytes calldata
   )
     public
@@ -686,7 +708,7 @@ contract HarbourNFT is ERC721MetadataMintable {
       bytes memory royaltyPaymentData
     )
   {
-    return (_royaltyReceiver, _royaltyAmount, '');
+    return (_royaltyReceiver, (_value * _royaltyAmount) / 10000, '');
   }
 
   function getFeeRecipients(uint256)
