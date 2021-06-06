@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "pretty": "prettier \"scripts/**/*.js\" \"scripts/**/*.json\" \"contracts/**/*.sol\" \"data/**/*.json\" --write",
-    "pretty-abi": "prettier --parser json \"contracts/**/*.abi\" --write"
+    "pretty-abi": "prettier --parser json \"compiled/**/*.json\" --write"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.0.0",

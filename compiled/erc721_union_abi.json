@@ -1,3469 +1,3469 @@
 [
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "bytes4",
-    "name": "interfaceId",
-    "type": "bytes4"
-   }
-  ],
-  "name": "supportsInterface",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint16",
-    "name": "",
-    "type": "uint16"
-   }
-  ],
-  "name": "mythicTradable",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "name",
-  "outputs": [
-   {
-    "internalType": "string",
-    "name": "",
-    "type": "string"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "getApproved",
-  "outputs": [
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "approve",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256[]",
-    "name": "tokenIDs",
-    "type": "uint256[]"
-   }
-  ],
-  "name": "transferAllFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint256[]",
-    "name": "tokenIDs",
-    "type": "uint256[]"
-   }
-  ],
-  "name": "burnAll",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "totalSupply",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "getProto",
-  "outputs": [
-   {
-    "internalType": "uint16",
-    "name": "",
-    "type": "uint16"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint16[]",
-    "name": "_ids",
-    "type": "uint16[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_gods",
-    "type": "uint8[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_cardTypes",
-    "type": "uint8[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_rarities",
-    "type": "uint8[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_manas",
-    "type": "uint8[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_attacks",
-    "type": "uint8[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_healths",
-    "type": "uint8[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_tribes",
-    "type": "uint8[]"
-   }
-  ],
-  "name": "updateProtos",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "_manager",
-    "type": "address"
-   }
-  ],
-  "name": "setPropertyManager",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "name": "addressToUserID",
-  "outputs": [
-   {
-    "internalType": "uint48",
-    "name": "",
-    "type": "uint48"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint16",
-    "name": "",
-    "type": "uint16"
-   },
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "name": "mythicApproved",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "isOld",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "transferFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "factoryApproved",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "MYTHIC_THRESHOLD",
-  "outputs": [
-   {
-    "internalType": "uint16",
-    "name": "",
-    "type": "uint16"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint16[]",
-    "name": "_ids",
-    "type": "uint16[]"
-   }
-  ],
-  "name": "lockProtos",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_tokenId",
-    "type": "uint256"
-   },
-   {
-    "internalType": "bytes32",
-    "name": "_key",
-    "type": "bytes32"
-   }
-  ],
-  "name": "getTokenKey",
-  "outputs": [
-   {
-    "internalType": "bytes32",
-    "name": "",
-    "type": "bytes32"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "pure",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "bytes32",
-    "name": "_key",
-    "type": "bytes32"
-   }
-  ],
-  "name": "getClassKey",
-  "outputs": [
-   {
-    "internalType": "bytes32",
-    "name": "",
-    "type": "bytes32"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "pure",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "safeTransferFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "burn",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "gasThreshold",
-    "type": "uint256"
-   }
-  ],
-  "name": "copyUntil",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "migrating",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "string",
-    "name": "uri",
-    "type": "string"
-   }
-  ],
-  "name": "setBaseURI",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_id",
-    "type": "uint256"
-   },
-   {
-    "internalType": "bytes32",
-    "name": "_key",
-    "type": "bytes32"
-   },
-   {
-    "internalType": "bytes32",
-    "name": "_value",
-    "type": "bytes32"
-   }
-  ],
-  "name": "setProperty",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "index",
-    "type": "uint256"
-   }
-  ],
-  "name": "getBatch",
-  "outputs": [
-   {
-    "internalType": "uint48",
-    "name": "userID",
-    "type": "uint48"
-   },
-   {
-    "internalType": "uint16",
-    "name": "size",
-    "type": "uint16"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "_to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint16",
-    "name": "_proto",
-    "type": "uint16"
-   },
-   {
-    "internalType": "uint8",
-    "name": "_quality",
-    "type": "uint8"
-   }
-  ],
-  "name": "mintCard",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "id",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "_factory",
-    "type": "address"
-   },
-   {
-    "internalType": "uint16",
-    "name": "_mythic",
-    "type": "uint16"
-   }
-  ],
-  "name": "approveForMythic",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "ownerOf",
-  "outputs": [
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint48",
-    "name": "",
-    "type": "uint48"
-   }
-  ],
-  "name": "userIDToAddress",
-  "outputs": [
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "baseURI",
-  "outputs": [
-   {
-    "internalType": "string",
-    "name": "",
-    "type": "string"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "_owner",
-    "type": "address"
-   }
-  ],
-  "name": "balanceOf",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "renounceOwnership",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256[]",
-    "name": "tokenIDs",
-    "type": "uint256[]"
-   }
-  ],
-  "name": "safeTransferAllFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "getBatchStart",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "string",
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "name": "mythicTradable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
     "name": "name",
-    "type": "string"
-   },
-   {
-    "internalType": "uint16",
-    "name": "low",
-    "type": "uint16"
-   },
-   {
-    "internalType": "uint16",
-    "name": "high",
-    "type": "uint16"
-   }
-  ],
-  "name": "startSeason",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "owner",
-  "outputs": [
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "isOwner",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "symbol",
-  "outputs": [
-   {
-    "internalType": "string",
-    "name": "",
-    "type": "string"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "tokenCount",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "bytes32",
-    "name": "_key",
-    "type": "bytes32"
-   }
-  ],
-  "name": "getClassProperty",
-  "outputs": [
-   {
-    "internalType": "bytes32",
-    "name": "",
-    "type": "bytes32"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "bool",
-    "name": "approved",
-    "type": "bool"
-   }
-  ],
-  "name": "setApprovalForAll",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "bytes32",
-    "name": "_key",
-    "type": "bytes32"
-   },
-   {
-    "internalType": "bytes32",
-    "name": "_value",
-    "type": "bytes32"
-   }
-  ],
-  "name": "setClassProperty",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "protos",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "locked",
-    "type": "bool"
-   },
-   {
-    "internalType": "bool",
-    "name": "exists",
-    "type": "bool"
-   },
-   {
-    "internalType": "uint8",
-    "name": "god",
-    "type": "uint8"
-   },
-   {
-    "internalType": "uint8",
-    "name": "cardType",
-    "type": "uint8"
-   },
-   {
-    "internalType": "uint8",
-    "name": "rarity",
-    "type": "uint8"
-   },
-   {
-    "internalType": "uint8",
-    "name": "mana",
-    "type": "uint8"
-   },
-   {
-    "internalType": "uint8",
-    "name": "attack",
-    "type": "uint8"
-   },
-   {
-    "internalType": "uint8",
-    "name": "health",
-    "type": "uint8"
-   },
-   {
-    "internalType": "uint8",
-    "name": "tribe",
-    "type": "uint8"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "start",
-    "type": "uint256"
-   },
-   {
-    "internalType": "uint256",
-    "name": "end",
-    "type": "uint256"
-   }
-  ],
-  "name": "safeTransferBatch",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "seasonTradable",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "batches",
-  "outputs": [
-   {
-    "internalType": "uint48",
-    "name": "userID",
-    "type": "uint48"
-   },
-   {
-    "internalType": "uint16",
-    "name": "size",
-    "type": "uint16"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "protoToSeason",
-  "outputs": [
-   {
-    "internalType": "uint16",
-    "name": "",
-    "type": "uint16"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "old",
-  "outputs": [
-   {
-    "internalType": "contract Cards",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   },
-   {
-    "internalType": "bytes",
-    "name": "_data",
-    "type": "bytes"
-   }
-  ],
-  "name": "safeTransferFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "getDetails",
-  "outputs": [
-   {
-    "internalType": "uint16",
-    "name": "proto",
-    "type": "uint16"
-   },
-   {
-    "internalType": "uint8",
-    "name": "quality",
-    "type": "uint8"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_season",
-    "type": "uint256"
-   }
-  ],
-  "name": "unlockTrading",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "bytes32",
-    "name": "",
-    "type": "bytes32"
-   }
-  ],
-  "name": "properties",
-  "outputs": [
-   {
-    "internalType": "bytes32",
-    "name": "",
-    "type": "bytes32"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "start",
-    "type": "uint256"
-   },
-   {
-    "internalType": "uint256",
-    "name": "end",
-    "type": "uint256"
-   }
-  ],
-  "name": "transferBatch",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "tokenURI",
-  "outputs": [
-   {
-    "internalType": "string",
-    "name": "",
-    "type": "string"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "_to",
-    "type": "address"
-   },
-   {
-    "internalType": "uint16[]",
-    "name": "_protos",
-    "type": "uint16[]"
-   },
-   {
-    "internalType": "uint8[]",
-    "name": "_qualities",
-    "type": "uint8[]"
-   }
-  ],
-  "name": "mintCards",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "id",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_id",
-    "type": "uint256"
-   },
-   {
-    "internalType": "bytes32",
-    "name": "_key",
-    "type": "bytes32"
-   }
-  ],
-  "name": "getProperty",
-  "outputs": [
-   {
-    "internalType": "bytes32",
-    "name": "_value",
-    "type": "bytes32"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "copyNextBatch",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint16",
-    "name": "",
-    "type": "uint16"
-   }
-  ],
-  "name": "mythicCreated",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "isTradable",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_tokenId",
-    "type": "uint256"
-   },
-   {
-    "internalType": "uint8",
-    "name": "_quality",
-    "type": "uint8"
-   }
-  ],
-  "name": "setQuality",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "propertyManager",
-  "outputs": [
-   {
-    "internalType": "address",
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "nextBatch",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "uint16",
-    "name": "_mythic",
-    "type": "uint16"
-   }
-  ],
-  "name": "makeMythicTradable",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "address",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getApproved",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "approve",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "tokenIDs",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "transferAllFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "tokenIDs",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "burnAll",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getProto",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "_ids",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_gods",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_cardTypes",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_rarities",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_manas",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_attacks",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_healths",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_tribes",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "updateProtos",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_manager",
+        "type": "address"
+      }
+    ],
+    "name": "setPropertyManager",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "addressToUserID",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "",
+        "type": "uint48"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "mythicApproved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isOld",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "factoryApproved",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "MYTHIC_THRESHOLD",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint16[]",
+        "name": "_ids",
+        "type": "uint16[]"
+      }
+    ],
+    "name": "lockProtos",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_key",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getTokenKey",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_key",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getClassKey",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "burn",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "gasThreshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "copyUntil",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "migrating",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
+      }
+    ],
+    "name": "setBaseURI",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_key",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_value",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setProperty",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBatch",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "userID",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint16",
+        "name": "size",
+        "type": "uint16"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_proto",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_quality",
+        "type": "uint8"
+      }
+    ],
+    "name": "mintCard",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_factory",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_mythic",
+        "type": "uint16"
+      }
+    ],
+    "name": "approveForMythic",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ownerOf",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint48",
+        "name": "",
+        "type": "uint48"
+      }
+    ],
+    "name": "userIDToAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "baseURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "tokenIDs",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "safeTransferAllFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBatchStart",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint16",
+        "name": "low",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "high",
+        "type": "uint16"
+      }
+    ],
+    "name": "startSeason",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
     "name": "owner",
-    "type": "address"
-   },
-   {
-    "internalType": "address",
-    "name": "operator",
-    "type": "address"
-   }
-  ],
-  "name": "isApprovedForAll",
-  "outputs": [
-   {
-    "internalType": "bool",
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "getQuality",
-  "outputs": [
-   {
-    "internalType": "uint8",
-    "name": "",
-    "type": "uint8"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "_factory",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "_season",
-    "type": "uint256"
-   }
-  ],
-  "name": "addFactory",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "address",
-    "name": "newOwner",
-    "type": "address"
-   }
-  ],
-  "name": "transferOwnership",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "batchSize",
-  "outputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "internalType": "uint256",
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "seasons",
-  "outputs": [
-   {
-    "internalType": "uint16",
-    "name": "high",
-    "type": "uint16"
-   },
-   {
-    "internalType": "uint16",
-    "name": "low",
-    "type": "uint16"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "internalType": "bool",
-    "name": "_migrating",
-    "type": "bool"
-   }
-  ],
-  "name": "setMigrating",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "inputs": [
-   {
-    "internalType": "contract Cards",
-    "name": "_old",
-    "type": "address"
-   },
-   {
-    "internalType": "uint256",
-    "name": "_batchSize",
-    "type": "uint256"
-   },
-   {
-    "internalType": "string",
-    "name": "_name",
-    "type": "string"
-   },
-   {
-    "internalType": "string",
-    "name": "_symbol",
-    "type": "string"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "constructor"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "uint16",
-    "name": "id",
-    "type": "uint16"
-   }
-  ],
-  "name": "ProtoUpdated",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "uint16",
-    "name": "id",
-    "type": "uint16"
-   },
-   {
-    "indexed": false,
-    "internalType": "string",
-    "name": "name",
-    "type": "string"
-   },
-   {
-    "indexed": true,
-    "internalType": "uint16",
-    "name": "low",
-    "type": "uint16"
-   },
-   {
-    "indexed": true,
-    "internalType": "uint16",
-    "name": "high",
-    "type": "uint16"
-   }
-  ],
-  "name": "SeasonStarted",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   },
-   {
-    "indexed": false,
-    "internalType": "uint8",
-    "name": "quality",
-    "type": "uint8"
-   },
-   {
-    "indexed": false,
-    "internalType": "address",
-    "name": "factory",
-    "type": "address"
-   }
-  ],
-  "name": "QualityChanged",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "uint256",
-    "name": "start",
-    "type": "uint256"
-   },
-   {
-    "indexed": false,
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "internalType": "uint16[]",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isOwner",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "tokenCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_key",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getClassProperty",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_key",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_value",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setClassProperty",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "protos",
-    "type": "uint16[]"
-   },
-   {
-    "indexed": false,
-    "internalType": "uint8[]",
-    "name": "qualities",
-    "type": "uint8[]"
-   }
-  ],
-  "name": "CardsMinted",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "bytes32",
-    "name": "key",
-    "type": "bytes32"
-   },
-   {
-    "indexed": false,
-    "internalType": "bytes32",
-    "name": "value",
-    "type": "bytes32"
-   }
-  ],
-  "name": "ClassPropertySet",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "uint256",
-    "name": "id",
-    "type": "uint256"
-   },
-   {
-    "indexed": true,
-    "internalType": "bytes32",
-    "name": "key",
-    "type": "bytes32"
-   },
-   {
-    "indexed": false,
-    "internalType": "bytes32",
-    "name": "value",
-    "type": "bytes32"
-   }
-  ],
-  "name": "TokenPropertySet",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "indexed": true,
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "Transfer",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "owner",
-    "type": "address"
-   },
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "approved",
-    "type": "address"
-   },
-   {
-    "indexed": true,
-    "internalType": "uint256",
-    "name": "tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "Approval",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "owner",
-    "type": "address"
-   },
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "operator",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "internalType": "bool",
-    "name": "approved",
-    "type": "bool"
-   }
-  ],
-  "name": "ApprovalForAll",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "previousOwner",
-    "type": "address"
-   },
-   {
-    "indexed": true,
-    "internalType": "address",
-    "name": "newOwner",
-    "type": "address"
-   }
-  ],
-  "name": "OwnershipTransferred",
-  "type": "event"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "cfoAddress",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_tokenId",
-    "type": "uint256"
-   },
-   {
-    "name": "_preferredTransport",
-    "type": "string"
-   }
-  ],
-  "name": "tokenMetadata",
-  "outputs": [
-   {
-    "name": "infoUrl",
-    "type": "string"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "promoCreatedCount",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "ceoAddress",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "GEN0_STARTING_PRICE",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_address",
-    "type": "address"
-   }
-  ],
-  "name": "setSiringAuctionAddress",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "pregnantKitties",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_kittyId",
-    "type": "uint256"
-   }
-  ],
-  "name": "isPregnant",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "GEN0_AUCTION_DURATION",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "siringAuction",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_address",
-    "type": "address"
-   }
-  ],
-  "name": "setGeneScienceAddress",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_newCEO",
-    "type": "address"
-   }
-  ],
-  "name": "setCEO",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_newCOO",
-    "type": "address"
-   }
-  ],
-  "name": "setCOO",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_kittyId",
-    "type": "uint256"
-   },
-   {
-    "name": "_startingPrice",
-    "type": "uint256"
-   },
-   {
-    "name": "_endingPrice",
-    "type": "uint256"
-   },
-   {
-    "name": "_duration",
-    "type": "uint256"
-   }
-  ],
-  "name": "createSaleAuction",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "unpause",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "sireAllowedToAddress",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_matronId",
-    "type": "uint256"
-   },
-   {
-    "name": "_sireId",
-    "type": "uint256"
-   }
-  ],
-  "name": "canBreedWith",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "kittyIndexToApproved",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_kittyId",
-    "type": "uint256"
-   },
-   {
-    "name": "_startingPrice",
-    "type": "uint256"
-   },
-   {
-    "name": "_endingPrice",
-    "type": "uint256"
-   },
-   {
-    "name": "_duration",
-    "type": "uint256"
-   }
-  ],
-  "name": "createSiringAuction",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "val",
-    "type": "uint256"
-   }
-  ],
-  "name": "setAutoBirthFee",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_addr",
-    "type": "address"
-   },
-   {
-    "name": "_sireId",
-    "type": "uint256"
-   }
-  ],
-  "name": "approveSiring",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_newCFO",
-    "type": "address"
-   }
-  ],
-  "name": "setCFO",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_genes",
-    "type": "uint256"
-   },
-   {
-    "name": "_owner",
-    "type": "address"
-   }
-  ],
-  "name": "createPromoKitty",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "secs",
-    "type": "uint256"
-   }
-  ],
-  "name": "setSecondsPerBlock",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "paused",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "withdrawBalance",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "GEN0_CREATION_LIMIT",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "newContractAddress",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_address",
-    "type": "address"
-   }
-  ],
-  "name": "setSaleAuctionAddress",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_v2Address",
-    "type": "address"
-   }
-  ],
-  "name": "setNewAddress",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "secondsPerBlock",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "pause",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_owner",
-    "type": "address"
-   }
-  ],
-  "name": "tokensOfOwner",
-  "outputs": [
-   {
-    "name": "ownerTokens",
-    "type": "uint256[]"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_matronId",
-    "type": "uint256"
-   }
-  ],
-  "name": "giveBirth",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "withdrawAuctionBalances",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "cooldowns",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint32"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "kittyIndexToOwner",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_to",
-    "type": "address"
-   },
-   {
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "transfer",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "cooAddress",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "autoBirthFee",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "erc721Metadata",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_genes",
-    "type": "uint256"
-   }
-  ],
-  "name": "createGen0Auction",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_kittyId",
-    "type": "uint256"
-   }
-  ],
-  "name": "isReadyToBreed",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "PROMO_CREATION_LIMIT",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_contractAddress",
-    "type": "address"
-   }
-  ],
-  "name": "setMetadataAddress",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "saleAuction",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_id",
-    "type": "uint256"
-   }
-  ],
-  "name": "getKitty",
-  "outputs": [
-   {
-    "name": "isGestating",
-    "type": "bool"
-   },
-   {
-    "name": "isReady",
-    "type": "bool"
-   },
-   {
-    "name": "cooldownIndex",
-    "type": "uint256"
-   },
-   {
-    "name": "nextActionAt",
-    "type": "uint256"
-   },
-   {
-    "name": "siringWithId",
-    "type": "uint256"
-   },
-   {
-    "name": "birthTime",
-    "type": "uint256"
-   },
-   {
-    "name": "matronId",
-    "type": "uint256"
-   },
-   {
-    "name": "sireId",
-    "type": "uint256"
-   },
-   {
-    "name": "generation",
-    "type": "uint256"
-   },
-   {
-    "name": "genes",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_sireId",
-    "type": "uint256"
-   },
-   {
-    "name": "_matronId",
-    "type": "uint256"
-   }
-  ],
-  "name": "bidOnSiringAuction",
-  "outputs": [],
-  "payable": true,
-  "stateMutability": "payable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "gen0CreatedCount",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "geneScience",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_matronId",
-    "type": "uint256"
-   },
-   {
-    "name": "_sireId",
-    "type": "uint256"
-   }
-  ],
-  "name": "breedWithAuto",
-  "outputs": [],
-  "payable": true,
-  "stateMutability": "payable",
-  "type": "function"
- },
- {
-  "inputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "constructor"
- },
- {
-  "payable": true,
-  "stateMutability": "payable",
-  "type": "fallback"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": false,
-    "name": "owner",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "name": "matronId",
-    "type": "uint256"
-   },
-   {
-    "indexed": false,
-    "name": "sireId",
-    "type": "uint256"
-   },
-   {
-    "indexed": false,
-    "name": "cooldownEndBlock",
-    "type": "uint256"
-   }
-  ],
-  "name": "Pregnant",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": false,
-    "name": "owner",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "name": "kittyId",
-    "type": "uint256"
-   },
-   {
-    "indexed": false,
-    "name": "matronId",
-    "type": "uint256"
-   },
-   {
-    "indexed": false,
-    "name": "sireId",
-    "type": "uint256"
-   },
-   {
-    "indexed": false,
-    "name": "genes",
-    "type": "uint256"
-   }
-  ],
-  "name": "Birth",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": false,
-    "name": "newContract",
-    "type": "address"
-   }
-  ],
-  "name": "ContractUpgrade",
-  "type": "event"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "implementsERC721",
-  "outputs": [
-   {
-    "name": "_implementsERC721",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_owner",
-    "type": "address"
-   },
-   {
-    "name": "_index",
-    "type": "uint256"
-   }
-  ],
-  "name": "tokenOfOwnerByIndex",
-  "outputs": [
-   {
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "tokenMetadata",
-  "outputs": [
-   {
-    "name": "_infoUrl",
-    "type": "string"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "_owner",
-    "type": "address"
-   },
-   {
-    "name": "_tokenId",
-    "type": "uint256"
-   },
-   {
-    "name": "_approvedAddress",
-    "type": "address"
-   },
-   {
-    "name": "_metadata",
-    "type": "string"
-   }
-  ],
-  "name": "mint",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "numTokensTotal",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "_owner",
-    "type": "address"
-   }
-  ],
-  "name": "getOwnerTokens",
-  "outputs": [
-   {
-    "name": "_tokenIds",
-    "type": "uint256[]"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": true,
-    "name": "_to",
-    "type": "address"
-   },
-   {
-    "indexed": true,
-    "name": "_tokenId",
-    "type": "uint256"
-   }
-  ],
-  "name": "Mint",
-  "type": "event"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "minter",
-    "type": "address"
-   }
-  ],
-  "name": "addMinter",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "height",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "name": "ids",
-    "type": "uint256[]"
-   },
-   {
-    "name": "data",
-    "type": "bytes"
-   }
-  ],
-  "name": "batchTransferFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "name": "ids",
-    "type": "uint256[]"
-   },
-   {
-    "name": "data",
-    "type": "bytes"
-   }
-  ],
-  "name": "safeBatchTransferFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "sender",
-    "type": "address"
-   },
-   {
-    "name": "operator",
-    "type": "address"
-   },
-   {
-    "name": "id",
-    "type": "uint256"
-   }
-  ],
-  "name": "approveFor",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "name": "size",
-    "type": "uint256"
-   },
-   {
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "locked",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "exists",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint8",
+        "name": "god",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "cardType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "rarity",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "mana",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "attack",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "health",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "tribe",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "start",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "end",
+        "type": "uint256"
+      }
+    ],
+    "name": "safeTransferBatch",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "seasonTradable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "batches",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "userID",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint16",
+        "name": "size",
+        "type": "uint16"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "protoToSeason",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "old",
+    "outputs": [
+      {
+        "internalType": "contract Cards",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getDetails",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "proto",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "quality",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_season",
+        "type": "uint256"
+      }
+    ],
+    "name": "unlockTrading",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "properties",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "start",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "end",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferBatch",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16[]",
+        "name": "_protos",
+        "type": "uint16[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_qualities",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "mintCards",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_key",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getProperty",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_value",
+        "type": "bytes32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "copyNextBatch",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "name": "mythicCreated",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isTradable",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "_quality",
+        "type": "uint8"
+      }
+    ],
+    "name": "setQuality",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "propertyManager",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "nextBatch",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "_mythic",
+        "type": "uint16"
+      }
+    ],
+    "name": "makeMythicTradable",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getQuality",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_factory",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_season",
+        "type": "uint256"
+      }
+    ],
+    "name": "addFactory",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "batchSize",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "seasons",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "high",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "low",
+        "type": "uint16"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_migrating",
+        "type": "bool"
+      }
+    ],
+    "name": "setMigrating",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract Cards",
+        "name": "_old",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_batchSize",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_symbol",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint16",
+        "name": "id",
+        "type": "uint16"
+      }
+    ],
+    "name": "ProtoUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint16",
+        "name": "id",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint16",
+        "name": "low",
+        "type": "uint16"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint16",
+        "name": "high",
+        "type": "uint16"
+      }
+    ],
+    "name": "SeasonStarted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "quality",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "factory",
+        "type": "address"
+      }
+    ],
+    "name": "QualityChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "start",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16[]",
+        "name": "protos",
+        "type": "uint16[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8[]",
+        "name": "qualities",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "CardsMinted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "value",
+        "type": "bytes32"
+      }
+    ],
+    "name": "ClassPropertySet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "key",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "value",
+        "type": "bytes32"
+      }
+    ],
+    "name": "TokenPropertySet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "approved",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "cfoAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "name": "_preferredTransport",
+        "type": "string"
+      }
+    ],
+    "name": "tokenMetadata",
+    "outputs": [
+      {
+        "name": "infoUrl",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "promoCreatedCount",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "ceoAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "GEN0_STARTING_PRICE",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "setSiringAuctionAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "pregnantKitties",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_kittyId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isPregnant",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "GEN0_AUCTION_DURATION",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "siringAuction",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "setGeneScienceAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_newCEO",
+        "type": "address"
+      }
+    ],
+    "name": "setCEO",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_newCOO",
+        "type": "address"
+      }
+    ],
+    "name": "setCOO",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_kittyId",
+        "type": "uint256"
+      },
+      {
+        "name": "_startingPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "_endingPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "_duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "createSaleAuction",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "unpause",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "sireAllowedToAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_matronId",
+        "type": "uint256"
+      },
+      {
+        "name": "_sireId",
+        "type": "uint256"
+      }
+    ],
+    "name": "canBreedWith",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "kittyIndexToApproved",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_kittyId",
+        "type": "uint256"
+      },
+      {
+        "name": "_startingPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "_endingPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "_duration",
+        "type": "uint256"
+      }
+    ],
+    "name": "createSiringAuction",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "val",
+        "type": "uint256"
+      }
+    ],
+    "name": "setAutoBirthFee",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_addr",
+        "type": "address"
+      },
+      {
+        "name": "_sireId",
+        "type": "uint256"
+      }
+    ],
+    "name": "approveSiring",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_newCFO",
+        "type": "address"
+      }
+    ],
+    "name": "setCFO",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_genes",
+        "type": "uint256"
+      },
+      {
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "createPromoKitty",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "secs",
+        "type": "uint256"
+      }
+    ],
+    "name": "setSecondsPerBlock",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "paused",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "withdrawBalance",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "GEN0_CREATION_LIMIT",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "newContractAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "setSaleAuctionAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_v2Address",
+        "type": "address"
+      }
+    ],
+    "name": "setNewAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "secondsPerBlock",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "tokensOfOwner",
+    "outputs": [
+      {
+        "name": "ownerTokens",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_matronId",
+        "type": "uint256"
+      }
+    ],
+    "name": "giveBirth",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "withdrawAuctionBalances",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "cooldowns",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint32"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "kittyIndexToOwner",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "transfer",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "cooAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "autoBirthFee",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "erc721Metadata",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_genes",
+        "type": "uint256"
+      }
+    ],
+    "name": "createGen0Auction",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_kittyId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isReadyToBreed",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "PROMO_CREATION_LIMIT",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_contractAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setMetadataAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "saleAuction",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_id",
+        "type": "uint256"
+      }
+    ],
+    "name": "getKitty",
+    "outputs": [
+      {
+        "name": "isGestating",
+        "type": "bool"
+      },
+      {
+        "name": "isReady",
+        "type": "bool"
+      },
+      {
+        "name": "cooldownIndex",
+        "type": "uint256"
+      },
+      {
+        "name": "nextActionAt",
+        "type": "uint256"
+      },
+      {
+        "name": "siringWithId",
+        "type": "uint256"
+      },
+      {
+        "name": "birthTime",
+        "type": "uint256"
+      },
+      {
+        "name": "matronId",
+        "type": "uint256"
+      },
+      {
+        "name": "sireId",
+        "type": "uint256"
+      },
+      {
+        "name": "generation",
+        "type": "uint256"
+      },
+      {
+        "name": "genes",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_sireId",
+        "type": "uint256"
+      },
+      {
+        "name": "_matronId",
+        "type": "uint256"
+      }
+    ],
+    "name": "bidOnSiringAuction",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "gen0CreatedCount",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "geneScience",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_matronId",
+        "type": "uint256"
+      },
+      {
+        "name": "_sireId",
+        "type": "uint256"
+      }
+    ],
+    "name": "breedWithAuto",
+    "outputs": [],
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "payable": true,
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "matronId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "sireId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "cooldownEndBlock",
+        "type": "uint256"
+      }
+    ],
+    "name": "Pregnant",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "kittyId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "matronId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "sireId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "name": "genes",
+        "type": "uint256"
+      }
+    ],
+    "name": "Birth",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "newContract",
+        "type": "address"
+      }
+    ],
+    "name": "ContractUpgrade",
+    "type": "event"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "implementsERC721",
+    "outputs": [
+      {
+        "name": "_implementsERC721",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "name": "_index",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenOfOwnerByIndex",
+    "outputs": [
+      {
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenMetadata",
+    "outputs": [
+      {
+        "name": "_infoUrl",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "name": "_tokenId",
+        "type": "uint256"
+      },
+      {
+        "name": "_approvedAddress",
+        "type": "address"
+      },
+      {
+        "name": "_metadata",
+        "type": "string"
+      }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "numTokensTotal",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
+    "name": "getOwnerTokens",
+    "outputs": [
+      {
+        "name": "_tokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "name": "_tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Mint",
+    "type": "event"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "minter",
+        "type": "address"
+      }
+    ],
+    "name": "addMinter",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "height",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "batchTransferFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "ids",
+        "type": "uint256[]"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeBatchTransferFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "approveFor",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "size",
+        "type": "uint256"
+      },
+      {
+        "name": "x",
+        "type": "uint256"
+      },
+      {
+        "name": "y",
+        "type": "uint256"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "transferQuad",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
     "name": "x",
-    "type": "uint256"
-   },
-   {
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
     "name": "y",
-    "type": "uint256"
-   },
-   {
-    "name": "data",
-    "type": "bytes"
-   }
-  ],
-  "name": "transferQuad",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "id",
-    "type": "uint256"
-   }
-  ],
-  "name": "x",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "id",
-    "type": "uint256"
-   }
-  ],
-  "name": "y",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "who",
-    "type": "address"
-   }
-  ],
-  "name": "isSuperOperator",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "name": "size",
-    "type": "uint256"
-   },
-   {
-    "name": "x",
-    "type": "uint256"
-   },
-   {
-    "name": "y",
-    "type": "uint256"
-   },
-   {
-    "name": "data",
-    "type": "bytes"
-   }
-  ],
-  "name": "mintQuad",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [],
-  "name": "getAdmin",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "name": "owner",
-    "type": "address"
-   },
-   {
-    "name": "id",
-    "type": "uint256"
-   }
-  ],
-  "name": "_burn",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "name": "id",
-    "type": "uint256"
-   }
-  ],
-  "name": "burnFrom",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "name": "_numNFTPerAddress",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "metaTransactionProcessor",
-    "type": "address"
-   },
-   {
-    "name": "enabled",
-    "type": "bool"
-   }
-  ],
-  "name": "setMetaTransactionProcessor",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "newAdmin",
-    "type": "address"
-   }
-  ],
-  "name": "changeAdmin",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "_owners",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "address"
-   },
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "name": "_operatorsForAll",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [],
-  "name": "width",
-  "outputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "who",
-    "type": "address"
-   }
-  ],
-  "name": "isMinter",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "superOperator",
-    "type": "address"
-   },
-   {
-    "name": "enabled",
-    "type": "bool"
-   }
-  ],
-  "name": "setSuperOperator",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "",
-    "type": "uint256"
-   }
-  ],
-  "name": "_operators",
-  "outputs": [
-   {
-    "name": "",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "minter",
-    "type": "address"
-   },
-   {
-    "name": "enabled",
-    "type": "bool"
-   }
-  ],
-  "name": "setMinter",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": true,
-  "inputs": [
-   {
-    "name": "who",
-    "type": "address"
-   }
-  ],
-  "name": "isMetaTransactionProcessor",
-  "outputs": [
-   {
-    "name": "",
-    "type": "bool"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "from",
-    "type": "address"
-   },
-   {
-    "name": "to",
-    "type": "address"
-   },
-   {
-    "name": "sizes",
-    "type": "uint256[]"
-   },
-   {
-    "name": "xs",
-    "type": "uint256[]"
-   },
-   {
-    "name": "ys",
-    "type": "uint256[]"
-   },
-   {
-    "name": "data",
-    "type": "bytes"
-   }
-  ],
-  "name": "batchTransferQuad",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "constant": false,
-  "inputs": [
-   {
-    "name": "sender",
-    "type": "address"
-   },
-   {
-    "name": "operator",
-    "type": "address"
-   },
-   {
-    "name": "approved",
-    "type": "bool"
-   }
-  ],
-  "name": "setApprovalForAllFor",
-  "outputs": [],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "function"
- },
- {
-  "inputs": [
-   {
-    "name": "metaTransactionContract",
-    "type": "address"
-   },
-   {
-    "name": "admin",
-    "type": "address"
-   }
-  ],
-  "payable": false,
-  "stateMutability": "nonpayable",
-  "type": "constructor"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": false,
-    "name": "superOperator",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "name": "enabled",
-    "type": "bool"
-   }
-  ],
-  "name": "Minter",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": false,
-    "name": "metaTransactionProcessor",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "name": "enabled",
-    "type": "bool"
-   }
-  ],
-  "name": "MetaTransactionProcessor",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": false,
-    "name": "superOperator",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "name": "enabled",
-    "type": "bool"
-   }
-  ],
-  "name": "SuperOperator",
-  "type": "event"
- },
- {
-  "anonymous": false,
-  "inputs": [
-   {
-    "indexed": false,
-    "name": "oldAdmin",
-    "type": "address"
-   },
-   {
-    "indexed": false,
-    "name": "newAdmin",
-    "type": "address"
-   }
-  ],
-  "name": "AdminChanged",
-  "type": "event"
- }
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "isSuperOperator",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "size",
+        "type": "uint256"
+      },
+      {
+        "name": "x",
+        "type": "uint256"
+      },
+      {
+        "name": "y",
+        "type": "uint256"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "mintQuad",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getAdmin",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "_burn",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "burnFrom",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "_numNFTPerAddress",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "metaTransactionProcessor",
+        "type": "address"
+      },
+      {
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setMetaTransactionProcessor",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "changeAdmin",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "_owners",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      },
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "_operatorsForAll",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "width",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "isMinter",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "superOperator",
+        "type": "address"
+      },
+      {
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setSuperOperator",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "_operators",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "minter",
+        "type": "address"
+      },
+      {
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "setMinter",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "who",
+        "type": "address"
+      }
+    ],
+    "name": "isMetaTransactionProcessor",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "sizes",
+        "type": "uint256[]"
+      },
+      {
+        "name": "xs",
+        "type": "uint256[]"
+      },
+      {
+        "name": "ys",
+        "type": "uint256[]"
+      },
+      {
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "batchTransferQuad",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApprovalForAllFor",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "name": "metaTransactionContract",
+        "type": "address"
+      },
+      {
+        "name": "admin",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "superOperator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "Minter",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "metaTransactionProcessor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "MetaTransactionProcessor",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "superOperator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "enabled",
+        "type": "bool"
+      }
+    ],
+    "name": "SuperOperator",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "oldAdmin",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "name": "newAdmin",
+        "type": "address"
+      }
+    ],
+    "name": "AdminChanged",
+    "type": "event"
+  }
 ]

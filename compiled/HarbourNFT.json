@@ -14,6 +14,32 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "AdminAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "AdminRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "owner",
         "type": "address"
       },
@@ -113,6 +139,15 @@
     "inputs": [
       { "internalType": "address", "name": "account", "type": "address" }
     ],
+    "name": "addAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
     "name": "addMinter",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -145,11 +180,66 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "contractURI",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
     ],
     "name": "getApproved",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "getFeeBps",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "getFeeRecipients",
+    "outputs": [
+      { "internalType": "address payable[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "getRoyalties",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address payable",
+            "name": "account",
+            "type": "address"
+          },
+          { "internalType": "uint96", "name": "value", "type": "uint96" }
+        ],
+        "internalType": "struct HarbourNFT.Part[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "isAdmin",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -213,9 +303,31 @@
   },
   {
     "inputs": [],
+    "name": "renounceAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "renounceMinter",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "bytes", "name": "", "type": "bytes" }
+    ],
+    "name": "royaltyInfo",
+    "outputs": [
+      { "internalType": "address", "name": "receiver", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "bytes", "name": "royaltyPaymentData", "type": "bytes" }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -247,6 +359,49 @@
       { "internalType": "bool", "name": "approved", "type": "bool" }
     ],
     "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "string", "name": "uri", "type": "string" }],
+    "name": "setContractURI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+    ],
+    "name": "setFeeBps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+    ],
+    "name": "setRoyaltyAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address payable", "name": "_addr", "type": "address" }
+    ],
+    "name": "setRoyaltyReceiver",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint96", "name": "_amount", "type": "uint96" }
+    ],
+    "name": "setRoyaltyValue",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
