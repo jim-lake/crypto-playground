@@ -624,12 +624,14 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
     uint256 count,
     string memory _tokenURI
   ) public onlyMinter returns (bool) {
-    for (uint256 i = 0; i < count; i++) {
+    _mint(to, startTokenId);
+    _setTokenURI(startTokenId, _tokenURI);
+
+    for (uint256 i = 1; i < count; i++) {
       uint256 tokenId = startTokenId + i;
       _mint(to, tokenId);
       _tokenTokenMap[tokenId] = startTokenId;
     }
-    _setTokenURI(startTokenId, _tokenURI);
     return true;
   }
 
