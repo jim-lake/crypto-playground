@@ -330,6 +330,7 @@ contract ERC721 is Context, ERC165, IERC721 {
   // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
   bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
 
+  Counters.Counter private _totalSupply;
   mapping(uint256 => address) private _tokenOwner;
   mapping(uint256 => address) private _tokenApprovals;
   mapping(address => Counters.Counter) private _ownedTokensCount;
@@ -339,6 +340,10 @@ contract ERC721 is Context, ERC165, IERC721 {
 
   constructor() {
     _registerInterface(_INTERFACE_ID_ERC721);
+  }
+
+  function totalSupply() public view returns (uint256) {
+    return _totalSupply.current();
   }
 
   function balanceOf(address owner) public view override returns (uint256) {
@@ -476,8 +481,18 @@ contract ERC721 is Context, ERC165, IERC721 {
 
     _tokenOwner[tokenId] = to;
     _ownedTokensCount[to].increment();
+    _totalSupply.increment();
 
     emit Transfer(address(0), to, tokenId);
+  }
+
+  function _burn(uint256 tokenId) internal {
+    address owner = _tokenOwner[tokenId];
+    _clearApproval(tokenId);
+    _totalSupply.decrement();
+    _ownedTokensCount[owner].decrement();
+    _tokenOwner[tokenId] = address(0);
+    emit Transfer(owner, address(0), tokenId);
   }
 
   function _transferFrom(
@@ -632,6 +647,15 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
       _mint(to, tokenId);
       _tokenTokenMap[tokenId] = startTokenId;
     }
+    return true;
+  }
+
+  function burn(uint256 tokenId) public returns (bool) {
+    require(
+      _isApprovedOrOwner(_msgSender(), tokenId),
+      'ERC721: burn caller is not owner nor approved'
+    );
+    _burn(tokenId);
     return true;
   }
 
