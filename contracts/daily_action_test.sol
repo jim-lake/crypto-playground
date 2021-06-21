@@ -148,11 +148,10 @@ contract DailyTester {
       'DailyTester: once per 2 minutes'
     );
     _lastPickup[msg.sender] = block.timestamp;
-    bool ret =
-      IERC20(0xf220aF718A8d13CCE7f5A466722F2b5857cd4215).transfer(
-        msg.sender,
-        100 ether
-      );
+    bool ret = IERC20(0xf220aF718A8d13CCE7f5A466722F2b5857cd4215).transfer(
+      msg.sender,
+      100 ether
+    );
     require(ret = true, 'DailyTester: Transfer failed');
     emit DailyPickup(msg.sender, block.timestamp);
   }

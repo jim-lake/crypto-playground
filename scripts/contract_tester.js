@@ -23,7 +23,6 @@ const contract_abi_path = argv[0];
 const contract_addr = argv[1];
 const from_addr = argv[2];
 const method = argv[3];
-const call_args = argv.slice(4);
 
 console.error('Reading contract abi from path:', contract_abi_path);
 const contract_abi = JSON.parse(fs.readFileSync(contract_abi_path, 'utf8'));
@@ -35,11 +34,18 @@ const contract = new ethers.Contract(
 );
 const contract_interface = new ethers.utils.Interface(contract_abi);
 
+const call_inputs = contract_interface.getFunction(method).inputs;
+const call_args = argv.slice(4).map((arg, i) => {
+  const spec = call_inputs[i];
+  return _fixupArg(arg, spec);
+});
+console.error('call_args:', ...call_args);
+
 getContractTx();
 
 async function getContractTx() {
   try {
-    if (contract_interface.functions[method].type === 'call') {
+    if (contract_interface.getFunction(method).type === 'call') {
       const ret = await contract.functions[method](...call_args, {
         from: from_addr,
       });
@@ -47,14 +53,19 @@ async function getContractTx() {
       process.exit(0);
     }
 
-    const gas = await contract.estimate[method](...call_args, {
+    const nonce = await infuraProvider.getTransactionCount(from_addr);
+    const gas = await contract.estimateGas[method](...call_args, {
       from: from_addr,
+      nonce,
     });
     const remoteGasPrice = await infuraProvider.getGasPrice();
     const gasPrice = gas_override || remoteGasPrice;
     const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
 
-    const etherscanProvider = new ethers.providers.EtherscanProvider();
+    const etherscanProvider = new ethers.providers.EtherscanProvider(
+      null,
+      'CRS43J3ZNGDM6ZU8YYCZSINCHNCZUG8S2Y'
+    );
     const ethUSD = await etherscanProvider.getEtherPrice();
     const gasUSD = ethUSD * gasEth;
 
@@ -76,9 +87,7 @@ async function getContractTx() {
       throw 'too_expensive';
     }
 
-    const call_abi = contract_interface.functions[method].encode(call_args);
-    const nonce = await infuraProvider.getTransactionCount(from_addr);
-
+    const fake_tx = await contract.populateTransaction[method](...call_args);
     _origLog(
       JSON.stringify(
         {
@@ -87,7 +96,7 @@ async function getContractTx() {
           value: 0,
           gas: gas.toString(),
           gasPrice: gasPrice.toString(),
-          data: call_abi,
+          data: fake_tx.data,
           nonce,
           chain,
         },
@@ -98,4 +107,14 @@ async function getContractTx() {
   } catch (e) {
     console.error('threw:', e);
   }
+}
+
+function _fixupArg(value, spec) {
+  let ret = value;
+  if (spec.type === 'uint256' && value.indexOf('gwei') !== -1) {
+    value = ethers.utils.parseUnits(value.split('gwei')[0], 'gwei').toString();
+  } else if (spec.type === 'uint256' && value.indexOf('eth') !== -1) {
+    value = ethers.utils.parseUnits(value.split('eth')[0], 'ether').toString();
+  }
+  return value;
 }

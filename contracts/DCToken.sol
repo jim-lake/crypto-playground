@@ -1,4 +1,6 @@
-pragma solidity ^0.5.0;
+pragma solidity ^0.8.3;
+
+// SPDX-License-Identifier: MIT
 
 library SafeMath {
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -117,12 +119,8 @@ interface IERC20 {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
-contract Context {
-  constructor() internal {}
-
-  // solhint-disable-previous-line no-empty-blocks
-
-  function _msgSender() internal view returns (address payable) {
+abstract contract Context {
+  function _msgSender() internal view returns (address) {
     return msg.sender;
   }
 
@@ -140,7 +138,7 @@ contract MinterRole is Context {
 
   Roles.Role private _minters;
 
-  constructor() internal {
+  constructor() {
     _addMinter(_msgSender());
   }
 
@@ -175,19 +173,19 @@ contract MinterRole is Context {
   }
 }
 
-contract ERC20Detailed is IERC20 {
+abstract contract ERC20Detailed {
   string private _name;
   string private _symbol;
   uint8 private _decimals;
 
   constructor(
-    string memory name,
-    string memory symbol,
-    uint8 decimals
-  ) public {
-    _name = name;
-    _symbol = symbol;
-    _decimals = decimals;
+    string memory __name,
+    string memory __symbol,
+    uint8 __decimals
+  ) {
+    _name = __name;
+    _symbol = __symbol;
+    _decimals = __decimals;
   }
 
   function name() public view returns (string memory) {
@@ -203,7 +201,7 @@ contract ERC20Detailed is IERC20 {
   }
 }
 
-contract ERC20 is Context, IERC20 {
+abstract contract ERC20 is Context, IERC20 {
   using SafeMath for uint256;
 
   mapping(address => uint256) private _balances;
@@ -212,15 +210,19 @@ contract ERC20 is Context, IERC20 {
 
   uint256 private _totalSupply;
 
-  function totalSupply() public view returns (uint256) {
+  function totalSupply() public view override returns (uint256) {
     return _totalSupply;
   }
 
-  function balanceOf(address account) public view returns (uint256) {
+  function balanceOf(address account) public view override returns (uint256) {
     return _balances[account];
   }
 
-  function transfer(address recipient, uint256 amount) public returns (bool) {
+  function transfer(address recipient, uint256 amount)
+    public
+    override
+    returns (bool)
+  {
     _transfer(_msgSender(), recipient, amount);
     return true;
   }
@@ -228,12 +230,17 @@ contract ERC20 is Context, IERC20 {
   function allowance(address owner, address spender)
     public
     view
+    override
     returns (uint256)
   {
     return _allowances[owner][spender];
   }
 
-  function approve(address spender, uint256 amount) public returns (bool) {
+  function approve(address spender, uint256 amount)
+    public
+    override
+    returns (bool)
+  {
     _approve(_msgSender(), spender, amount);
     return true;
   }
@@ -242,7 +249,7 @@ contract ERC20 is Context, IERC20 {
     address sender,
     address recipient,
     uint256 amount
-  ) public returns (bool) {
+  ) public override returns (bool) {
     _transfer(sender, recipient, amount);
     _approve(
       sender,
@@ -342,7 +349,7 @@ contract ERC20 is Context, IERC20 {
   }
 }
 
-contract ERC20Mintable is ERC20, MinterRole {
+abstract contract ERC20Mintable is ERC20, MinterRole {
   function mint(address account, uint256 amount)
     public
     onlyMinter
@@ -358,7 +365,7 @@ contract DCToken is ERC20Mintable, ERC20Detailed {
     string memory name,
     string memory symbol,
     uint256 initialSupply
-  ) public ERC20Detailed(name, symbol, 18) {
+  ) ERC20Detailed(name, symbol, 18) {
     _mint(msg.sender, initialSupply);
   }
 }

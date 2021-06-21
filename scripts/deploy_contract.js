@@ -17,15 +17,21 @@ const GAS_LIMIT_ETH = config.GAS_LIMIT_ETH;
 
 if (argv.length < 3) {
   console.error(
-    'Usage deploy_contact.js <contract_bin_path> <contract_abi> <source_addr> [args]'
+    'Usage deploy_contact.js <contract_bin_path> <contract_abi_path> <from_addr> [args]'
   );
   process.exit(-1);
 }
 
-const contract_path = argv[0];
+const _origLog = console.log;
+console.log = console.error;
+
+const contract_bin_path = argv[0];
 const contract_abi_path = argv[1];
-console.error('Reading contract from path:', contract_path);
-const raw_data = fs.readFileSync(contract_path, 'utf8').trim();
+const from_addr = argv[2];
+const contract_args = argv.slice(3);
+
+console.error('Reading contract from path:', contract_bin_path);
+const raw_data = fs.readFileSync(contract_bin_path, 'utf8').trim();
 const contract_data =
   raw_data.slice(0, 2) === '0x' ? raw_data : '0x' + raw_data;
 
@@ -35,39 +41,49 @@ const contract_abi = JSON.parse(fs.readFileSync(contract_abi_path, 'utf8'));
 const web3 = new Web3(new Web3.providers.HttpProvider(http_provider_url));
 const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
-const contract_src = argv[2];
-const contract = new web3.eth.Contract(contract_abi);
+const contractFactory = new ethers.ContractFactory(contract_abi, contract_data);
+const constructor_inputs = contractFactory.interface.deploy.inputs;
 
 getDeployTx();
-
 async function getDeployTx() {
   try {
-    contract.defaultAccount = contract_src;
-    const deploy_opts = {
-      data: contract_data,
-      arguments: argv.slice(3),
-    };
-    const deploy = contract.deploy(deploy_opts);
+    const fixed_args = contract_args.map((arg, i) => {
+      const spec = constructor_inputs[i];
+      return _fixupArg(arg, spec);
+    });
+    console.error('fixed_args:', ...fixed_args);
+    const tx = contractFactory.getDeployTransaction(...fixed_args);
 
-    const gas = new BigNumber(await deploy.estimateGas());
     const remoteGasPrice = await infuraProvider.getGasPrice();
     const gasPrice = gas_override || remoteGasPrice;
-    const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
 
-    const etherscanProvider = new ethers.providers.EtherscanProvider();
+    const nonce = await infuraProvider.getTransactionCount(from_addr);
+    const gas = await infuraProvider.estimateGas({
+      from: from_addr,
+      to: 0x0,
+      value: 0,
+      data: tx.data,
+      gasPrice: gasPrice.toString(),
+      nonce,
+      chain,
+    });
+
+    const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
+    const etherscanProvider = new ethers.providers.EtherscanProvider(
+      null,
+      'CRS43J3ZNGDM6ZU8YYCZSINCHNCZUG8S2Y'
+    );
     const ethUSD = await etherscanProvider.getEtherPrice();
     const gasUSD = ethUSD * gasEth;
 
     console.error(
       'GasPrice: ' + web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)'
     );
-
     console.error(
-      'Gas Price in Eth:',
+      'TX Total Cost in Eth:',
       gasEth + ' (eth)',
       'USD: $' + gasUSD.toFixed(4)
     );
-
     if (gasEth > GAS_LIMIT_ETH) {
       console.error(
         'Gas cost over limit in eth, gasEth:',
@@ -78,17 +94,14 @@ async function getDeployTx() {
       throw 'too_expensive';
     }
 
-    const data = deploy.encodeABI();
-    const nonce = await web3.eth.getTransactionCount(contract_src);
-
-    console.log(
+    _origLog(
       JSON.stringify(
         {
-          from: contract_src,
+          from: from_addr,
           value: 0,
           gas: gas.toString(),
           gasPrice: gasPrice.toString(),
-          data,
+          data: tx.data,
           nonce,
           chain,
         },
@@ -99,4 +112,14 @@ async function getDeployTx() {
   } catch (e) {
     console.error('threw:', e);
   }
+}
+
+function _fixupArg(value, spec) {
+  let ret = value;
+  if (spec.type === 'uint256' && value.indexOf('gwei') !== -1) {
+    value = ethers.utils.parseUnits(value.split('gwei')[0], 'gwei').toString();
+  } else if (spec.type === 'uint256' && value.indexOf('eth') !== -1) {
+    value = ethers.utils.parseUnits(value.split('eth')[0], 'ether').toString();
+  }
+  return value;
 }

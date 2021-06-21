@@ -139,7 +139,50 @@ abstract contract Context {
   }
 }
 
-abstract contract MinterRole is Context {
+abstract contract AdminRole is Context {
+  using Roles for Roles.Role;
+
+  event AdminAdded(address indexed account);
+  event AdminRemoved(address indexed account);
+
+  Roles.Role private _admins;
+
+  constructor() {
+    _addAdmin(_msgSender());
+  }
+
+  modifier onlyAdmin() {
+    require(
+      isAdmin(_msgSender()),
+      'AdminRole: caller does not have the Admin role'
+    );
+    _;
+  }
+
+  function isAdmin(address account) public view returns (bool) {
+    return _admins.has(account);
+  }
+
+  function addAdmin(address account) public onlyAdmin {
+    _addAdmin(account);
+  }
+
+  function renounceAdmin() public {
+    _removeAdmin(_msgSender());
+  }
+
+  function _addAdmin(address account) internal {
+    _admins.add(account);
+    emit AdminAdded(account);
+  }
+
+  function _removeAdmin(address account) internal {
+    _admins.remove(account);
+    emit AdminRemoved(account);
+  }
+}
+
+abstract contract MinterRole is Context, AdminRole {
   using Roles for Roles.Role;
 
   event MinterAdded(address indexed account);
@@ -163,7 +206,7 @@ abstract contract MinterRole is Context {
     return _minters.has(account);
   }
 
-  function addMinter(address account) public onlyMinter {
+  function addMinter(address account) public onlyAdmin {
     _addMinter(account);
   }
 
@@ -289,9 +332,11 @@ contract ERC721 is Context, ERC165, IERC721 {
   // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
   bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
 
+  Counters.Counter private _totalSupply;
   mapping(uint256 => address) private _tokenOwner;
   mapping(uint256 => address) private _tokenApprovals;
-  mapping(address => Counters.Counter) private _ownedTokensCount;
+  mapping(address => uint256[]) private _ownedTokenList;
+  mapping(uint256 => uint256) private _tokenIdToOwnedTokenListIndex;
   mapping(address => mapping(address => bool)) private _operatorApprovals;
 
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -300,10 +345,14 @@ contract ERC721 is Context, ERC165, IERC721 {
     _registerInterface(_INTERFACE_ID_ERC721);
   }
 
+  function totalSupply() public view returns (uint256) {
+    return _totalSupply.current();
+  }
+
   function balanceOf(address owner) public view override returns (uint256) {
     require(owner != address(0), 'ERC721: balance query for the zero address');
 
-    return _ownedTokensCount[owner].current();
+    return _ownedTokenList[owner].length;
   }
 
   function ownerOf(uint256 tokenId) public view override returns (address) {
@@ -311,6 +360,23 @@ contract ERC721 is Context, ERC165, IERC721 {
     require(owner != address(0), 'ERC721: owner query for nonexistent token');
 
     return owner;
+  }
+
+  function tokenOfOwnerByIndex(address owner, uint256 index)
+    external
+    view
+    returns (uint256 tokenId)
+  {
+    require(index < _ownedTokenList[owner].length, 'ERC721: past end of index');
+    return _ownedTokenList[owner][index];
+  }
+
+  function tokenListOfOwner(address owner)
+    external
+    view
+    returns (uint256[] memory)
+  {
+    return _ownedTokenList[owner];
   }
 
   function approve(address to, uint256 tokenId) public override {
@@ -434,9 +500,36 @@ contract ERC721 is Context, ERC165, IERC721 {
     require(!_exists(tokenId), 'ERC721: token already minted');
 
     _tokenOwner[tokenId] = to;
-    _ownedTokensCount[to].increment();
+    _addToOwnerList(to, tokenId);
+    _totalSupply.increment();
 
     emit Transfer(address(0), to, tokenId);
+  }
+
+  function _addToOwnerList(address owner, uint256 tokenId) internal {
+    _tokenIdToOwnedTokenListIndex[tokenId] = _ownedTokenList[owner].length;
+    _ownedTokenList[owner].push(tokenId);
+  }
+
+  function _removeFromOwnerList(address owner, uint256 tokenId) internal {
+    uint256 index = _tokenIdToOwnedTokenListIndex[tokenId];
+    uint256 endIndex = _ownedTokenList[owner].length - 1;
+    if (index < endIndex) {
+      uint256 endTokenId = _ownedTokenList[owner][endIndex];
+      _ownedTokenList[owner][index] = endTokenId;
+      _tokenIdToOwnedTokenListIndex[endTokenId] = index;
+    }
+    _ownedTokenList[owner].pop();
+  }
+
+  function _burn(uint256 tokenId) internal {
+    address owner = _tokenOwner[tokenId];
+    _clearApproval(tokenId);
+    _totalSupply.decrement();
+    _removeFromOwnerList(owner, tokenId);
+    delete _tokenIdToOwnedTokenListIndex[tokenId];
+    delete _tokenOwner[tokenId];
+    emit Transfer(owner, address(0), tokenId);
   }
 
   function _transferFrom(
@@ -452,10 +545,9 @@ contract ERC721 is Context, ERC165, IERC721 {
 
     _clearApproval(tokenId);
 
-    _ownedTokensCount[from].decrement();
-    _ownedTokensCount[to].increment();
-
+    _removeFromOwnerList(from, tokenId);
     _tokenOwner[tokenId] = to;
+    _addToOwnerList(to, tokenId);
 
     emit Transfer(from, to, tokenId);
   }
@@ -506,9 +598,9 @@ abstract contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
 
   bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
 
-  constructor(string memory arg_name, string memory arg_symbol) {
-    _name = arg_name;
-    _symbol = arg_symbol;
+  constructor(string memory argName, string memory argSymbol) {
+    _name = argName;
+    _symbol = argSymbol;
 
     _registerInterface(_INTERFACE_ID_ERC721_METADATA);
   }
@@ -524,9 +616,14 @@ abstract contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
   function tokenURI(uint256 tokenId)
     external
     view
+    virtual
     override
     returns (string memory)
   {
+    return _getTokenURI(tokenId);
+  }
+
+  function _getTokenURI(uint256 tokenId) internal view returns (string memory) {
     require(
       _exists(tokenId),
       'ERC721Metadata: URI query for nonexistent token'
@@ -556,6 +653,8 @@ abstract contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
 }
 
 contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
+  mapping(uint256 => uint256) private _tokenTokenMap;
+
   constructor(
     string memory name,
     string memory symbol,
@@ -567,10 +666,10 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
   function mintWithTokenURI(
     address to,
     uint256 tokenId,
-    string memory tokenURI
+    string memory _tokenURI
   ) public onlyMinter returns (bool) {
     _mint(to, tokenId);
-    _setTokenURI(tokenId, tokenURI);
+    _setTokenURI(tokenId, _tokenURI);
     return true;
   }
 
@@ -578,13 +677,142 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
     address to,
     uint256 startTokenId,
     uint256 count,
-    string memory tokenURI
+    string memory _tokenURI
   ) public onlyMinter returns (bool) {
-    for (uint256 i = 0; i < count; i++) {
+    _mint(to, startTokenId);
+    _setTokenURI(startTokenId, _tokenURI);
+
+    for (uint256 i = 1; i < count; i++) {
       uint256 tokenId = startTokenId + i;
       _mint(to, tokenId);
-      _setTokenURI(tokenId, tokenURI);
+      _tokenTokenMap[tokenId] = startTokenId;
     }
     return true;
+  }
+
+  function burn(uint256 tokenId) public returns (bool) {
+    require(
+      _isApprovedOrOwner(_msgSender(), tokenId),
+      'ERC721: burn caller is not owner nor approved'
+    );
+    _burn(tokenId);
+    return true;
+  }
+
+  function tokenURI(uint256 tokenId)
+    external
+    view
+    override
+    returns (string memory)
+  {
+    uint256 _baseTokenId = _tokenTokenMap[tokenId];
+    if (_baseTokenId == 0) {
+      return _getTokenURI(tokenId);
+    } else {
+      return _getTokenURI(_baseTokenId);
+    }
+  }
+}
+
+contract HarbourNFTv3 is ERC721MetadataMintable {
+  bytes4 private constant _INTERFACE_ID_ERC2981 = 0xc155531d;
+  bytes4 private constant _INTERFACE_ID_CONTRACT_URI = 0xe8a3d485;
+  bytes4 private constant _INTERFACE_ID_FEES = 0xb7799584;
+  bytes4 private constant _INTERFACE_ID_ROYALTIES = 0x44c74bcc;
+
+  string private _contractURI;
+  address payable private _royaltyReceiver;
+  uint256 private _royaltyAmount;
+  uint256 private _feeBps;
+  uint96 private _royaltyValue;
+
+  constructor(
+    string memory name,
+    string memory symbol,
+    string memory baseURI,
+    string memory argContractURI,
+    address payable royaltyReceiver,
+    uint256 royaltyAmount,
+    uint256 feeBps,
+    uint96 royaltyValue
+  ) ERC721MetadataMintable(name, symbol, baseURI) {
+    _registerInterface(_INTERFACE_ID_CONTRACT_URI);
+    _registerInterface(_INTERFACE_ID_ERC2981);
+    _registerInterface(_INTERFACE_ID_FEES);
+    _registerInterface(_INTERFACE_ID_ROYALTIES);
+
+    _contractURI = argContractURI;
+    _royaltyReceiver = royaltyReceiver;
+    _royaltyAmount = royaltyAmount;
+    _feeBps = feeBps;
+    _royaltyValue = royaltyValue;
+  }
+
+  function setContractURI(string memory uri) public onlyAdmin {
+    _contractURI = uri;
+  }
+
+  function contractURI() public view returns (string memory) {
+    return _contractURI;
+  }
+
+  function setRoyaltyReceiver(address payable _addr) public onlyAdmin {
+    _royaltyReceiver = _addr;
+  }
+
+  function setRoyaltyAmount(uint256 _amount) public onlyAdmin {
+    _royaltyAmount = _amount;
+  }
+
+  function setFeeBps(uint256 _amount) public onlyAdmin {
+    _feeBps = _amount;
+  }
+
+  function setRoyaltyValue(uint96 _amount) public onlyAdmin {
+    _royaltyValue = _amount;
+  }
+
+  function royaltyInfo(
+    uint256,
+    uint256 _value,
+    bytes calldata
+  )
+    public
+    view
+    returns (
+      address receiver,
+      uint256 amount,
+      bytes memory royaltyPaymentData
+    )
+  {
+    return (_royaltyReceiver, (_value * _royaltyAmount) / 10000, '');
+  }
+
+  function getFeeRecipients(uint256)
+    public
+    view
+    returns (address payable[] memory)
+  {
+    address payable[] memory result = new address payable[](1);
+    result[0] = _royaltyReceiver;
+    return result;
+  }
+
+  function getFeeBps(uint256) public view returns (uint256[] memory) {
+    uint256[] memory result = new uint256[](1);
+    result[0] = _feeBps;
+    return result;
+  }
+
+  struct Part {
+    address payable account;
+    uint96 value;
+  }
+
+  function getRoyalties(uint256) public view returns (Part[] memory) {
+    Part[] memory result = new Part[](1);
+    result[0].account = _royaltyReceiver;
+    result[0].value = _royaltyValue;
+    return result;
   }
 }

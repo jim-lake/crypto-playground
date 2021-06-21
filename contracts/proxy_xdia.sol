@@ -162,8 +162,9 @@ contract Ownable is EternalStorage {
    * @dev Throws if called through proxy by any account other than contract itself or an upgradeability owner.
    */
   modifier onlyRelevantSender() {
-    (bool isProxy, bytes memory returnData) =
-      address(this).call(abi.encodeWithSelector(UPGRADEABILITY_OWNER));
+    (bool isProxy, bytes memory returnData) = address(this).call(
+      abi.encodeWithSelector(UPGRADEABILITY_OWNER)
+    );
     require(
       !isProxy || // covers usage without calling through storage proxy
         (returnData.length == 32 &&
@@ -281,8 +282,10 @@ library Address {
     // and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned
     // for accounts without code, i.e. `keccak256('')`
     bytes32 codehash;
-    bytes32 accountHash =
-      0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
+
+
+      bytes32 accountHash
+     = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
     // solhint-disable-next-line no-inline-assembly
     assembly {
       codehash := extcodehash(account)
@@ -409,8 +412,9 @@ library Address {
     require(isContract(target), 'Address: call to non-contract');
 
     // solhint-disable-next-line avoid-low-level-calls
-    (bool success, bytes memory returndata) =
-      target.call{value: weiValue}(data);
+    (bool success, bytes memory returndata) = target.call{value: weiValue}(
+      data
+    );
     if (success) {
       return returndata;
     } else {
@@ -1414,8 +1418,9 @@ contract ERC721Reader is Ownable {
    * @return name for the token.
    */
   function _readName(address _token) internal view returns (string memory) {
-    (bool status, bytes memory data) =
-      _token.staticcall(abi.encodeWithSelector(IERC721Metadata.name.selector));
+    (bool status, bytes memory data) = _token.staticcall(
+      abi.encodeWithSelector(IERC721Metadata.name.selector)
+    );
     return
       status
         ? abi.decode(data, (string))
@@ -1429,10 +1434,9 @@ contract ERC721Reader is Ownable {
    * @return symbol for the token.
    */
   function _readSymbol(address _token) internal view returns (string memory) {
-    (bool status, bytes memory data) =
-      _token.staticcall(
-        abi.encodeWithSelector(IERC721Metadata.symbol.selector)
-      );
+    (bool status, bytes memory data) = _token.staticcall(
+      abi.encodeWithSelector(IERC721Metadata.symbol.selector)
+    );
     return
       status
         ? abi.decode(data, (string))
@@ -1450,10 +1454,9 @@ contract ERC721Reader is Ownable {
     view
     returns (string memory)
   {
-    (bool status, bytes memory data) =
-      _token.staticcall(
-        abi.encodeWithSelector(IERC721Metadata.tokenURI.selector, _tokenId)
-      );
+    (bool status, bytes memory data) = _token.staticcall(
+      abi.encodeWithSelector(IERC721Metadata.tokenURI.selector, _tokenId)
+    );
     return status ? abi.decode(data, (string)) : '';
   }
 }
@@ -1650,12 +1653,12 @@ abstract contract Proxy {
                 copied to `ptr` from the delegatecall return data
             */
       switch result
-        case 0 {
-          revert(ptr, returndatasize())
-        }
-        default {
-          return(ptr, returndatasize())
-        }
+      case 0 {
+        revert(ptr, returndatasize())
+      }
+      default {
+        return(ptr, returndatasize())
+      }
     }
   }
 }
@@ -3165,17 +3168,16 @@ contract ERC721 is
     if (!to.isContract()) {
       return true;
     }
-    bytes memory returndata =
-      to.functionCall(
-        abi.encodeWithSelector(
-          IERC721Receiver(to).onERC721Received.selector,
-          _msgSender(),
-          from,
-          tokenId,
-          _data
-        ),
-        'ERC721: transfer to non ERC721Receiver implementer'
-      );
+    bytes memory returndata = to.functionCall(
+      abi.encodeWithSelector(
+        IERC721Receiver(to).onERC721Received.selector,
+        _msgSender(),
+        from,
+        tokenId,
+        _data
+      ),
+      'ERC721: transfer to non ERC721Receiver implementer'
+    );
     bytes4 retval = abi.decode(returndata, (bytes4));
     return (retval == _ERC721_RECEIVED);
   }
@@ -3489,20 +3491,18 @@ abstract contract BasicNFTOmnibridge is
 
     _setMediatorOwns(_token, _tokenId, true);
 
-    bytes memory data =
-      abi.encodeWithSelector(
-        this.handleBridgedNFT.selector,
-        _token,
-        _receiver,
-        _tokenId
-      );
+    bytes memory data = abi.encodeWithSelector(
+      this.handleBridgedNFT.selector,
+      _token,
+      _receiver,
+      _tokenId
+    );
 
-    bytes32 _messageId =
-      bridgeContract().requireToPassMessage(
-        mediatorContractOnOtherSide(),
-        data,
-        requestGasLimit()
-      );
+    bytes32 _messageId = bridgeContract().requireToPassMessage(
+      mediatorContractOnOtherSide(),
+      data,
+      requestGasLimit()
+    );
     _recordBridgeOperation(false, _messageId, _token, _receiver, _tokenId);
   }
 
@@ -3569,12 +3569,11 @@ abstract contract BasicNFTOmnibridge is
       _setMediatorOwns(_token, _tokenId, true);
     }
 
-    bytes32 _messageId =
-      bridgeContract().requireToPassMessage(
-        mediatorContractOnOtherSide(),
-        data,
-        requestGasLimit()
-      );
+    bytes32 _messageId = bridgeContract().requireToPassMessage(
+      mediatorContractOnOtherSide(),
+      data,
+      requestGasLimit()
+    );
 
     _recordBridgeOperation(!isKnownToken, _messageId, _token, _from, _tokenId);
   }

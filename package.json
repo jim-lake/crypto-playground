@@ -19,7 +19,7 @@
     "ethereumjs-tx": "2.1.1",
     "ethereumjs-vm": "^4.1.3",
     "ethereumjs-wallet": "0.6.3",
-    "ethers": "^4.0.45",
+    "ethers": "^5.0.0",
     "level": "^6.0.1",
     "rlp": "^2.2.4",
     "solc": "^0.8.3",
@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "prettier": "*",
-    "prettier-plugin-solidity": "^1.0.0-beta.6",
+    "prettier-plugin-solidity": "^1.0.0-beta.13",
     "solhint": "^3.3.4"
   }
 }
