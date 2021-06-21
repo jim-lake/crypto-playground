@@ -1,11 +1,9 @@
 pragma solidity ^0.8.3;
 
 // SPDX-License-Identifier: MIT
-interface IERC2981 {
-  function royaltyInfo(uint256 _tokenId, uint256 _value)
-    external
-    view
-    returns (address _receiver, uint256 _royaltyAmount);
+
+interface IERC165 {
+  function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
 interface IERC20 {
@@ -24,6 +22,24 @@ interface IERC721 {
     address to,
     uint256 tokenId
   ) external;
+
+  function royaltyInfo(uint256 _tokenId, uint256 _value)
+    external
+    view
+    returns (address _receiver, uint256 _royaltyAmount);
+
+  function royaltyInfo(
+    uint256 _tokenId,
+    uint256 _value,
+    bytes calldata _data
+  )
+    external
+    view
+    returns (
+      address _receiver,
+      uint256 _royaltyAmount,
+      bytes memory _royaltyPaymentData
+    );
 }
 
 library SafeMath {
@@ -343,30 +359,6 @@ contract HarbourAuction is AdminRole {
     uint256 makerAmount;
   }
 
-  function _calcPayouts(
-    address token,
-    uint256 tokenId,
-    uint256 price
-  ) internal view returns (PayoutResult memory) {
-    PayoutResult memory result;
-    try IERC2981(token).royaltyInfo(tokenId, price) returns (
-      address royaltyAddress,
-      uint256 fee
-    ) {
-      result.royaltyAddress = payable(royaltyAddress);
-      result.royaltyFee = fee;
-    } catch {
-      result.royaltyFee = 0;
-    }
-    require(result.royaltyFee < price, 'bad IERC2981 royalty amount');
-
-    result.exchangeFee = (price * exchangeFeeBps) / 10000;
-    result.makerAmount = price - result.exchangeFee - result.royaltyFee;
-    require(result.royaltyFee >= 0, 'bad royalty amount');
-    require(result.makerAmount > 0, 'makerAmount must be > 0');
-    return result;
-  }
-
   function _validateAndTake(
     address maker,
     address taker,
@@ -382,10 +374,35 @@ contract HarbourAuction is AdminRole {
     require(price >= offerPrice, 'price must be >= maker price');
     require(offerPrice >= minPrice, 'maker price must be >= minPrice');
     require(offerPrice <= maxPrice, 'maker price must be <= maxPrice');
-    PayoutResult memory payouts = _calcPayouts(token, tokenId, offerPrice);
 
     // clear offer re-entrance check
     _clearOffer(maker, token, tokenId);
+
+    PayoutResult memory payouts;
+    try IERC721(token).royaltyInfo(tokenId, price) returns (
+      address royaltyAddress,
+      uint256 fee
+    ) {
+      payouts.royaltyAddress = payable(royaltyAddress);
+      payouts.royaltyFee = fee;
+    } catch {
+      try IERC721(token).royaltyInfo(tokenId, price, '') returns (
+        address royaltyAddress2,
+        uint256 fee2,
+        bytes memory
+      ) {
+        payouts.royaltyAddress = payable(royaltyAddress2);
+        payouts.royaltyFee = fee2;
+      } catch {
+        payouts.royaltyFee = 0;
+      }
+    }
+    require(payouts.royaltyFee < price, 'bad IERC2981 royalty amount');
+
+    payouts.exchangeFee = (price * exchangeFeeBps) / 10000;
+    payouts.makerAmount = price - payouts.exchangeFee - payouts.royaltyFee;
+    require(payouts.makerAmount > 0, 'makerAmount must be > 0');
+
     IERC721(token).safeTransferFrom(maker, taker, tokenId);
     emit OrderTaken(maker, token, tokenId, offerPrice, taker);
     return payouts;

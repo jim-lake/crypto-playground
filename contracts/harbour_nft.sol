@@ -681,7 +681,7 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
 }
 
 contract HarbourNFT is ERC721MetadataMintable {
-  bytes4 private constant _INTERFACE_ID_ERC2981 = 0xc155531d;
+  bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
   bytes4 private constant _INTERFACE_ID_CONTRACT_URI = 0xe8a3d485;
   bytes4 private constant _INTERFACE_ID_FEES = 0xb7799584;
   bytes4 private constant _INTERFACE_ID_ROYALTIES = 0x44c74bcc;
@@ -738,20 +738,12 @@ contract HarbourNFT is ERC721MetadataMintable {
     _royaltyValue = _amount;
   }
 
-  function royaltyInfo(
-    uint256,
-    uint256 _value,
-    bytes calldata
-  )
+  function royaltyInfo(uint256, uint256 _value)
     public
     view
-    returns (
-      address receiver,
-      uint256 amount,
-      bytes memory royaltyPaymentData
-    )
+    returns (address receiver, uint256 amount)
   {
-    return (_royaltyReceiver, (_value * _royaltyAmount) / 10000, '');
+    return (_royaltyReceiver, (_value * _royaltyAmount) / 10000);
   }
 
   function getFeeRecipients(uint256)

@@ -336,14 +336,12 @@
   {
     "inputs": [
       { "internalType": "uint256", "name": "", "type": "uint256" },
-      { "internalType": "uint256", "name": "_value", "type": "uint256" },
-      { "internalType": "bytes", "name": "", "type": "bytes" }
+      { "internalType": "uint256", "name": "_value", "type": "uint256" }
     ],
     "name": "royaltyInfo",
     "outputs": [
       { "internalType": "address", "name": "receiver", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "internalType": "bytes", "name": "royaltyPaymentData", "type": "bytes" }
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
