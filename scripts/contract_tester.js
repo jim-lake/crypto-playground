@@ -45,7 +45,7 @@ getContractTx();
 
 async function getContractTx() {
   try {
-    if (contract_interface.getFunction(method).type === 'call') {
+    if (contract_interface.getFunction(method).stateMutability === 'view') {
       const ret = await contract.functions[method](...call_args, {
         from: from_addr,
       });
@@ -115,6 +115,8 @@ function _fixupArg(value, spec) {
     value = ethers.utils.parseUnits(value.split('gwei')[0], 'gwei').toString();
   } else if (spec.type === 'uint256' && value.indexOf('eth') !== -1) {
     value = ethers.utils.parseUnits(value.split('eth')[0], 'ether').toString();
+  } else if (spec.type === 'address' && value === '0x0') {
+    value = '0x0000000000000000000000000000000000000000';
   }
   return value;
 }

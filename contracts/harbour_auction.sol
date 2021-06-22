@@ -316,7 +316,7 @@ contract HarbourAuction is AdminRole {
   function cancelOffer(address token, uint256 tokenId) public {
     address maker = _msgSender();
     uint256 oldPrice = getOffer(maker, token, tokenId);
-    require(oldPrice > 0, 'cant cancel an order that doesnt exist');
+    require(oldPrice > 0, 'offer_not_found');
     _clearOffer(maker, token, tokenId);
     emit OrderCancel(maker, token, tokenId);
   }
@@ -326,8 +326,8 @@ contract HarbourAuction is AdminRole {
     uint256 tokenId,
     uint256 price
   ) public {
-    require(price >= minPrice, 'price must be >= minPrice');
-    require(price <= maxPrice, 'price must be <= maxPrice');
+    require(price >= minPrice, 'price_too_low');
+    require(price <= maxPrice, 'price_too_high');
 
     address maker = _msgSender();
     _setOffer(maker, token, tokenId, price);
@@ -365,11 +365,11 @@ contract HarbourAuction is AdminRole {
         payouts.royaltyFee = 0;
       }
     }
-    require(price > payouts.royaltyFee, 'bad IERC2981 royalty amount');
+    require(price > payouts.royaltyFee, 'erc2981_invalid_royalty');
 
     payouts.exchangeFee = (price * exchangeFeeBps) / 10000;
     payouts.makerAmount = price - payouts.exchangeFee - payouts.royaltyFee;
-    require(payouts.makerAmount > 0, 'maker amount must be > 0');
+    require(payouts.makerAmount > 0, 'maker_amount_invalid');
     return payouts;
   }
 
@@ -396,17 +396,17 @@ contract HarbourAuction is AdminRole {
     uint256 tokenId
   ) public view returns (uint256 price) {
     price = getOffer(maker, token, tokenId);
-    require(price != 0, 'offer not found');
-    require(price >= minPrice, 'price must be >= minPrice');
-    require(price <= maxPrice, 'price must be <= maxPrice');
+    require(price != 0, 'offer_not_found');
+    require(price >= minPrice, 'price_too_low');
+    require(price <= maxPrice, 'price_too_high');
     address owner = IERC721(token).ownerOf(tokenId);
-    require(owner == maker, 'owner must be maker');
+    require(owner == maker, 'owner_not_maker');
     bool isApprovedForAll = IERC721(token).isApprovedForAll(
       maker,
       address(this)
     );
     bool isApproved = IERC721(token).getApproved(tokenId) == address(this);
-    require(isApprovedForAll || isApproved, 'auction not approved');
+    require(isApprovedForAll || isApproved, 'erc721_not_approved');
     return price;
   }
 
@@ -418,15 +418,15 @@ contract HarbourAuction is AdminRole {
     uint256 price,
     address erc20
   ) public view {
-    require(maker != taker, 'maker cant be taker');
+    require(maker != taker, 'maker_is_taker');
     uint256 offerPrice = checkOffer(maker, token, tokenId);
-    require(offerPrice >= price, 'price must be >= offer price');
+    require(offerPrice >= price, 'offer_gt_price');
     _getPayouts(token, tokenId, price);
     if (erc20 != address(0)) {
       uint256 balance = IERC20(erc20).balanceOf(taker);
-      require(balance >= price, 'taker doesnt have enough erc20');
+      require(balance >= price, 'erc20_balance_too_low');
       uint256 allowance = IERC20(erc20).allowance(taker, address(this));
-      require(allowance >= price, 'auction not approved for erc20 transfer');
+      require(allowance >= price, 'erc20_transfer_not_allowed');
     }
   }
 
@@ -437,19 +437,19 @@ contract HarbourAuction is AdminRole {
     uint256 tokenId,
     uint256 price
   ) internal returns (PayoutResult memory) {
-    require(maker != taker, 'maker cant be taker');
+    require(maker != taker, 'maker_is_taker');
 
     uint256 offerPrice = getOffer(maker, token, tokenId);
-    require(offerPrice != 0, 'offer not found');
-    require(price >= offerPrice, 'price must be >= offer price');
-    require(offerPrice >= minPrice, 'offer price must be >= minPrice');
-    require(offerPrice <= maxPrice, 'offer price must be <= maxPrice');
+    require(offerPrice != 0, 'offer_not_found');
+    require(price >= offerPrice, 'offer_gt_price');
+    require(offerPrice >= minPrice, 'price_too_low');
+    require(offerPrice <= maxPrice, 'price_too_high');
 
     // clear offer re-entrance check
     _clearOffer(maker, token, tokenId);
 
     address owner = IERC721(token).ownerOf(tokenId);
-    require(owner == maker, 'owner must be maker');
+    require(owner == maker, 'owner_not_maker');
     PayoutResult memory payouts = _getPayouts(token, tokenId, price);
     IERC721(token).safeTransferFrom(maker, taker, tokenId);
     emit OrderTaken(maker, token, tokenId, offerPrice, taker);
@@ -464,7 +464,7 @@ contract HarbourAuction is AdminRole {
   ) internal {
     require(
       IERC20(erc20).transferFrom(from, to, amount),
-      'ERC20 Transfer failed'
+      'erc20_transfer_failed'
     );
   }
 
@@ -473,7 +473,7 @@ contract HarbourAuction is AdminRole {
     address token,
     uint256 tokenId
   ) public payable {
-    require(isUnwrappedValid, 'unwrapped currency not valid');
+    require(isUnwrappedValid, 'unwrapped_currency_not_allowed');
     uint256 price = msg.value;
     address taker = _msgSender();
     PayoutResult memory payouts = _validateAndTake(
@@ -499,7 +499,7 @@ contract HarbourAuction is AdminRole {
     uint256 price,
     address erc20
   ) public {
-    require(isCurrencyValid(erc20), 'invalid ERC20 currency');
+    require(isCurrencyValid(erc20), 'erc20_not_accepted');
     address taker = _msgSender();
     PayoutResult memory payouts = _validateAndTake(
       maker,
