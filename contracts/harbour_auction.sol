@@ -2,11 +2,14 @@ pragma solidity ^0.8.3;
 
 // SPDX-License-Identifier: MIT
 
-interface IERC165 {
-  function supportsInterface(bytes4 interfaceId) external view returns (bool);
-}
-
 interface IERC20 {
+  function balanceOf(address account) external view returns (uint256);
+
+  function allowance(address owner, address spender)
+    external
+    view
+    returns (uint256);
+
   function transfer(address recipient, uint256 amount) external returns (bool);
 
   function transferFrom(
@@ -17,6 +20,18 @@ interface IERC20 {
 }
 
 interface IERC721 {
+  function ownerOf(uint256 tokenId) external view returns (address owner);
+
+  function getApproved(uint256 tokenId)
+    external
+    view
+    returns (address operator);
+
+  function isApprovedForAll(address owner, address operator)
+    external
+    view
+    returns (bool);
+
   function safeTransferFrom(
     address from,
     address to,
@@ -105,44 +120,6 @@ library SafeMath {
   }
 }
 
-library Address {
-  function isContract(address account) internal view returns (bool) {
-    // According to EIP-1052, 0x0 is the value returned for not-yet created accounts
-    // and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned
-    // for accounts without code, i.e. `keccak256('')`
-    bytes32 codehash;
-
-
-      bytes32 accountHash
-     = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
-    // solhint-disable-next-line no-inline-assembly
-    assembly {
-      codehash := extcodehash(account)
-    }
-    return (codehash != accountHash && codehash != 0x0);
-  }
-}
-
-library Counters {
-  using SafeMath for uint256;
-
-  struct Counter {
-    uint256 _value; // default: 0
-  }
-
-  function current(Counter storage counter) internal view returns (uint256) {
-    return counter._value;
-  }
-
-  function increment(Counter storage counter) internal {
-    counter._value += 1;
-  }
-
-  function decrement(Counter storage counter) internal {
-    counter._value = counter._value.sub(1);
-  }
-}
-
 library Roles {
   struct Role {
     mapping(address => bool) bearer;
@@ -224,8 +201,8 @@ abstract contract AdminRole is Context {
 
 contract HarbourAuction is AdminRole {
   using SafeMath for uint256;
-  using Address for address;
 
+  address payable private _creator;
   // maker => token address => tokenId => price
   mapping(address => mapping(address => mapping(uint256 => uint256)))
     private _priceByMakerTokenTokenId;
@@ -234,53 +211,58 @@ contract HarbourAuction is AdminRole {
   uint256 public maxPrice;
   uint256 public exchangeFeeBps;
   address payable public exchangeFeeAddress;
-  mapping(address => bool) private _validCurrencies;
   bool public isUnwrappedValid = false;
-  address payable private _creator;
+  mapping(address => bool) private _validCurrencies;
 
   constructor(
     uint256 min,
     uint256 max,
     uint256 fee,
-    address payable feeAddress
+    address payable feeAddress,
+    bool unwrappedValid
   ) {
     _creator = payable(_msgSender());
     minPrice = min;
     maxPrice = max;
     exchangeFeeBps = fee;
     exchangeFeeAddress = feeAddress;
+    isUnwrappedValid = unwrappedValid;
   }
 
-  function setUnwrappedValid(bool valid) public onlyAdmin {
-    isUnwrappedValid = valid;
-  }
+  event CurrencyUpdate(address erc20, bool valid);
+  event LimitUpdate(uint256 min, uint256 max);
+  event FeeUpdate(address payable feeAddress, uint256 fee);
 
   function setCurrencyValid(address erc20, bool valid) public onlyAdmin {
-    _validCurrencies[erc20] = valid;
+    if (erc20 == address(0)) {
+      isUnwrappedValid = valid;
+    } else {
+      _validCurrencies[erc20] = valid;
+    }
+    emit CurrencyUpdate(erc20, valid);
   }
 
-  function setMaxPrice(uint256 price) public onlyAdmin {
-    maxPrice = price;
+  function setPriceLimits(uint256 min, uint256 max) public onlyAdmin {
+    minPrice = min;
+    maxPrice = max;
+    emit LimitUpdate(min, max);
   }
 
-  function setMinPrice(uint256 price) public onlyAdmin {
-    minPrice = price;
-  }
-
-  function setExchangeFeeBps(uint256 fee) public onlyAdmin {
-    exchangeFeeBps = fee;
-  }
-
-  function setExchangeAddress(address payable feeAddress) public onlyAdmin {
+  function setExchangeFee(address payable feeAddress, uint256 fee)
+    public
+    onlyAdmin
+  {
     exchangeFeeAddress = feeAddress;
+    exchangeFeeBps = fee;
+    emit FeeUpdate(feeAddress, fee);
   }
 
-  function withdraw(uint256 amount) public onlyAdmin {
-    payable(_creator).transfer(amount);
-  }
-
-  function withdrawToken(address token, uint256 amount) public onlyAdmin {
-    IERC20(token).transfer(_creator, amount);
+  function withdraw(address erc20, uint256 amount) public onlyAdmin {
+    if (erc20 == address(0)) {
+      _creator.transfer(amount);
+    } else {
+      IERC20(erc20).transfer(_creator, amount);
+    }
   }
 
   event OrderOffer(
@@ -359,25 +341,11 @@ contract HarbourAuction is AdminRole {
     uint256 makerAmount;
   }
 
-  function _validateAndTake(
-    address maker,
-    address taker,
+  function _getPayouts(
     address token,
     uint256 tokenId,
     uint256 price
-  ) internal returns (PayoutResult memory) {
-    require(price >= minPrice, 'price must be >= minPrice');
-    require(price <= maxPrice, 'price must be <= maxPrice');
-
-    uint256 offerPrice = getOffer(maker, token, tokenId);
-    require(offerPrice != 0, 'offer not found');
-    require(price >= offerPrice, 'price must be >= maker price');
-    require(offerPrice >= minPrice, 'maker price must be >= minPrice');
-    require(offerPrice <= maxPrice, 'maker price must be <= maxPrice');
-
-    // clear offer re-entrance check
-    _clearOffer(maker, token, tokenId);
-
+  ) internal view returns (PayoutResult memory) {
     PayoutResult memory payouts;
     try IERC721(token).royaltyInfo(tokenId, price) returns (
       address royaltyAddress,
@@ -397,12 +365,92 @@ contract HarbourAuction is AdminRole {
         payouts.royaltyFee = 0;
       }
     }
-    require(payouts.royaltyFee < price, 'bad IERC2981 royalty amount');
+    require(price > payouts.royaltyFee, 'bad IERC2981 royalty amount');
 
     payouts.exchangeFee = (price * exchangeFeeBps) / 10000;
     payouts.makerAmount = price - payouts.exchangeFee - payouts.royaltyFee;
-    require(payouts.makerAmount > 0, 'makerAmount must be > 0');
+    require(payouts.makerAmount > 0, 'maker amount must be > 0');
+    return payouts;
+  }
 
+  function previewPayout(
+    address token,
+    uint256 tokenId,
+    uint256 price
+  )
+    public
+    view
+    returns (
+      uint256 exchangeFee,
+      uint256 royaltyFee,
+      uint256 makerAmount
+    )
+  {
+    PayoutResult memory payouts = _getPayouts(token, tokenId, price);
+    return (payouts.exchangeFee, payouts.royaltyFee, payouts.makerAmount);
+  }
+
+  function checkOffer(
+    address maker,
+    address token,
+    uint256 tokenId
+  ) public view returns (uint256 price) {
+    price = getOffer(maker, token, tokenId);
+    require(price != 0, 'offer not found');
+    require(price >= minPrice, 'price must be >= minPrice');
+    require(price <= maxPrice, 'price must be <= maxPrice');
+    address owner = IERC721(token).ownerOf(tokenId);
+    require(owner == maker, 'owner must be maker');
+    bool isApprovedForAll = IERC721(token).isApprovedForAll(
+      maker,
+      address(this)
+    );
+    bool isApproved = IERC721(token).getApproved(tokenId) == address(this);
+    require(isApprovedForAll || isApproved, 'auction not approved');
+    return price;
+  }
+
+  function preflightTake(
+    address maker,
+    address taker,
+    address token,
+    uint256 tokenId,
+    uint256 price,
+    address erc20
+  ) public view {
+    require(maker != taker, 'maker cant be taker');
+    uint256 offerPrice = checkOffer(maker, token, tokenId);
+    require(offerPrice >= price, 'price must be >= offer price');
+    _getPayouts(token, tokenId, price);
+    if (erc20 != address(0)) {
+      uint256 balance = IERC20(erc20).balanceOf(taker);
+      require(balance >= price, 'taker doesnt have enough erc20');
+      uint256 allowance = IERC20(erc20).allowance(taker, address(this));
+      require(allowance >= price, 'auction not approved for erc20 transfer');
+    }
+  }
+
+  function _validateAndTake(
+    address maker,
+    address taker,
+    address token,
+    uint256 tokenId,
+    uint256 price
+  ) internal returns (PayoutResult memory) {
+    require(maker != taker, 'maker cant be taker');
+
+    uint256 offerPrice = getOffer(maker, token, tokenId);
+    require(offerPrice != 0, 'offer not found');
+    require(price >= offerPrice, 'price must be >= offer price');
+    require(offerPrice >= minPrice, 'offer price must be >= minPrice');
+    require(offerPrice <= maxPrice, 'offer price must be <= maxPrice');
+
+    // clear offer re-entrance check
+    _clearOffer(maker, token, tokenId);
+
+    address owner = IERC721(token).ownerOf(tokenId);
+    require(owner == maker, 'owner must be maker');
+    PayoutResult memory payouts = _getPayouts(token, tokenId, price);
     IERC721(token).safeTransferFrom(maker, taker, tokenId);
     emit OrderTaken(maker, token, tokenId, offerPrice, taker);
     return payouts;

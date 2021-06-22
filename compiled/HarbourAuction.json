@@ -8,7 +8,8 @@
         "internalType": "address payable",
         "name": "feeAddress",
         "type": "address"
-      }
+      },
+      { "internalType": "bool", "name": "unwrappedValid", "type": "bool" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -37,6 +38,63 @@
       }
     ],
     "name": "AdminRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "erc20",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "valid",
+        "type": "bool"
+      }
+    ],
+    "name": "CurrencyUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address payable",
+        "name": "feeAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeeUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "min",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "max",
+        "type": "uint256"
+      }
+    ],
+    "name": "LimitUpdate",
     "type": "event"
   },
   {
@@ -152,6 +210,19 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "address", "name": "maker", "type": "address" },
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "checkOffer",
+    "outputs": [
+      { "internalType": "uint256", "name": "price", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "exchangeFeeAddress",
     "outputs": [
@@ -229,6 +300,35 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "address", "name": "maker", "type": "address" },
+      { "internalType": "address", "name": "taker", "type": "address" },
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "internalType": "uint256", "name": "price", "type": "uint256" },
+      { "internalType": "address", "name": "erc20", "type": "address" }
+    ],
+    "name": "preflightTake",
+    "outputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "internalType": "uint256", "name": "price", "type": "uint256" }
+    ],
+    "name": "previewPayout",
+    "outputs": [
+      { "internalType": "uint256", "name": "exchangeFee", "type": "uint256" },
+      { "internalType": "uint256", "name": "royaltyFee", "type": "uint256" },
+      { "internalType": "uint256", "name": "makerAmount", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "renounceAdmin",
     "outputs": [],
@@ -251,41 +351,20 @@
         "internalType": "address payable",
         "name": "feeAddress",
         "type": "address"
-      }
+      },
+      { "internalType": "uint256", "name": "fee", "type": "uint256" }
     ],
-    "name": "setExchangeAddress",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "fee", "type": "uint256" }],
-    "name": "setExchangeFeeBps",
+    "name": "setExchangeFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
+      { "internalType": "uint256", "name": "min", "type": "uint256" },
+      { "internalType": "uint256", "name": "max", "type": "uint256" }
     ],
-    "name": "setMaxPrice",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" }
-    ],
-    "name": "setMinPrice",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "bool", "name": "valid", "type": "bool" }],
-    "name": "setUnwrappedValid",
+    "name": "setPriceLimits",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -316,19 +395,10 @@
   },
   {
     "inputs": [
+      { "internalType": "address", "name": "erc20", "type": "address" },
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "withdraw",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "withdrawToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
