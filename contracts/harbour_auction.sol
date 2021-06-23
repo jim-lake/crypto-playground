@@ -417,17 +417,21 @@ contract HarbourAuction is AdminRole {
     uint256 tokenId,
     uint256 price,
     address erc20
-  ) public view {
+  ) public view returns (bool) {
     require(maker != taker, 'maker_is_taker');
     uint256 offerPrice = checkOffer(maker, token, tokenId);
-    require(offerPrice >= price, 'offer_gt_price');
+    require(price >= offerPrice, 'offer_gt_price');
     _getPayouts(token, tokenId, price);
-    if (erc20 != address(0)) {
+    if (erc20 == address(0)) {
+      require(isUnwrappedValid, 'unwrapped_currency_not_allowed');
+    } else {
+      require(isCurrencyValid(erc20), 'erc20_not_accepted');
       uint256 balance = IERC20(erc20).balanceOf(taker);
       require(balance >= price, 'erc20_balance_too_low');
       uint256 allowance = IERC20(erc20).allowance(taker, address(this));
       require(allowance >= price, 'erc20_transfer_not_allowed');
     }
+    return true;
   }
 
   function _validateAndTake(
