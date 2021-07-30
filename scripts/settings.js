@@ -42,3 +42,4 @@ exports.http_provider_url = http_provider_url;
 exports.chain = chain;
 exports.common = common;
 exports.gas_override = gas_override;
+exports.gas_limit = chain_data.GAS_LIMIT;

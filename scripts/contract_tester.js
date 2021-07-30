@@ -4,7 +4,12 @@ const config = require('../config.json');
 const web3 = require('web3');
 const fs = require('fs');
 const argv = process.argv.slice(2);
-const { chain, http_provider_url, gas_override } = require('./settings.js');
+const {
+  chain,
+  http_provider_url,
+  gas_override,
+  gas_limit,
+} = require('./settings.js');
 
 if (argv.length < 3) {
   console.log(
@@ -16,7 +21,7 @@ if (argv.length < 3) {
 const _origLog = console.log;
 console.log = console.error;
 
-const GAS_LIMIT_ETH = 0.01;
+const GAS_LIMIT_ETH = gas_limit || 0.01;
 const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
 const contract_abi_path = argv[0];
