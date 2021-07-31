@@ -111,18 +111,7 @@ library Roles {
   }
 }
 
-abstract contract Context {
-  function _msgSender() internal view returns (address) {
-    return msg.sender;
-  }
-
-  function _msgData() internal view returns (bytes memory) {
-    this;
-    return msg.data;
-  }
-}
-
-abstract contract AdminRole is Context {
+abstract contract AdminRole {
   using Roles for Roles.Role;
 
   event AdminAdded(address indexed account);
@@ -131,12 +120,12 @@ abstract contract AdminRole is Context {
   Roles.Role private _admins;
 
   constructor() {
-    _addAdmin(_msgSender());
+    _addAdmin(msg.sender);
   }
 
   modifier onlyAdmin() {
     require(
-      isAdmin(_msgSender()),
+      isAdmin(msg.sender),
       'AdminRole: caller does not have the Admin role'
     );
     _;
@@ -151,7 +140,7 @@ abstract contract AdminRole is Context {
   }
 
   function renounceAdmin() public {
-    _removeAdmin(_msgSender());
+    _removeAdmin(msg.sender);
   }
 
   function _addAdmin(address account) internal {
@@ -165,7 +154,7 @@ abstract contract AdminRole is Context {
   }
 }
 
-contract HarbourElection is AdminRole {
+contract HarbourElection {
   using SafeMath for uint256;
   enum Vote {
     Null,
@@ -210,14 +199,22 @@ contract HarbourElection is AdminRole {
   );
   event ProcessProposal(uint256 indexed proposalIndex, bool yes);
 
-  ITrackedToken public voteToken;
   address payable private _creator;
+  ITrackedToken public voteToken;
   mapping(uint256 => Proposal) public proposals;
   uint256 public proposalCount;
 
   constructor(address token) {
-    _creator = payable(_msgSender());
+    _creator = payable(msg.sender);
     voteToken = ITrackedToken(token);
+  }
+
+  function withdraw(address erc20, uint256 amount) public {
+    if (erc20 == address(0)) {
+      _creator.transfer(amount);
+    } else {
+      IERC20(erc20).transfer(_creator, amount);
+    }
   }
 
   function submitProposal(
@@ -234,7 +231,7 @@ contract HarbourElection is AdminRole {
     return proposalIndex;
   }
 
-  function _isVotingActive(uint256 proposalIndex) internal view returns (bool) {
+  function isVotingActive(uint256 proposalIndex) public view returns (bool) {
     Proposal storage proposal = proposals[proposalIndex];
     bool active = true;
     if (block.timestamp < proposal.startTime) {
@@ -245,11 +242,7 @@ contract HarbourElection is AdminRole {
     return active;
   }
 
-  function _isVotingComplete(uint256 proposalIndex)
-    internal
-    view
-    returns (bool)
-  {
+  function isVotingComplete(uint256 proposalIndex) public view returns (bool) {
     Proposal storage proposal = proposals[proposalIndex];
     return block.timestamp > proposal.endTime;
   }
@@ -266,10 +259,11 @@ contract HarbourElection is AdminRole {
     if (voteCount > 0) {
       ProposalVote storage existing = proposal.votesByVoter[voter];
       if (existing.voteCount == 0) {
-        proposal.totalVotes += voteCount;
         proposal.voterCount += 1;
+        proposal.totalVotes += voteCount;
       } else if (existing.voteCount != voteCount) {
-        proposal.totalVotes += (voteCount - existing.voteCount);
+        proposal.totalVotes -= existing.voteCount;
+        proposal.totalVotes += voteCount;
       }
 
       proposal.votesByVoter[voter] = ProposalVote(
@@ -283,7 +277,7 @@ contract HarbourElection is AdminRole {
   }
 
   function submitVote(uint256 proposalIndex, bool yes) public {
-    require(_isVotingActive(proposalIndex), 'voting_not_active');
+    require(isVotingActive(proposalIndex), 'voting_not_active');
     uint256 voteCount = _addVote(proposalIndex, msg.sender, yes);
     require(voteCount > 0, 'zero_balance');
     emit SubmitVote(proposalIndex, msg.sender, voteCount, yes);
@@ -296,15 +290,15 @@ contract HarbourElection is AdminRole {
     Proposal storage proposal = proposals[proposalIndex];
     ProposalVote storage vote = proposal.votesByVoter[voter];
     if (vote.voteCount > 0 && !vote.processed) {
-      uint256 voteCount = voteToken.balanceOf(voter);
+      uint256 balance = voteToken.balanceOf(voter);
       uint256 lastSendBlock = voteToken.lastSendBlockOf(voter);
-      if (lastSendBlock < vote.blockNumber && voteCount >= vote.voteCount) {
+      if (lastSendBlock < vote.blockNumber && balance >= vote.voteCount) {
         if (vote.vote == Vote.Yes) {
           proposal.validatedYesCount += vote.voteCount;
-          emit ValidateVote(proposalIndex, voter, voteCount, true);
+          emit ValidateVote(proposalIndex, voter, vote.voteCount, true);
         } else if (vote.vote == Vote.No) {
           proposal.validatedNoCount += vote.voteCount;
-          emit ValidateVote(proposalIndex, voter, voteCount, false);
+          emit ValidateVote(proposalIndex, voter, vote.voteCount, false);
         } else {
           proposal.invalidCount += vote.voteCount;
           emit ValidateVote(proposalIndex, voter, 0, false);
@@ -318,11 +312,24 @@ contract HarbourElection is AdminRole {
     return vote.processed;
   }
 
+  function checkVote(uint256 proposalIndex, address voter)
+    public
+    view
+    returns (bool, uint256)
+  {
+    Proposal storage proposal = proposals[proposalIndex];
+    ProposalVote storage vote = proposal.votesByVoter[voter];
+    uint256 balance = voteToken.balanceOf(voter);
+    uint256 lastSendBlock = voteToken.lastSendBlockOf(voter);
+    bool valid = lastSendBlock < vote.blockNumber && balance >= vote.voteCount;
+    return (valid, vote.voteCount);
+  }
+
   function validateVote(uint256 proposalIndex, address voter)
     public
     returns (bool)
   {
-    require(_isVotingComplete(proposalIndex), 'voting_not_closed');
+    require(isVotingComplete(proposalIndex), 'voting_not_closed');
     Proposal storage proposal = proposals[proposalIndex];
     ProposalVote storage vote = proposal.votesByVoter[voter];
     require(vote.voteCount > 0, 'no_votes');
@@ -333,7 +340,7 @@ contract HarbourElection is AdminRole {
   function validateVoteList(uint256 proposalIndex, address[] calldata list)
     public
   {
-    require(_isVotingComplete(proposalIndex), 'voting_not_closed');
+    require(isVotingComplete(proposalIndex), 'voting_not_closed');
     uint256 count = list.length;
     for (uint256 i = 0; i < count; i++) {
       _validateVote(proposalIndex, list[i]);
@@ -341,7 +348,7 @@ contract HarbourElection is AdminRole {
   }
 
   function processProposal(uint256 proposalIndex) public returns (Vote) {
-    require(_isVotingComplete(proposalIndex), 'voting_not_closed');
+    require(isVotingComplete(proposalIndex), 'voting_not_closed');
     Proposal storage proposal = proposals[proposalIndex];
     require(!proposal.complete, 'already_complete');
 
@@ -386,7 +393,7 @@ contract HarbourElection is AdminRole {
   }
 }
 
-contract HarbourElectionTesterV14 is HarbourElection {
+contract HarbourElectionTesterV17 is HarbourElection, AdminRole {
   // solhint-disable-next-line
   constructor(address token) HarbourElection(token) {}
 
