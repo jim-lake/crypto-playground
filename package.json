@@ -7,7 +7,7 @@
     "pretty-abi": "prettier --parser json \"compiled/**/*.json\" --write"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.0.0",
+    "@openzeppelin/contracts": "^4.3.1",
     "@smartwallet/sdk": "^1.1.0",
     "@truffle/hdwallet-provider": "1.0.26",
     "async": "^3.2.0",
