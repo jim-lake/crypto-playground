@@ -38,15 +38,13 @@ module.exports = {
   },
   aurora: {
     DNC_CONTRACT: '',
-    HTTP_PROVIDER:
-      'https://mainnet.aurora.dev',
+    HTTP_PROVIDER: 'https://mainnet.aurora.dev',
     CHAIN_ID: 1313161554,
     GAS_OVERRIDE: 0,
   },
   aurora_testnet: {
     DNC_CONTRACT: '',
-    HTTP_PROVIDER:
-      'https://testnet.aurora.dev',
+    HTTP_PROVIDER: 'https://testnet.aurora.dev',
     CHAIN_ID: 1313161555,
     GAS_OVERRIDE: 0,
   },

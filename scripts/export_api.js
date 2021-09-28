@@ -3,9 +3,7 @@ const fs = require('fs');
 const argv = process.argv.slice(2);
 
 if (argv.length < 1) {
-  console.log(
-    'Usage: contract_tester.js <abi> [map_file]'
-  );
+  console.log('Usage: contract_tester.js <abi> [map_file]');
   process.exit(-1);
 }
 const contract_abi_path = argv[0];
@@ -26,16 +24,18 @@ for (let key in contract_interface.functions) {
     continue;
   }
   const sighash = contract_interface.getSighash(func);
-  const args = func.inputs.map(input => input.type + " " + _clean(input.name));
+  const args = func.inputs.map(
+    (input) => input.type + ' ' + _clean(input.name)
+  );
   const sig = `${func.name}(${args.join(',')})`;
   obj[sighash] = sig;
   partial[sighash] = sig;
 }
 
-console.log(JSON.stringify(partial,null,' '));
+console.log(JSON.stringify(partial, null, ' '));
 
 if (map_file) {
-  fs.writeFileSync(map_file, JSON.stringify(obj,null,' '));
+  fs.writeFileSync(map_file, JSON.stringify(obj, null, ' '));
 }
 
 function _clean(s) {
