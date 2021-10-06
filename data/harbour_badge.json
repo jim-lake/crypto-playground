@@ -1,0 +1,8 @@
+{
+  "name": "Harbour Badge",
+  "description": "Harbour.lol Badges",
+  "image": "https://cdn.harbor.lol/assets/606d843c9e37491b1c77cb356e14646f",
+  "external_link": "https://harbour.lol",
+  "seller_fee_basis_points": 0,
+  "fee_recipient": "0x838147F864310aa9cc200DE3Ee4df11607bFFc23"
+}
