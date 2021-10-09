@@ -30,7 +30,7 @@ if (source === '-') {
 }
 
 const tx = JSON.parse(fs.readFileSync(source, 'utf8'));
-if (!tx || !tx.gasPrice) {
+if (!tx) {
   console.error(
     'bad transaction provided, please sign a filename or provide data on the stdin'
   );
@@ -45,7 +45,18 @@ if (!keyId) {
 console.error('KeyId:', keyId);
 
 tx.gas = parseInt(tx.gas);
-tx.gasPrice = parseInt(tx.gasPrice);
+if (tx.gasPrice) {
+  tx.gasPrice = parseInt(tx.gasPrice);
+}
+if (tx.maxFeePerGas) {
+  tx.maxFeePerGas = parseInt(tx.maxFeePerGas);
+  tx.chainId = common.chainId();
+  tx.type = 2;
+  delete tx.chain;
+}
+if (tx.maxPriorityFeePerGas) {
+  tx.maxPriorityFeePerGas = parseInt(tx.maxPriorityFeePerGas);
+}
 
 sign();
 async function sign() {
@@ -57,7 +68,11 @@ async function sign() {
     const kmsProvider = new KMSProvider({
       keyId,
       providerOrUrl: http_provider_url,
-      chainSettings: common,
+      chainSettings: {
+        chain: common._chainParams.name,
+        chainId: common.chainId(),
+        hardfork: common.hardfork(),
+      },
     });
 
     const signer = await new ethers.providers.Web3Provider(
