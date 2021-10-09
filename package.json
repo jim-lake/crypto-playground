@@ -7,30 +7,34 @@
     "pretty-abi": "prettier --parser json \"compiled/**/*.json\" --write"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.0.0",
-    "@smartwallet/sdk": "^1.1.0",
+    "@ethereumjs/common": "2.5.0",
+    "@ethereumjs/tx": "3.3.2",
+    "@openzeppelin/contracts": "4.0.0",
+    "@rumblefishdev/eth-signer-kms": "github:jim-lake/eth-signer-kms#4d3bfa0ed19054f54b1362263aaf0366ad1ec7b2",
+    "@smartwallet/sdk": "1.1.0",
     "@truffle/hdwallet-provider": "1.0.26",
-    "async": "^3.2.0",
+    "async": "3.2.0",
+    "aws-sdk": "2.1004.0",
     "bip39": "3.0.2",
-    "bn.js": "^5.1.1",
-    "ethereumjs-block": "^2.2.2",
-    "ethereumjs-blockchain": "^4.0.3",
-    "ethereumjs-common": "^1.5.0",
+    "bn.js": "5.1.1",
+    "ethereumjs-block": "2.2.2",
+    "ethereumjs-blockchain": "4.0.3",
+    "ethereumjs-common": "1.5.0",
     "ethereumjs-tx": "2.1.1",
-    "ethereumjs-vm": "^4.1.3",
+    "ethereumjs-vm": "4.1.3",
     "ethereumjs-wallet": "0.6.3",
-    "ethers": "^5.0.0",
-    "level": "^6.0.1",
-    "rlp": "^2.2.4",
-    "solc": "^0.8.3",
+    "ethers": "5.4.7",
+    "level": "6.0.1",
+    "rlp": "2.2.4",
+    "solc": "0.8.9",
     "truffle": "5.1.3",
-    "truffle-flattener": "^1.5.0",
+    "truffle-flattener": "1.5.0",
     "web3": "1.2.4",
-    "yargs": "^15.1.0"
+    "yargs": "15.1.0"
   },
   "devDependencies": {
-    "prettier": "*",
-    "prettier-plugin-solidity": "^1.0.0-beta.13",
-    "solhint": "^3.3.4"
+    "prettier": "2.3.1",
+    "prettier-plugin-solidity": "1.0.0-beta.13",
+    "solhint": "3.3.4"
   }
 }

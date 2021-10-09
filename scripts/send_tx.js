@@ -1,5 +1,5 @@
 const fs = require('fs');
-const Web3 = require('web3');
+const ethers = require('ethers');
 const AppConfig = require('../config.json');
 const config = require('../config.json');
 const argv = process.argv.slice(2);
@@ -22,7 +22,7 @@ if (fs.existsSync(argv[0])) {
   signed_tx = argv[0].trim();
 }
 
-const web3 = new Web3(new Web3.providers.HttpProvider(http_provider_url));
+const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
 const VERIFY_BLOCKS = 5;
 
@@ -31,31 +31,46 @@ sendTx();
 async function sendTx() {
   try {
     console.log('sending tx: 0x' + signed_tx);
-    const receipt = await web3.eth.sendSignedTransaction('0x' + signed_tx);
-    const { transactionHash, blockNumber } = receipt;
-    console.log('Receipt Data:');
-    console.log(JSON.stringify(receipt, null, ' '));
-    console.log('');
-    if (!receipt.status) {
-      throw 'bad status returned:' + receipt.status;
-    }
+    const response = await infuraProvider.sendTransaction('0x' + signed_tx);
+    const transactionHash = response.hash;
+    console.log('transactionHash:', transactionHash);
 
+    let blockNumber = null;
     console.log(`waiting ${VERIFY_BLOCKS} for confirmations`);
     let waited = false;
     while (!waited) {
       await timeout(10 * 1000);
 
-      const curr_block = await web3.eth.getBlockNumber();
-      const delta_blocks = curr_block - blockNumber;
-      console.log('  loop: delta_blocks:', delta_blocks);
+      if (blockNumber) {
+        const curr_block = await infuraProvider.getBlockNumber();
+        const delta_blocks = curr_block - blockNumber;
+        console.log('  loop: delta_blocks:', delta_blocks);
 
-      if (delta_blocks >= VERIFY_BLOCKS) {
-        waited = true;
+        if (delta_blocks >= VERIFY_BLOCKS) {
+          waited = true;
+        }
+      } else {
+        const receipt = await infuraProvider.getTransactionReceipt(
+          transactionHash
+        );
+        if (receipt) {
+          console.log('receipt:', receipt);
+          blockNumber = receipt.blockNumber;
+          if (blockNumber) {
+            if (receipt.status === 0) {
+              console.error('bad status returned:' + receipt.status);
+            }
+          }
+        } else {
+          console.log('  not mined yet....');
+        }
       }
     }
 
     console.log('Double checking transaction:', transactionHash);
-    const receipt2 = await web3.eth.getTransaction(transactionHash);
+    const receipt2 = await infuraProvider.getTransactionReceipt(
+      transactionHash
+    );
 
     if (!receipt2) {
       console.log('verify failed:', receipt2);
@@ -68,6 +83,9 @@ async function sendTx() {
         receipt2
       );
       throw 'bad verify block number';
+    }
+    if (!receipt2.status === 0) {
+      console.error('bad status receipt2 returned:' + receipt2.status);
     }
 
     console.log('success!!');

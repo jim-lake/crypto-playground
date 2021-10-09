@@ -2,7 +2,7 @@ const AppConfig = require('../config.json');
 const config = require('../config.json');
 const BlockChains = require('./blockchains');
 const { basename } = require('path');
-const Common = require('ethereumjs-common');
+const Common = require('@ethereumjs/common');
 
 let chain;
 if (process.env['CHAIN']) {
