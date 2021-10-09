@@ -1,9 +1,9 @@
+const { chain, common } = require('./settings');
 const Bip39 = require('bip39');
 const HDKey = require('ethereumjs-wallet/hdkey');
-const EthereumJsTx = require('ethereumjs-tx');
+const EthereumJsTx = require('@ethereumjs/tx');
 const config = require('../config.json');
 const fs = require('fs');
-const { chain, common } = require('./settings');
 const argv = process.argv.slice(2);
 
 const mnemonic = config.SIGN_MNEMONIC;
@@ -30,15 +30,24 @@ if (source === '-') {
 }
 
 const tx = JSON.parse(fs.readFileSync(source, 'utf8'));
-if (!tx || !tx.gasPrice) {
+if (!tx || !tx.gas) {
   console.error(
     'bad transaction provided, please sign a filename or provide data on the stdin'
   );
   process.exit(-1);
 }
 
-tx.gas = parseInt(tx.gas);
-tx.gasPrice = parseInt(tx.gasPrice);
+tx.gasLimit = parseInt(tx.gas);
+delete tx.gas;
+if (tx.gasPrice) {
+  tx.gasPrice = parseInt(tx.gasPrice);
+}
+if (tx.maxFeePerGas) {
+  tx.maxFeePerGas = parseInt(tx.maxFeePerGas);
+}
+if (tx.maxPriorityFeePerGas) {
+  tx.maxPriorityFeePerGas = parseInt(tx.maxPriorityFeePerGas);
+}
 
 console.error('Ether Address from wallet:', address);
 if (address.toLowerCase() !== tx.from.toLowerCase()) {
@@ -54,12 +63,23 @@ if (tx.chain !== chain) {
 }
 delete tx.chain;
 
-const ether_tx = new EthereumJsTx.Transaction(tx, { common });
+let ether_tx;
+if (tx.maxFeePerGas) {
+  console.error('EIP1559Tx');
+  tx.chainId = common._chainParams.chainId;
+  ether_tx = new EthereumJsTx.FeeMarketEIP1559Transaction(tx, { common });
+  //console.log(ether_tx);
+} else {
+  ether_tx = new EthereumJsTx.Transaction(tx, { common });
+}
 console.error('Signing transaction:', tx);
-ether_tx.sign(private_key);
+const signedTx = ether_tx.sign(private_key);
 console.error('');
 console.error('Signed Transaction:');
 console.error('');
 //console.error('ether_tx:', ether_tx);
-console.log(ether_tx.serialize().toString('hex'));
+const signed_hex = signedTx.serialize().toString('hex');
+console.log(signed_hex);
+//const decoded = EthereumJsTx.FeeMarketEIP1559Transaction.fromSerializedTx(signed_hex);
+//console.error('decoded:', decoded);
 console.error('');

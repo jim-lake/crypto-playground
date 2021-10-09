@@ -63,25 +63,35 @@ async function getContractTx() {
       from: from_addr,
       nonce,
     });
-    const remoteGasPrice = await infuraProvider.getGasPrice();
-    const gasPrice = gas_override || remoteGasPrice;
-    const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
 
     const etherscanProvider = new ethers.providers.EtherscanProvider(
       null,
       'CRS43J3ZNGDM6ZU8YYCZSINCHNCZUG8S2Y'
     );
     const ethUSD = await etherscanProvider.getEtherPrice();
-    const gasUSD = ethUSD * gasEth;
 
-    console.error(
-      'GasPrice: ' + web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)'
-    );
-    console.error(
-      'TX Total Cost in Eth:',
-      gasEth + ' (eth)',
-      'USD: $' + gasUSD.toFixed(4)
-    );
+    const feeData = await infuraProvider.getFeeData();
+    const { gasPrice: remoteGasPrice, maxPriorityFeePerGas, maxFeePerGas } = feeData;
+    let gasData = null;
+    let gasEth;
+    console.error('');
+    if (!gas_override && maxFeePerGas && maxPriorityFeePerGas) {
+      gasData = {
+        maxFeePerGas: maxFeePerGas.toString(),
+        maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
+      };
+      gasEth = _printGas('maxFee:', gas, maxFeePerGas, ethUSD);
+      _printGas('priorityFee:', gas, maxPriorityFeePerGas, ethUSD);
+    } else {
+      const gasPrice = gas_override !== undefined ? gas_override : remoteGasPrice;
+      gasData = {
+        gasPrice: String(gasPrice),
+      };
+      console.error('gas_override:', gas_override);
+      gasEth = _printGas('gasPrice:', gas, gasData.gasPrice, ethUSD);
+    }
+    console.error('');
+
     if (gasEth > GAS_LIMIT_ETH) {
       console.error(
         'Gas cost over limit in eth, gasEth:',
@@ -100,7 +110,7 @@ async function getContractTx() {
           to: contract_addr,
           value: 0,
           gas: gas.toString(),
-          gasPrice: gasPrice.toString(),
+          ...gasData,
           data: fake_tx.data,
           nonce,
           chain,
@@ -124,4 +134,14 @@ function _fixupArg(value, spec) {
     value = '0x0000000000000000000000000000000000000000';
   }
   return value;
+}
+function _printGas(label, gas, gasPrice, ethUSD) {
+    const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
+    const gasUSD = ethUSD * gasEth;
+    console.error(label, web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)',
+      'TX Total Cost in Eth:',
+      gasEth + ' (eth)',
+      'USD: $' + gasUSD.toFixed(4)
+    );
+  return gasEth;
 }

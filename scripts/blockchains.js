@@ -36,6 +36,20 @@ module.exports = {
     CHAIN_ID: 100,
     GAS_OVERRIDE: 1e9,
   },
+  bsc: {
+    HTTP_PROVIDER: 'https://bsc-dataseed.binance.org/',
+    CHAIN_ID: 56,
+    NAME: 'Binance SC',
+    SYMBOL: 'BNB',
+    BLOCK_EXPLORER: 'https://bscscan.com',
+  },
+  polygon: {
+    HTTP_PROVIDER:
+      'https://polygon-mainnet.infura.io/v3/2343217699c44b45851935789f1f89e6',
+    CHAIN_ID: 137,
+    NAME: 'Polygon',
+    SYMBOL: 'MATIC',
+  },
   aurora: {
     DNC_CONTRACT: '',
     HTTP_PROVIDER: 'https://mainnet.aurora.dev',
