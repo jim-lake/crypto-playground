@@ -71,7 +71,11 @@ async function getContractTx() {
     const ethUSD = await etherscanProvider.getEtherPrice();
 
     const feeData = await infuraProvider.getFeeData();
-    const { gasPrice: remoteGasPrice, maxPriorityFeePerGas, maxFeePerGas } = feeData;
+    const {
+      gasPrice: remoteGasPrice,
+      maxPriorityFeePerGas,
+      maxFeePerGas,
+    } = feeData;
     let gasData = null;
     let gasEth;
     console.error('');
@@ -83,7 +87,8 @@ async function getContractTx() {
       gasEth = _printGas('maxFee:', gas, maxFeePerGas, ethUSD);
       _printGas('priorityFee:', gas, maxPriorityFeePerGas, ethUSD);
     } else {
-      const gasPrice = gas_override !== undefined ? gas_override : remoteGasPrice;
+      const gasPrice =
+        gas_override !== undefined ? gas_override : remoteGasPrice;
       gasData = {
         gasPrice: String(gasPrice),
       };
@@ -136,12 +141,14 @@ function _fixupArg(value, spec) {
   return value;
 }
 function _printGas(label, gas, gasPrice, ethUSD) {
-    const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
-    const gasUSD = ethUSD * gasEth;
-    console.error(label, web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)',
-      'TX Total Cost in Eth:',
-      gasEth + ' (eth)',
-      'USD: $' + gasUSD.toFixed(4)
-    );
+  const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
+  const gasUSD = ethUSD * gasEth;
+  console.error(
+    label,
+    web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)',
+    'TX Total Cost in Eth:',
+    gasEth + ' (eth)',
+    'USD: $' + gasUSD.toFixed(4)
+  );
   return gasEth;
 }

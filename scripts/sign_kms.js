@@ -11,6 +11,7 @@ const {
   http_provider_url,
   gas_override,
   gas_limit,
+  chain_params,
 } = require('./settings.js');
 
 const _origLog = console.log;
@@ -68,11 +69,7 @@ async function sign() {
     const kmsProvider = new KMSProvider({
       keyId,
       providerOrUrl: http_provider_url,
-      chainSettings: {
-        chain: common._chainParams.name,
-        chainId: common.chainId(),
-        hardfork: common.hardfork(),
-      },
+      chainSettings: chain_params,
     });
 
     const signer = await new ethers.providers.Web3Provider(
