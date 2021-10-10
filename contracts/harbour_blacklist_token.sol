@@ -183,6 +183,22 @@ abstract contract CreatorWithdraw is Context, AdminRole {
   }
 }
 
+abstract contract Owned is Context, AdminRole {
+  address private _owner;
+
+  constructor() {
+    _owner = _msgSender();
+  }
+
+  function getOwner() public view returns (address) {
+    return _owner;
+  }
+
+  function setOwner(address owner) public onlyAdmin {
+    _owner = owner;
+  }
+}
+
 abstract contract MinterRole is Context {
   using Roles for Roles.Role;
 
@@ -429,7 +445,8 @@ contract HarbourBlackListToken is
   ERC20Mintable,
   ERC20Detailed,
   BlackList,
-  CreatorWithdraw
+  CreatorWithdraw,
+  Owned
 {
   constructor(string memory name, string memory symbol)
     ERC20Detailed(name, symbol, 18)

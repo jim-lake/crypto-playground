@@ -222,6 +222,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "getOwner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "address", "name": "spender", "type": "address" },
       { "internalType": "uint256", "name": "addedValue", "type": "uint256" }
@@ -276,6 +283,15 @@
   {
     "inputs": [],
     "name": "renounceMinter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "owner", "type": "address" }
+    ],
+    "name": "setOwner",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
