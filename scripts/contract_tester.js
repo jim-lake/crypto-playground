@@ -84,16 +84,16 @@ async function getContractTx() {
         maxFeePerGas: maxFeePerGas.toString(),
         maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
       };
-      gasEth = _printGas('maxFee:', gas, maxFeePerGas, ethUSD);
       _printGas('priorityFee:', gas, maxPriorityFeePerGas, ethUSD);
+      gasEth = _printGas('maxFee:', gas, maxFeePerGas, ethUSD);
     } else {
+      _printGas('remoteGasPrice:', gas, remoteGasPrice, ethUSD);
       const gasPrice =
         gas_override !== undefined ? gas_override : remoteGasPrice;
       gasData = {
         gasPrice: String(gasPrice),
       };
-      console.error('gas_override:', gas_override);
-      gasEth = _printGas('gasPrice:', gas, gasData.gasPrice, ethUSD);
+      gasEth = _printGas('picked gasPrice:', gas, gasData.gasPrice, ethUSD);
     }
     console.error('');
 
