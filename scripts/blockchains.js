@@ -50,6 +50,12 @@ module.exports = {
     NAME: 'Polygon',
     SYMBOL: 'MATIC',
   },
+  mumbai: {
+    CHAIN_ID: 80001,
+    NAME: 'Polygon Mumbai',
+    SYMBOL: 'tMATIC',
+    HTTP_PROVIDER: 'https://rpc-mumbai.maticvigil.com/',
+  },
   aurora: {
     DNC_CONTRACT: '',
     HTTP_PROVIDER: 'https://mainnet.aurora.dev',

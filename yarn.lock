@@ -615,9 +615,9 @@
     "debug" "^3.1.0"
     "hosted-git-info" "^2.6.0"
 
-"@rumblefishdev/eth-signer-kms@github:jim-lake/eth-signer-kms#4d3bfa0ed19054f54b1362263aaf0366ad1ec7b2":
-  "integrity" "sha512-SFcjUPa8OiGyXQyuRYrAZhP1gf4dMeP0DAWHvDx9lS4IQOHgc66oosSBdEzyAh1rKEM8/Z9tPNQFkebwx3ZRPQ=="
-  "resolved" "git+ssh://git@github.com/jim-lake/eth-signer-kms.git#4d3bfa0ed19054f54b1362263aaf0366ad1ec7b2"
+"@rumblefishdev/eth-signer-kms@github:jim-lake/eth-signer-kms#af7b541c0a0ee0c8a74a68158469178ef1a191bd":
+  "integrity" "sha512-N8ZdFMKvdFvhBQofHpEvee7uS83ArYzkuOCaoVSKdi1dSHLzfoojNeSzEo5mvHymPgnERkipGACtm1vVbcTB1A=="
+  "resolved" "git+ssh://git@github.com/jim-lake/eth-signer-kms.git#af7b541c0a0ee0c8a74a68158469178ef1a191bd"
   "version" "1.1.0"
   dependencies:
     "@ethereumjs/common" "^2.5.0"

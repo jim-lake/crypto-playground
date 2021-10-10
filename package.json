@@ -10,7 +10,7 @@
     "@ethereumjs/common": "2.5.0",
     "@ethereumjs/tx": "3.3.2",
     "@openzeppelin/contracts": "4.0.0",
-    "@rumblefishdev/eth-signer-kms": "github:jim-lake/eth-signer-kms#4d3bfa0ed19054f54b1362263aaf0366ad1ec7b2",
+    "@rumblefishdev/eth-signer-kms": "github:jim-lake/eth-signer-kms#af7b541c0a0ee0c8a74a68158469178ef1a191bd",
     "@smartwallet/sdk": "1.1.0",
     "@truffle/hdwallet-provider": "1.0.26",
     "async": "3.2.0",
