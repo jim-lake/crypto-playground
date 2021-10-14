@@ -1,4 +1,4 @@
-pragma solidity ^0.8.3;
+pragma solidity ^0.8.9;
 
 // SPDX-License-Identifier: MIT
 
@@ -119,6 +119,22 @@ interface IERC20 {
   event Approval(address indexed owner, address indexed spender, uint256 value);
 }
 
+interface IERC677 is IERC20 {
+  function transferAndCall(
+    address recipient,
+    uint256 value,
+    bytes memory data
+  ) external returns (bool);
+}
+
+interface IERC677Receiver {
+  function onTokenTransfer(
+    address sender,
+    uint256 value,
+    bytes memory data
+  ) external;
+}
+
 interface ITrackedToken is IERC20 {
   function lastSendBlockOf(address account) external view returns (uint256);
 }
@@ -134,7 +150,76 @@ abstract contract Context {
   }
 }
 
-contract MinterRole is Context {
+abstract contract AdminRole is Context {
+  using Roles for Roles.Role;
+
+  event AdminAdded(address indexed account);
+  event AdminRemoved(address indexed account);
+
+  Roles.Role private _admins;
+
+  constructor() {
+    _admins.add(_msgSender());
+    emit AdminAdded(_msgSender());
+  }
+
+  modifier onlyAdmin() {
+    require(
+      _admins.has(_msgSender()),
+      'AdminRole: caller does not have the Admin role'
+    );
+    _;
+  }
+
+  function addAdmin(address account) public onlyAdmin {
+    _admins.add(account);
+    emit AdminAdded(account);
+  }
+
+  function renounceAdmin() public onlyAdmin {
+    _admins.remove(_msgSender());
+    emit AdminRemoved(_msgSender());
+  }
+}
+
+abstract contract CreatorWithdraw is Context, AdminRole {
+  address payable private _creator;
+
+  constructor() {
+    _creator = payable(_msgSender());
+  }
+
+  // solhint-disable-next-line no-empty-blocks
+  receive() external payable {
+    // thank you
+  }
+
+  function withdraw(address erc20, uint256 amount) public onlyAdmin {
+    if (erc20 == address(0)) {
+      _creator.transfer(amount);
+    } else if (erc20 != address(this)) {
+      IERC20(erc20).transfer(_creator, amount);
+    }
+  }
+}
+
+abstract contract Owned is Context, AdminRole {
+  address private _owner;
+
+  constructor() {
+    _owner = _msgSender();
+  }
+
+  function getOwner() public view returns (address) {
+    return _owner;
+  }
+
+  function setOwner(address owner) public onlyAdmin {
+    _owner = owner;
+  }
+}
+
+abstract contract MinterRole is Context {
   using Roles for Roles.Role;
 
   event MinterAdded(address indexed account);
@@ -143,37 +228,26 @@ contract MinterRole is Context {
   Roles.Role private _minters;
 
   constructor() {
-    _addMinter(_msgSender());
+    _minters.add(_msgSender());
+    emit MinterAdded(_msgSender());
   }
 
   modifier onlyMinter() {
     require(
-      isMinter(_msgSender()),
+      _minters.has(_msgSender()),
       'MinterRole: caller does not have the Minter role'
     );
     _;
   }
 
-  function isMinter(address account) public view returns (bool) {
-    return _minters.has(account);
-  }
-
   function addMinter(address account) public onlyMinter {
-    _addMinter(account);
-  }
-
-  function renounceMinter() public {
-    _removeMinter(_msgSender());
-  }
-
-  function _addMinter(address account) internal {
     _minters.add(account);
     emit MinterAdded(account);
   }
 
-  function _removeMinter(address account) internal {
-    _minters.remove(account);
-    emit MinterRemoved(account);
+  function renounceMinter() public onlyMinter {
+    _minters.remove(_msgSender());
+    emit MinterRemoved(_msgSender());
   }
 }
 
@@ -365,6 +439,18 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
   }
 }
 
+abstract contract ERC667Tracked is IERC677, ERC20Tracked {
+  function transferAndCall(
+    address recipient,
+    uint256 value,
+    bytes memory data
+  ) public returns (bool) {
+    transfer(recipient, value);
+    IERC677Receiver(recipient).onTokenTransfer(_msgSender(), value, data);
+    return true;
+  }
+}
+
 abstract contract ERC20Mintable is ERC20Tracked, MinterRole {
   function mint(address account, uint256 amount)
     public
@@ -376,12 +462,17 @@ abstract contract ERC20Mintable is ERC20Tracked, MinterRole {
   }
 }
 
-contract HarbourTrackedToken is ERC20Mintable, ERC20Detailed {
+contract HarbourTrackedToken is
+  ERC667Tracked,
+  ERC20Detailed,
+  Owned,
+  CreatorWithdraw
+{
   constructor(
     string memory name,
     string memory symbol,
-    uint256 initialSupply
+    uint256 fixedSupply
   ) ERC20Detailed(name, symbol, 18) {
-    _mint(msg.sender, initialSupply);
+    _mint(_msgSender(), fixedSupply);
   }
 }
