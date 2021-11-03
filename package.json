@@ -18,6 +18,7 @@
     "bip39": "3.0.2",
     "bitcoinjs-lib": "5.2.0",
     "bn.js": "5.1.1",
+    "cashaddrjs": "^0.4.4",
     "ecpair": "1.0.1",
     "ethereumjs-block": "2.2.2",
     "ethereumjs-blockchain": "4.0.3",
