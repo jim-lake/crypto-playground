@@ -36,6 +36,13 @@ function getSegwit() {
       network: bitcoin.networks.testnet,
     }).address
   );
+  console.log(
+    'p2pkh testnet:',
+    bitcoin.payments.p2pkh({
+      pubkey: public_key,
+      network: bitcoin.networks.testnet,
+    }).address
+  );
 }
 
 function getDoge() {

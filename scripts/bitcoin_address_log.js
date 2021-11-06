@@ -11,7 +11,7 @@ if (argv.length < 1) {
 const address = argv[0];
 console.log('getting log for address:', address);
 const opts = {
-  url: `https://api.blockcypher.com/v1/${COIN}/${CHAIN}/addrs/${address}?limit=2000`,
+  url: `https://api.blockcypher.com/v1/${COIN}/${CHAIN}/addrs/${address}/full?limit=50`,
   method: 'GET',
   json: true,
 };
@@ -21,11 +21,11 @@ request(opts, (err, response, body) => {
   } else if (response && response.statusCode > 299) {
     console.error('bad status:', response.statusCode, body);
   } else {
-    const { txrefs, final_balance, unconfirmed_balance } = body;
+    const { txs, final_balance, unconfirmed_balance } = body;
     console.log('final_balance:', final_balance / 1e8);
     console.log('unconfirmed_balance:', unconfirmed_balance / 1e8);
-    if (txrefs) {
-      txrefs.forEach((tx) => {
+    if (txs) {
+      txs.forEach((tx) => {
         const { block_height, value, tx_hash, confirmations } = tx;
         console.log(
           'block:',
