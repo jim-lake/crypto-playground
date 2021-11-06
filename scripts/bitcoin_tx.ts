@@ -345,8 +345,8 @@ function _findSumList(list, input_count, min, max) {
         const found_index = list.findIndex((v) => v < val);
         if (found_index !== -1) {
           test_list = [
-            ...old_list.slice(0, i - 1),
-            ...list.slice(found_index, found_index + input_count - i - 2),
+            ...old_list.slice(0, i),
+            ...list.slice(found_index, found_index + input_count - i - 1),
           ];
           break;
         }
