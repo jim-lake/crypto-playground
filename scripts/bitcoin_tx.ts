@@ -49,11 +49,8 @@ const fake_signer_address = bitcoin.payments.p2wpkh({
 makeTransaction();
 
 async function makeTransaction() {
-  const {
-    high_fee_per_kb,
-    medium_fee_per_kb,
-    low_fee_per_kb,
-  } = await getFeeRate();
+  const { high_fee_per_kb, medium_fee_per_kb, low_fee_per_kb } =
+    await getFeeRate();
   console.error(
     'fee(high, medium, low):',
     high_fee_per_kb,
@@ -272,15 +269,8 @@ function _calculateFee(params): number {
   return fee;
 }
 function _makeUnsigned(params): bitcoin.Psbt {
-  const {
-    input_list,
-    change,
-    from,
-    to,
-    send_value,
-    dust,
-    fake_inputs,
-  } = params;
+  const { input_list, change, from, to, send_value, dust, fake_inputs } =
+    params;
   const psbt = new bitcoin.Psbt({ network: params.bitcoin_network });
 
   let fake_script;
@@ -310,27 +300,27 @@ function _makeUnsigned(params): bitcoin.Psbt {
 function _sortHighest(a, b) {
   return b.value - a.value;
 }
-function _findSumList(list, input_count, min, max) {
-  let test_list = list.slice(0, input_count - 1);
-  let result_list;
+function _findSumList(
+  list: number[],
+  out_len: number,
+  min: number,
+  max: number
+): number[] | null {
+  let test_list: number[] | null = list.slice(0, out_len - 1);
+  let result_list = null;
   let loop_count = 0;
   while (test_list && loop_count < MAX_LOOP) {
     const test_sum = _sum(test_list);
     if (test_sum < max) {
-      for (let i = 0, test_i = 0; i < list.length; i++) {
-        const val = list[i];
-        if (test_i < test_list.length) {
-          if (test_list[i] === val) {
-            test_i++;
-          }
-        } else {
-          const new_val = val + test_sum;
-          if (new_val < min) {
-            break;
-          } else if (new_val >= min && new_val <= max) {
-            result_list = [...test_list, val];
-            break;
-          }
+      const end_test = test_list[test_list.length - 1];
+      let i = out_len > 1 ? list.findIndex((v) => v < end_test) : 0;
+      for (; i < list.length; i++) {
+        const new_sum = test_sum + list[i];
+        if (new_sum < min) {
+          break;
+        } else if (new_sum >= min && new_sum <= max) {
+          result_list = [...test_list, list[i]];
+          break;
         }
       }
       loop_count += list.length;
@@ -338,7 +328,7 @@ function _findSumList(list, input_count, min, max) {
     if (result_list) {
       break;
     } else {
-      const old_list = test_list;
+      const old_list: number[] = test_list;
       test_list = null;
       for (let i = old_list.length - 1; i > 0; i--) {
         const val = old_list[i];
@@ -346,7 +336,7 @@ function _findSumList(list, input_count, min, max) {
         if (found_index !== -1) {
           test_list = [
             ...old_list.slice(0, i),
-            ...list.slice(found_index, found_index + input_count - i - 1),
+            ...list.slice(found_index, found_index + out_len - i - 1),
           ];
           break;
         }
@@ -355,6 +345,6 @@ function _findSumList(list, input_count, min, max) {
   }
   return result_list;
 }
-function _sum(list) {
+function _sum(list: number[]): number {
   return list.reduce((memo, value) => memo + value, 0);
 }
