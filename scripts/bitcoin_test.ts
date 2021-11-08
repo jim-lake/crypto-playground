@@ -15,7 +15,9 @@ const DUST = 546;
 
 const argv = process.argv.slice(2);
 if (argv.length < 3) {
-  console.error('Usage: bitcoin_test.js <src> <dest> <coins> [fee_per_byte] [fake]');
+  console.error(
+    'Usage: bitcoin_test.js <src> <dest> <coins> [fee_per_byte] [fake]'
+  );
   process.exit(-99);
 }
 
@@ -45,11 +47,8 @@ const signer = ecpair.ECPair.fromPrivateKey(
 makeTransaction();
 
 async function makeTransaction() {
-  const {
-    high_fee_per_kb,
-    medium_fee_per_kb,
-    low_fee_per_kb,
-  } = await getFeeRate();
+  const { high_fee_per_kb, medium_fee_per_kb, low_fee_per_kb } =
+    await getFeeRate();
   console.error(
     'fee(high, medium, low):',
     high_fee_per_kb,
