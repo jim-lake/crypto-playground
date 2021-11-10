@@ -29,6 +29,9 @@ function feth(val) {
 
 describe('HarbourSwap', () => {
   const [owner, buyer, seller] = accounts;
+  const extra_sellers = accounts.slice(10, 20);
+  const extra_buyers = accounts.slice(20, 30);
+
   beforeEach(async () => {
     this.token = await TestERC20.new('Token', 'T', eth(10000), { from: owner });
     this.currency = await TestERC20.new('Currency', 'C', eth(10000), {
@@ -53,14 +56,14 @@ describe('HarbourSwap', () => {
 
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
-    expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
-    expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
+    await expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
+    await expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
 
     const settle = await swap.settleBucketExact(
       token.address,
       currency.address,
       priceRatio,
-      100
+      await _getSettleBlock()
     );
     console.log('settle gasUsed:', settle.receipt.gasUsed);
 
@@ -77,14 +80,15 @@ describe('HarbourSwap', () => {
 
     await _setupOrders(this, eth(1), eth(10));
 
-    expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
-    expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
+    await expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
+    await expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
 
+    console.log('block:', String(await time.latestBlock()));
     const settle = await swap.settleBucketSingleSeller(
       token.address,
       currency.address,
       priceRatio,
-      100
+      await _getSettleBlock()
     );
     console.log('settle gasUsed:', settle.receipt.gasUsed);
 
@@ -100,14 +104,14 @@ describe('HarbourSwap', () => {
     const priceRatio = new BN(1).shln(128);
     await _setupOrders(this, eth(9), eth(1));
 
-    expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
-    expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
+    await expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
+    await expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
 
     const settle = await swap.settleBucketSingleBuyer(
       token.address,
       currency.address,
       priceRatio,
-      100
+      await _getSettleBlock()
     );
     console.log('settle gasUsed:', settle.receipt.gasUsed);
 
@@ -128,14 +132,14 @@ describe('HarbourSwap', () => {
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1 - 0.01), eth(1 - 0.01));
 
-    expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
-    expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
+    await expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
+    await expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
 
     const settle = await swap.settleBucketExact(
       token.address,
       currency.address,
       priceRatio,
-      100
+      await _getSettleBlock()
     );
     console.log('settle gasUsed:', settle.receipt.gasUsed);
 
@@ -155,6 +159,7 @@ describe('HarbourSwap', () => {
     await _verifyBalance(this, buyer, eth(0), eth(100 - 1 - 0.01));
     await _verifyBalance(this, seller, eth(100 - 1 - 0.01), eth(0));
 
+    await time.advanceBlockTo((await time.latestBlock()).addn(2));
     await cancelBoth(this, priceRatio, 1);
 
     await _dumpOrders(this, priceRatio);
@@ -173,18 +178,18 @@ describe('HarbourSwap', () => {
     await _verifyBalance(this, buyer, eth(0), eth(100 - 1 - 0.01));
     await _verifyBalance(this, seller, eth(100 - 1 - 0.01), eth(0));
 
-    expectRevert(
+    await time.advanceBlockTo((await time.latestBlock()).addn(2));
+    await expectRevert.unspecified(
       swap.cancelBuy(token.address, currency.address, priceRatio, 0, 0, {
         from: buyer,
-      }),
-      'not_force'
+      })
     );
-    expectRevert(
+    await expectRevert.unspecified(
       swap.cancelSell(token.address, currency.address, priceRatio, 0, 0, {
         from: seller,
-      }),
-      'not_force'
+      })
     );
+    await time.advanceBlockTo((await time.latestBlock()).addn(2));
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
 
@@ -243,6 +248,112 @@ describe('HarbourSwap', () => {
     );
     await _dumpFeeBalance(this);
   });
+
+  it('cancel fail double cancel', async () => {
+    const { swap, currency, token } = this;
+    const priceRatio = new BN(1).shln(128);
+    await _setupOrders(this, eth(1), eth(1), {
+      sell_fee_add: 0,
+      buy_fee_add: 0,
+    });
+    await _dumpOrders(this, priceRatio);
+    await _verifyMarket(this, priceRatio, eth(1 - 0.01), eth(1 - 0.01));
+    await _verifyBalance(this, buyer, eth(0), eth(100 - 1));
+    await _verifyBalance(this, seller, eth(100 - 1), eth(0));
+
+    await time.advanceBlockTo((await time.latestBlock()).addn(2));
+    await cancelBoth(this, priceRatio, 1);
+    await _dumpOrders(this, priceRatio);
+    await time.advanceBlock();
+    await expectRevert.unspecified(swap.cancelSell(
+      token.address,
+      currency.address,
+      priceRatio,
+      0,
+      1,
+      { from: seller }
+    ));
+    await time.advanceBlock();
+    await expectRevert.unspecified(swap.cancelBuy(
+      token.address,
+      currency.address,
+      priceRatio,
+      0,
+      1,
+      { from: buyer }
+    ));
+    await time.advanceBlock();
+
+    await _dumpOrders(this, priceRatio);
+    await _verifyMarket(this, priceRatio, '0', '0');
+    await _verifyBalance(this, buyer, '0', eth(100 - 0.01));
+    await _verifyBalance(this, seller, eth(100 - 0.01), '0');
+    await _verifyBalance(this, swap.address, eth(0.01), eth(0.01));
+    await _dumpFeeBalance(this);
+  });
+  it('multi exact', async () => {
+    const { swap, currency, token } = this;
+    await _setupMulti(this, 5, eth(2), 10, eth(1));
+    const priceRatio = new BN(1).shln(128);
+
+    await _dumpOrders(this, priceRatio);
+    await _verifyMarket(this, priceRatio, eth(10), eth(10));
+
+    const settle = await swap.settleBucketExact(
+      token.address,
+      currency.address,
+      priceRatio,
+      await _getSettleBlock()
+    );
+    console.log('settle gasUsed:', settle.receipt.gasUsed);
+
+    await _dumpOrders(this, priceRatio);
+    await _verifyMarket(this, priceRatio, '0', '0');
+    await _verifyBalance(this, swap.address, eth(0.1), eth(0.1));
+  });
+
+  async function _setupMulti(contracts, buy_count, buy_amount, sell_count, sell_amount, extra) {
+    extra = Object.assign(
+      {
+        sell_fee_add: 1,
+        buy_fee_add: 1,
+      },
+      extra || {}
+    );
+    const { swap, currency, token } = contracts;
+    for (let i = 0 ; i < sell_count ; i++) {
+      await token.transfer(extra_sellers[i], eth(100), { from: owner });
+      await token.approve(swap.address, eth(100), { from: extra_sellers[i] });
+      const post_sell = await swap.postSell(
+        token.address,
+        currency.address,
+        1,
+        128,
+        0,
+        1e10,
+        sell_amount,
+        extra.sell_fee_add,
+        { from: extra_sellers[i] }
+      );
+      console.log('postSell.gas:', post_sell.receipt.gasUsed);
+    }
+    for (let i = 0 ; i < buy_count ; i++) {
+      await currency.transfer(extra_buyers[i], eth(100), { from: owner });
+      await currency.approve(swap.address, eth(100), { from: extra_buyers[i] });
+      const post_buy = await swap.postBuy(
+        token.address,
+        currency.address,
+        1,
+        128,
+        0,
+        1e10,
+        buy_amount,
+        extra.buy_fee_add,
+        { from: extra_buyers[i] }
+      );
+      console.log('postBuy.gas:', post_buy.receipt.gasUsed);
+    }
+  }
 
   async function _setupOrders(contracts, buy_amount, sell_amount, extra) {
     extra = Object.assign(
@@ -333,8 +444,8 @@ describe('HarbourSwap', () => {
     currency_balance
   ) {
     const { swap, currency, token } = contracts;
-    expect(await token.balanceOf(addr)).to.be.bignumber.equal(token_balance);
-    expect(await currency.balanceOf(addr)).to.be.bignumber.equal(
+    await expect(await token.balanceOf(addr)).to.be.bignumber.equal(token_balance);
+    await expect(await currency.balanceOf(addr)).to.be.bignumber.equal(
       currency_balance
     );
   }
@@ -352,20 +463,29 @@ describe('HarbourSwap', () => {
 
   async function _dumpOrders(contracts, priceRatio) {
     const { swap, currency, token } = contracts;
-    const buy = await swap.getBuyOrder(
+    const market = await swap.getMarketData(
       token.address,
       currency.address,
-      priceRatio,
-      0
+      priceRatio
     );
-    console.log('buy_order: 0: qty:', feth(buy.quantity));
-    const sell = await swap.getSellOrder(
-      token.address,
-      currency.address,
-      priceRatio,
-      0
-    );
-    console.log('sell_order: 0: qty:', feth(sell.quantity));
+    for (let i = 0 ; i < market.buyOrderCount ; i++) {
+      const buy = await swap.getBuyOrder(
+        token.address,
+        currency.address,
+        priceRatio,
+        i
+      );
+      console.log('buy_order:', i, 'qty:', feth(buy.quantity));
+    }
+    for (let i = 0 ; i < market.sellOrderCount ; i++) {
+      const sell = await swap.getSellOrder(
+        token.address,
+        currency.address,
+        priceRatio,
+        i
+      );
+      console.log('sell_order:', i, 'qty:', feth(sell.quantity));
+    }
   }
   async function _dumpFeeBalance(contracts) {
     const { swap, currency, token } = contracts;
@@ -373,3 +493,11 @@ describe('HarbourSwap', () => {
     console.log('fee.token:', feth(await swap.feeBalance(token.address)));
   }
 });
+
+async function _getSettleBlock() {
+  const block_number = (await time.latestBlock()).toNumber();
+  const settle_block = block_number - (block_number % 5) + 5;
+  console.log('block_number:', block_number, 'settle_block:', settle_block);
+  await time.advanceBlockTo(settle_block);
+  return settle_block;
+}

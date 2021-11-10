@@ -44,6 +44,23 @@ library Roles {
   }
 }
 
+abstract contract ReentrancyGuard {
+  uint256 private constant _NOT_ENTERED = 1;
+  uint256 private constant _ENTERED = 2;
+  uint256 private _status;
+
+  constructor() {
+    _status = _NOT_ENTERED;
+  }
+
+  modifier nonReentrant() {
+    require(_status != _ENTERED, 'reentrant_failed');
+    _status = _ENTERED;
+    _;
+    _status = _NOT_ENTERED;
+  }
+}
+
 abstract contract Context {
   function _msgSender() internal view returns (address) {
     return msg.sender;
@@ -87,7 +104,7 @@ abstract contract AdminRole is Context {
   }
 }
 
-contract HarbourSwap is AdminRole {
+contract HarbourSwap is AdminRole, ReentrancyGuard {
   uint256 constant RATIO = 2**128;
   uint256 constant BPS = 1000;
 
@@ -197,11 +214,19 @@ contract HarbourSwap is AdminRole {
     returns (
       uint256 totalSell,
       uint256 totalBuy,
+      uint256 buyOrderCount,
+      uint256 sellOrderCount,
       uint48 lastSettledBlock
     )
   {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
-    return (bucket.totalSell, bucket.totalBuy, bucket.lastSettledBlock);
+    return (
+      bucket.totalSell,
+      bucket.totalBuy,
+      bucket.buyOrderList.length,
+      bucket.sellOrderList.length,
+      bucket.lastSettledBlock
+    );
   }
 
   function getBuyOrder(
@@ -292,26 +317,31 @@ contract HarbourSwap is AdminRole {
     emit BuyOrderPost(token, currency, priceRatio, quantity);
   }
 
-  function _checkOrderBlocks(
-    uint48 startBlock,
-    uint48 endBlock,
-    bool forceCancel
-  ) internal view returns (bool isRefundable, bool isLive) {
+  function _checkOrderBlocks(uint48 startBlock, uint48 endBlock)
+    internal
+    view
+    returns (
+      bool isRefundable,
+      bool isLive,
+      bool needForce
+    )
+  {
     bool is_refundable = true;
     bool is_live = false;
+    bool need_force = false;
     uint48 this_block = uint48(block.number);
     uint48 block_count = endBlock - startBlock;
     uint48 live_count = this_block - startBlock;
     if (block_count < minLiveBlocks) {
       is_refundable = false;
     } else if (live_count < freeCancelBlocks) {
-      require(forceCancel, 'not_force');
+      need_force = true;
       is_refundable = false;
     }
     if (startBlock <= this_block && this_block <= endBlock) {
       is_live = true;
     }
-    return (is_refundable, is_live);
+    return (is_refundable, is_live, need_force);
   }
 
   function cancelBuy(
@@ -320,24 +350,32 @@ contract HarbourSwap is AdminRole {
     uint256 priceRatio,
     uint256 index,
     bool forceCancel
-  ) public {
+  ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     BuyOrder storage order = bucket.buyOrderList[index];
     require(order.buyer == _msgSender(), 'not_owned');
     uint256 qty = order.quantity;
     require(qty > 0, 'already_closed');
 
-    (bool refund_fee, bool is_live) = _checkOrderBlocks(
+    (bool is_refundable, bool is_live, bool need_force) = _checkOrderBlocks(
       order.startBlock,
-      order.endBlock,
-      forceCancel
+      order.endBlock
     );
+    require(forceCancel || !need_force, 'need_force');
     uint256 currency_qty = (qty * priceRatio) / RATIO;
     uint256 fee = 0;
-    if (refund_fee) {
+    if (is_refundable && !forceCancel) {
       fee = (currency_qty * exchangeFeeBps) / BPS;
     }
-    order.quantity = 0;
+    if (index == bucket.buyOrderList.length - 1) {
+      BuyOrder[] storage list = bucket.buyOrderList;
+      assembly {
+        // cheap resize because we always write to the whole thing
+        sstore(list.slot, index)
+      }
+    } else {
+      order.quantity = 0;
+    }
     feeBalance[currency] -= fee;
     if (is_live) {
       bucket.totalBuy -= qty;
@@ -352,24 +390,32 @@ contract HarbourSwap is AdminRole {
     uint256 priceRatio,
     uint256 index,
     bool forceCancel
-  ) public {
+  ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     SellOrder storage order = bucket.sellOrderList[index];
     require(order.seller == _msgSender(), 'not_owned');
     uint256 qty = order.quantity;
     require(qty > 0, 'already_closed');
 
-    (bool refund_fee, bool is_live) = _checkOrderBlocks(
+    (bool is_refundable, bool is_live, bool need_force) = _checkOrderBlocks(
       order.startBlock,
-      order.endBlock,
-      forceCancel
+      order.endBlock
     );
+    require(forceCancel || !need_force, 'need_force');
 
     uint256 fee = 0;
-    if (refund_fee) {
+    if (is_refundable && !forceCancel) {
       fee = (qty * exchangeFeeBps) / BPS;
     }
-    order.quantity = 0;
+    if (index == bucket.sellOrderList.length - 1) {
+      SellOrder[] storage list = bucket.sellOrderList;
+      assembly {
+        // cheap resize because we always write to the whole thing
+        sstore(list.slot, index)
+      }
+    } else {
+      order.quantity = 0;
+    }
     feeBalance[token] -= fee;
     if (is_live) {
       bucket.totalSell -= qty;
@@ -460,13 +506,23 @@ contract HarbourSwap is AdminRole {
     return sell_qty;
   }
 
+  function _checkSettleBlock(uint48 newSettleBlock, uint48 oldSettleBlock)
+    internal
+    view
+  {
+    require(newSettleBlock > oldSettleBlock, 'not_newer');
+    require(newSettleBlock % windowBlocks == 0, 'not_aligned');
+    require(newSettleBlock <= uint48(block.number), 'settle_in_future');
+  }
+
   function settleBucketSingleSeller(
     address token,
     address currency,
     uint256 priceRatio,
     uint48 settleBlock
-  ) public {
+  ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
+    _checkSettleBlock(settleBlock, bucket.lastSettledBlock);
     bucket.lastSettledBlock = settleBlock;
 
     uint256 buy_qty = _settleBuyLimit(bucket, token, settleBlock, 0);
@@ -489,8 +545,9 @@ contract HarbourSwap is AdminRole {
     address currency,
     uint256 priceRatio,
     uint48 settleBlock
-  ) public {
+  ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
+    _checkSettleBlock(settleBlock, bucket.lastSettledBlock);
     bucket.lastSettledBlock = settleBlock;
 
     uint256 sell_qty = _settleSellLimit(
@@ -513,8 +570,9 @@ contract HarbourSwap is AdminRole {
     address currency,
     uint256 priceRatio,
     uint48 settleBlock
-  ) public {
+  ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
+    _checkSettleBlock(settleBlock, bucket.lastSettledBlock);
     bucket.lastSettledBlock = settleBlock;
     uint256 buy_qty = _settleBuyLimit(bucket, token, settleBlock, 0);
     uint256 sell_qty = _settleSellLimit(
