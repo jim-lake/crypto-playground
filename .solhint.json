@@ -5,6 +5,7 @@
     "compiler-version": ["error", "0.8.9"],
     "func-visibility": ["warn", { "ignoreConstructors": true } ],
     "reason-string": ["warn", { "maxLength": 64 }],
-    "not-rely-on-time": "off"
+    "not-rely-on-time": "off",
+    "var-name-mixedcase": "off"
   }
 }
