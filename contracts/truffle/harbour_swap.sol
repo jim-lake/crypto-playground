@@ -1,6 +1,5 @@
-pragma solidity ^0.8.9;
-
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
 
 interface IERC20 {
   function transfer(address recipient, uint256 amount) external returns (bool);
@@ -136,12 +135,14 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
   receive() external payable {
     // thank you
   }
+
   function withdraw(address coin, uint256 amount)
     public
     onlyAdmin
     returns (bool)
   {
     if (coin == address(0)) {
+      // solhint-disable-next-line avoid-low-level-calls
       (bool success, ) = exchangeFeeAddress.call{value: amount}('');
       return success;
     } else {
@@ -349,18 +350,18 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     view
     returns (bool isRefundable, bool needForce)
   {
-    bool is_refundable = true;
-    bool need_force = false;
+    isRefundable = true;
+    needForce = false;
     uint48 this_block = uint48(block.number);
     uint48 block_count = endBlock - startBlock;
     uint48 live_count = this_block - startBlock;
     if (block_count < minLiveBlocks) {
-      is_refundable = false;
+      isRefundable = false;
     } else if (live_count < freeCancelBlocks) {
-      need_force = true;
-      is_refundable = false;
+      needForce = true;
+      isRefundable = false;
     }
-    return (is_refundable, need_force);
+    return (isRefundable, needForce);
   }
 
   function cancelBuy(
@@ -389,6 +390,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     }
     if (index == bucket.buyOrderList.length - 1) {
       BuyOrder[] storage list = bucket.buyOrderList;
+      // solhint-disable-next-line no-inline-assembly
       assembly {
         // cheap resize because we always write to the whole thing
         sstore(list.slot, index)
@@ -427,6 +429,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     }
     if (index == bucket.sellOrderList.length - 1) {
       SellOrder[] storage list = bucket.sellOrderList;
+      // solhint-disable-next-line no-inline-assembly
       assembly {
         // cheap resize because we always write to the whole thing
         sstore(list.slot, index)
@@ -466,6 +469,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     if (trim_count > 0) {
       BuyOrder[] storage list = bucket.buyOrderList;
       uint256 new_len = bucket.buyOrderList.length - trim_count;
+      // solhint-disable-next-line no-inline-assembly
       assembly {
         sstore(list.slot, new_len)
       }
@@ -502,6 +506,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     if (trim_count > 0) {
       SellOrder[] storage list = bucket.sellOrderList;
       uint256 new_len = bucket.sellOrderList.length - trim_count;
+      // solhint-disable-next-line no-inline-assembly
       assembly {
         sstore(list.slot, new_len)
       }
