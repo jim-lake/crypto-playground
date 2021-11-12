@@ -631,7 +631,6 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
   ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     _checkSettleBlock(settleBlock, bucket.lastSettledBlock);
-    bucket.lastSettledBlock = settleBlock;
     uint256 buy_qty = _settleBuyAll(bucket, token, settleBlock);
     uint256 sell_qty = _settleSellAll(
       bucket,
@@ -639,8 +638,8 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
       priceRatio,
       settleBlock
     );
-
     require(buy_qty == sell_qty, 'buy_sell_mismatch');
+    bucket.lastSettledBlock = settleBlock;
     bucket.lastSettleDirection = SETTLE_BOTH;
     emit Settled(token, currency, priceRatio, buy_qty);
   }
@@ -653,7 +652,6 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
   ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     _checkSettleBlock(settleBlock, bucket.lastSettledBlock);
-    bucket.lastSettledBlock = settleBlock;
     uint256 buy_qty = _settleBuyAll(bucket, token, settleBlock);
     uint256 sell_qty = _settleSellFlat(
       bucket,
@@ -662,8 +660,8 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
       settleBlock,
       buy_qty
     );
-
     require(buy_qty == sell_qty, 'buy_sell_mismatch');
+    bucket.lastSettledBlock = settleBlock;
     bucket.lastSettleDirection = SETTLE_BUY;
     emit Settled(token, currency, priceRatio, buy_qty);
   }
@@ -676,7 +674,6 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
   ) public nonReentrant {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     _checkSettleBlock(settleBlock, bucket.lastSettledBlock);
-    bucket.lastSettledBlock = settleBlock;
     uint256 sell_qty = _settleSellAll(
       bucket,
       currency,
@@ -684,8 +681,8 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
       settleBlock
     );
     uint256 buy_qty = _settleBuyFlat(bucket, token, settleBlock, sell_qty);
-
     require(buy_qty == sell_qty, 'buy_sell_mismatch');
+    bucket.lastSettledBlock = settleBlock;
     bucket.lastSettleDirection = SETTLE_SELL;
     emit Settled(token, currency, priceRatio, buy_qty);
   }
@@ -724,7 +721,6 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
       settleBlock
     );
     uint256 buy_qty = _settleBuyFlat(buyBucket, token, settleBlock, sell_qty);
-
     require(buy_qty == sell_qty, 'buy_sell_mismatch');
     uint256 bonus_fee = ((buyRatio - sellRatio) * buy_qty) / RATIO;
     feeBalance[currency] += bonus_fee;
@@ -754,7 +750,6 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
       settleBlock,
       buy_qty
     );
-
     require(buy_qty == sell_qty, 'buy_sell_mismatch');
     uint256 bonus_fee = ((buyRatio - sellRatio) * buy_qty) / RATIO;
     feeBalance[currency] += bonus_fee;
