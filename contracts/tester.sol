@@ -1,140 +1,81 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.3;
 
-contract Tester {
-  int256 public foo;
-
-  constructor(int256 f) payable {
-    foo = f;
-  }
-
-  function incPayable(int256 i) public payable {
-    foo += i;
-  }
-
-  function inc(int256 i) public {
-    foo += i;
-  }
-
-  fallback() external payable {
-    if (msg.value > 0) {
-      foo += 1000;
-    } else {
-      foo += 42;
-    }
-  }
-
-  receive() external payable {
-    if (msg.value > 0) {
-      foo += 1000;
-    } else {
-      foo += 42;
-    }
-  }
-
-  function getAndIncFoo() public returns (int256) {
-    foo += 1;
-    return foo;
-  }
-
-  function getFoo() public view returns (int256) {
-    return foo;
-  }
-}
-
 contract MapMapTester {
-  uint256 public count;
-  mapping(uint256 => uint256) public keyMap;
-  mapping(uint256 => uint256) public keyToIndex;
-  mapping(uint256 => uint256) public indexToKey;
-
-  function addKey(uint256 key) public {
-    require(keyMap[key] == 0, 'key already used');
-    keyMap[key] = 1;
-    uint256 index = count++;
-    indexToKey[index] = key;
-    keyToIndex[key] = index;
+  struct Foo {
+      uint48 a;
+      uint48 b;
+      address c;
+      uint256 d;
   }
-
-  function removeKey(uint256 key) public {
-    require(keyMap[key] != 0, 'key not found');
-    uint256 index = keyToIndex[key];
-    count--;
-    if (index < count) {
-      uint256 endKey = indexToKey[count];
-      keyToIndex[endKey] = index;
-      indexToKey[index] = endKey;
-    }
-    delete indexToKey[count];
-    delete keyToIndex[key];
-    delete keyMap[key];
+  struct FooPacked {
+      uint256 a_b_c;
+      uint256 d;
   }
-
-  function getKeyAtIndex(uint256 index) public view returns (uint256) {
-    uint256 key = indexToKey[index];
-    require(keyMap[key] != 0, 'key not found');
-    return key;
+  struct FooHolder {
+      Foo[] fooList;
   }
-
-  function getIndexForKey(uint256 key) public view returns (uint256) {
-    require(keyMap[key] != 0, 'key not found');
-    return keyToIndex[key];
+  struct FooPackedHolder {
+      FooPacked[] fooList;
   }
+  mapping(address => mapping(address => mapping(uint48 => FooHolder))) myMap;
+  mapping(address => mapping(address => mapping(uint48 => FooPackedHolder))) myPackedMap;
 
-  function fill(uint256 start, uint256 _count) public {
-    for (uint256 i = 0; i < _count; i++) {
-      addKey(start + i);
-    }
+  function putNormal(address k1, address k2, uint48 k3, uint48 a, uint48 b, address c, uint256 d) public {
+    myMap[k1][k2][k3].fooList.push(Foo(a,b,c,d));
+  }
+  function getNormal(address k1, address k2, uint48 k3, uint256 i) public view returns (Foo memory) {
+    return myMap[k1][k2][k3].fooList[i];
+  }
+  function putPacked(address k1, address k2, uint48 k3, uint48 a, uint48 b, address c, uint256 d) public {
+    uint256 a_b_c = uint256(uint160(c)) | b << 160 | a << 208;
+    myPackedMap[k1][k2][k3].fooList.push(FooPacked(a_b_c,d));
+  }
+  function getPacked(address k1, address k2, uint48 k3, uint256 i) public view returns (FooPacked memory) {
+    return myPackedMap[k1][k2][k3].fooList[i];
+  }
+  function getUnpacked(address k1, address k2, uint48 k3, uint256 i) public view returns (Foo memory) {
+    FooPacked storage packed = myPackedMap[k1][k2][k3].fooList[i];
+    uint256 a_b_c = packed.a_b_c;
+    Foo memory ret = Foo(uint48(a_b_c >> 208),uint48(a_b_c >> 160), address(uint160(a_b_c)),packed.d);
+    return ret;
   }
 }
 
 contract MapListTester {
-  mapping(uint256 => uint256) public keyMap;
-  uint256[] public keyList;
-  mapping(uint256 => uint256) public keyToIndex;
+  int256 foo;
+  uint256 count;
+  mapping(uint256 => uint256) keyMap;
+  uint256[] keyList;
+  mapping(uint256 => uint256) keyToIndex;
 
+  constructor() payable {
+  }
   function addKey(uint256 key) public {
-    require(keyMap[key] == 0, 'key already used');
-    keyMap[key] = 1;
+    require(keyMap[key] == 0, "key already used");
+    keyMap[key] = block.timestamp;
     keyToIndex[key] = keyList.length;
     keyList.push(key);
   }
-
   function removeKey(uint256 key) public {
-    require(keyMap[key] != 0, 'key not found');
+    require(keyMap[key] != 0, "key not found");
     uint256 index = keyToIndex[key];
     if (index < keyList.length - 1) {
-      uint256 endKey = keyList[keyList.length - 1];
-      keyToIndex[endKey] = index;
-      keyList[index] = endKey;
+      uint256 end_key = keyList[keyList.length - 1];
+      keyToIndex[end_key] = index;
+      keyList[index] = end_key;
     }
     delete keyToIndex[key];
     delete keyMap[key];
     keyList.pop();
   }
-
   function getKeyAtIndex(uint256 index) public view returns (uint256) {
     uint256 key = keyList[index];
-    require(keyMap[key] != 0, 'key not found');
+    require(keyMap[key] != 0, "key not found");
     return key;
   }
-
   function getIndexForKey(uint256 key) public view returns (uint256) {
-    require(keyMap[key] != 0, 'key not found');
+    require(keyMap[key] != 0, "key not found");
     return keyToIndex[key];
-  }
-
-  function fill(uint256 start, uint256 _count) public {
-    for (uint256 i = 0; i < _count; i++) {
-      addKey(start + i);
-    }
-  }
-
-  function count() public view returns (uint256) {
-    return keyList.length;
-  }
-
-  function getList() public view returns (uint256[] memory) {
-    return keyList;
   }
 }
