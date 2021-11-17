@@ -1,1 +1,619 @@
-[{"inputs":[{"internalType":"uint256","name":"fee","type":"uint256"},{"internalType":"address payable","name":"feeAddress","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"}],"name":"AdminAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"account","type":"address"}],"name":"AdminRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":true,"internalType":"address","name":"currency","type":"address"},{"indexed":false,"internalType":"uint192","name":"priceRatio","type":"uint192"},{"indexed":false,"internalType":"uint256","name":"buyQuantity","type":"uint256"}],"name":"BuyOrderCancel","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":true,"internalType":"address","name":"currency","type":"address"},{"indexed":false,"internalType":"uint192","name":"priceRatio","type":"uint192"},{"indexed":false,"internalType":"uint256","name":"buyQuantity","type":"uint256"}],"name":"BuyOrderPost","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address payable","name":"feeAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"fee","type":"uint256"}],"name":"FeeUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":true,"internalType":"address","name":"currency","type":"address"},{"indexed":false,"internalType":"uint192","name":"priceRatio","type":"uint192"},{"indexed":false,"internalType":"uint256","name":"sellQuantity","type":"uint256"}],"name":"SellOrderCancel","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":true,"internalType":"address","name":"currency","type":"address"},{"indexed":false,"internalType":"uint192","name":"priceRatio","type":"uint192"},{"indexed":false,"internalType":"uint256","name":"sellQuantity","type":"uint256"}],"name":"SellOrderPost","type":"event"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"addAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"exchangeFeeAddress","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"exchangeFeeBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"address","name":"currency","type":"address"},{"internalType":"uint192","name":"priceRatio","type":"uint192"},{"internalType":"uint48","name":"endBlock","type":"uint48"},{"internalType":"uint256","name":"quantity","type":"uint256"}],"name":"postBuy","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"address","name":"currency","type":"address"},{"internalType":"uint192","name":"priceRatio","type":"uint192"},{"internalType":"uint48","name":"endBlock","type":"uint48"},{"internalType":"uint256","name":"quantity","type":"uint256"}],"name":"postSell","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceAdmin","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"feeAddress","type":"address"},{"internalType":"uint256","name":"fee","type":"uint256"}],"name":"setExchangeFee","outputs":[],"stateMutability":"nonpayable","type":"function"}]
+[
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "fee", "type": "uint256" },
+      {
+        "internalType": "address payable",
+        "name": "feeAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "AdminAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "AdminRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "priceRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "buyQuantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "BuyOrderCancel",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "priceRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "buyQuantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "BuyOrderPost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "priceRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "quantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "CrossBuySettled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "priceRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "quantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "CrossSellSettled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "windowBlocks",
+        "type": "uint48"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "minLiveBlocks",
+        "type": "uint48"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "freeCancelBlocks",
+        "type": "uint48"
+      }
+    ],
+    "name": "ExchangeBlocksUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address payable",
+        "name": "feeAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "FeeUpdate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "priceRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sellQuantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "SellOrderCancel",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "priceRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sellQuantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "SellOrderPost",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "currency",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "priceRatio",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "quantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "Settled",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "BPS",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "RATIO",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SETTLE_BOTH",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SETTLE_BUY",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SETTLE_SELL",
+    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "addAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" },
+      { "internalType": "bool", "name": "forceCancel", "type": "bool" }
+    ],
+    "name": "cancelBuy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" },
+      { "internalType": "bool", "name": "forceCancel", "type": "bool" }
+    ],
+    "name": "cancelSell",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "exchangeFeeAddress",
+    "outputs": [
+      { "internalType": "address payable", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "exchangeFeeBps",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "feeBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "freeCancelBlocks",
+    "outputs": [{ "internalType": "uint48", "name": "", "type": "uint48" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
+    ],
+    "name": "getBuyOrder",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
+          { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
+          { "internalType": "address", "name": "buyer", "type": "address" },
+          { "internalType": "uint256", "name": "quantity", "type": "uint256" }
+        ],
+        "internalType": "struct HarbourSwap.BuyOrder",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" }
+    ],
+    "name": "getMarketData",
+    "outputs": [
+      { "internalType": "uint256", "name": "buyOrderCount", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "sellOrderCount",
+        "type": "uint256"
+      },
+      { "internalType": "uint48", "name": "lastSettledBlock", "type": "uint48" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
+    ],
+    "name": "getSellOrder",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
+          { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
+          { "internalType": "address", "name": "seller", "type": "address" },
+          { "internalType": "uint256", "name": "quantity", "type": "uint256" }
+        ],
+        "internalType": "struct HarbourSwap.SellOrder",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minLiveBlocks",
+    "outputs": [{ "internalType": "uint48", "name": "", "type": "uint48" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint8", "name": "priceBucket", "type": "uint8" },
+      { "internalType": "uint8", "name": "priceShift", "type": "uint8" },
+      { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
+      { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
+      { "internalType": "uint256", "name": "quantity", "type": "uint256" },
+      { "internalType": "bool", "name": "feeAdd", "type": "bool" }
+    ],
+    "name": "postBuy",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint8", "name": "priceBucket", "type": "uint8" },
+      { "internalType": "uint8", "name": "priceShift", "type": "uint8" },
+      { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
+      { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
+      { "internalType": "uint256", "name": "quantity", "type": "uint256" },
+      { "internalType": "bool", "name": "feeAdd", "type": "bool" }
+    ],
+    "name": "postSell",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceAdmin",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint48", "name": "newWindow", "type": "uint48" },
+      { "internalType": "uint48", "name": "newMinLive", "type": "uint48" },
+      { "internalType": "uint48", "name": "newFreeCancel", "type": "uint48" }
+    ],
+    "name": "setExchangeBlocks",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address payable",
+        "name": "feeAddress",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "fee", "type": "uint256" }
+    ],
+    "name": "setExchangeFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" },
+      { "internalType": "uint48", "name": "settleBlock", "type": "uint48" }
+    ],
+    "name": "settleBucketExact",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" },
+      { "internalType": "uint48", "name": "settleBlock", "type": "uint48" }
+    ],
+    "name": "settleBucketFlatBuy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "priceRatio", "type": "uint256" },
+      { "internalType": "uint48", "name": "settleBlock", "type": "uint48" }
+    ],
+    "name": "settleBucketFlatSell",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "buyRatio", "type": "uint256" },
+      { "internalType": "uint256", "name": "sellRatio", "type": "uint256" },
+      { "internalType": "uint48", "name": "settleBlock", "type": "uint48" }
+    ],
+    "name": "settleCrossFlatBuy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "uint256", "name": "buyRatio", "type": "uint256" },
+      { "internalType": "uint256", "name": "sellRatio", "type": "uint256" },
+      { "internalType": "uint48", "name": "settleBlock", "type": "uint48" }
+    ],
+    "name": "settleCrossFlatSell",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "windowBlocks",
+    "outputs": [{ "internalType": "uint48", "name": "", "type": "uint48" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "coin", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "withdraw",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "stateMutability": "payable", "type": "receive" }
+]
