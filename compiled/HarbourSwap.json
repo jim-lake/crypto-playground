@@ -299,41 +299,6 @@
     "type": "event"
   },
   {
-    "inputs": [],
-    "name": "BPS",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "RATIO",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SETTLE_BOTH",
-    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SETTLE_BUY",
-    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "SETTLE_SELL",
-    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       { "internalType": "address", "name": "account", "type": "address" }
     ],
@@ -436,7 +401,16 @@
         "name": "sellOrderCount",
         "type": "uint256"
       },
-      { "internalType": "uint48", "name": "lastSettledBlock", "type": "uint48" }
+      {
+        "internalType": "uint48",
+        "name": "lastSettledBlock",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint8",
+        "name": "lastSettleDirection",
+        "type": "uint8"
+      }
     ],
     "stateMutability": "view",
     "type": "function"

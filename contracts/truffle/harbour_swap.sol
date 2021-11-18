@@ -97,11 +97,11 @@ abstract contract AdminRole is Context {
 }
 
 contract HarbourSwap is AdminRole, ReentrancyGuard {
-  uint256 public constant RATIO = 2**128;
-  uint256 public constant BPS = 1000;
-  uint8 public constant SETTLE_BOTH = 0;
-  uint8 public constant SETTLE_SELL = 1;
-  uint8 public constant SETTLE_BUY = 2;
+  uint256 private constant RATIO = 2**128;
+  uint256 private constant BPS = 1000;
+  uint8 private constant SETTLE_BOTH = 0;
+  uint8 private constant SETTLE_SELL = 1;
+  uint8 private constant SETTLE_BUY = 2;
 
   // token => currency => priceRatio => Market
   mapping(address => mapping(address => mapping(uint256 => MarketBucket)))
@@ -248,14 +248,16 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     returns (
       uint256 buyOrderCount,
       uint256 sellOrderCount,
-      uint48 lastSettledBlock
+      uint48 lastSettledBlock,
+      uint8 lastSettleDirection
     )
   {
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     return (
       bucket.buyOrderList.length,
       bucket.sellOrderList.length,
-      bucket.lastSettledBlock
+      bucket.lastSettledBlock,
+      bucket.lastSettleDirection
     );
   }
 
