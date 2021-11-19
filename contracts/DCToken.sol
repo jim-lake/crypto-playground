@@ -1,6 +1,5 @@
-pragma solidity ^0.8.3;
-
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
 
 library SafeMath {
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -357,6 +356,17 @@ abstract contract ERC20Mintable is ERC20, MinterRole {
   {
     _mint(account, amount);
     return true;
+  }
+}
+
+contract TestToken is ERC20Mintable, ERC20Detailed {
+  constructor(
+    string memory name,
+    string memory symbol,
+    uint8 decimals,
+    uint256 initialSupply
+  ) ERC20Detailed(name, symbol, decimals) {
+    _mint(msg.sender, initialSupply);
   }
 }
 

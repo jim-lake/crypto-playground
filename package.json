@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "pretty": "prettier \"scripts/**/*.js\" \"scripts/**/*.json\" \"scripts/**/*.ts\" \"contracts/**/*.sol\" --write",
+    "pretty": "prettier \"scripts/**/*.js\" \"scripts/**/*.ts\" \"contracts/**/*.sol\" --write",
     "pretty-abi": "prettier --parser json \"compiled/**/*.json\" --write",
     "test": "mocha --exit --recursive",
     "build": "truffle compile"
