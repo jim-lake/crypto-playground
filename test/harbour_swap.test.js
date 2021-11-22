@@ -15,6 +15,7 @@ const HarbourSwap = contract.fromArtifact('HarbourSwap');
 const TestERC20 = contract.fromArtifact('TestERC20');
 
 const ETH = new BN(10).pow(new BN(18));
+const RATIO = new BN(3).mul(new BN(10).pow(new BN(38)));
 
 function eth(num) {
   return new BN(parseUnits(String(num)).toString());
@@ -46,12 +47,11 @@ describe('HarbourSwap', function () {
     await this.currency.approve(this.swap.address, eth(10000), { from: buyer });
   });
 
-  it('test exact', async () => {
+  it('simple exact', async () => {
     const { swap, currency, token } = this;
     await _setupOrders(this, eth(1), eth(1));
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
 
-    await _verifyMarket(this, priceRatio, eth(1), eth(1));
     await expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
     await expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
 
@@ -59,6 +59,8 @@ describe('HarbourSwap', function () {
     await _dumpBalance(this, swap.address, 'before swap');
     await _dumpBalance(this, buyer, 'before buyer');
     await _dumpBalance(this, seller, 'before seller');
+
+    await _verifyMarket(this, priceRatio, eth(1), eth(1));
 
     const settle = await swap.settleBucketExact(
       token.address,
@@ -79,9 +81,9 @@ describe('HarbourSwap', function () {
     await _verifyBalance(this, swap.address, eth(0.01), eth(0.01));
   });
 
-  it('test single seller', async () => {
+  it('simple single seller', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
 
     await _setupOrders(this, eth(1), eth(10));
 
@@ -104,9 +106,9 @@ describe('HarbourSwap', function () {
     await _verifyBalance(this, swap.address, eth(9.1), eth(0.01));
   });
 
-  it('test single buyer', async () => {
+  it('simple single buyer', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _setupOrders(this, eth(9), eth(1));
 
     await expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
@@ -127,9 +129,9 @@ describe('HarbourSwap', function () {
     await _verifyBalance(this, swap.address, eth(0.01), eth(8.09));
   });
 
-  it('test no fee add', async () => {
+  it('simple no fee add', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _setupOrders(this, eth(1), eth(1), {
       sell_fee_add: 0,
       buy_fee_add: 0,
@@ -157,7 +159,7 @@ describe('HarbourSwap', function () {
 
   it('cancel force', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _setupOrders(this, eth(1), eth(1));
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
@@ -176,7 +178,7 @@ describe('HarbourSwap', function () {
 
   it('cancel fail no-force', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _setupOrders(this, eth(1), eth(1));
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
@@ -187,11 +189,19 @@ describe('HarbourSwap', function () {
     await expectRevert(
       swap.cancelBuy(token.address, currency.address, priceRatio, 0, 0, {
         from: buyer,
-      }), 'need_force'
+      }),
+      'need_force'
     );
-    const cancel = swap.cancelSell(token.address, currency.address, priceRatio, 0, 0, {
-      from: seller,
-    });
+    const cancel = swap.cancelSell(
+      token.address,
+      currency.address,
+      priceRatio,
+      0,
+      0,
+      {
+        from: seller,
+      }
+    );
     await expectRevert(cancel, 'need_force');
     await time.advanceBlockTo((await time.latestBlock()).addn(2));
     await _dumpOrders(this, priceRatio);
@@ -204,7 +214,7 @@ describe('HarbourSwap', function () {
 
   it('cancel no-force', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _setupOrders(this, eth(1), eth(1));
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
@@ -225,7 +235,7 @@ describe('HarbourSwap', function () {
 
   it('cancel no-force no-add', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _setupOrders(this, eth(1), eth(1), {
       sell_fee_add: 0,
       buy_fee_add: 0,
@@ -255,7 +265,7 @@ describe('HarbourSwap', function () {
 
   it('cancel fail double cancel', async () => {
     const { swap, currency, token } = this;
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _setupOrders(this, eth(1), eth(1), {
       sell_fee_add: 0,
       buy_fee_add: 0,
@@ -272,13 +282,15 @@ describe('HarbourSwap', function () {
     await expectRevert(
       swap.cancelSell(token.address, currency.address, priceRatio, 0, 1, {
         from: seller,
-      }), 'not_found'
+      }),
+      'not_found'
     );
     await time.advanceBlock();
     await expectRevert(
       swap.cancelBuy(token.address, currency.address, priceRatio, 0, 1, {
         from: buyer,
-      }), 'not_found'
+      }),
+      'not_found'
     );
     await time.advanceBlock();
 
@@ -292,7 +304,7 @@ describe('HarbourSwap', function () {
   it('multi exact', async () => {
     const { swap, currency, token } = this;
     await _setupMulti(this, 5, eth(2), 10, eth(1));
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
 
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(10), eth(10));
@@ -312,7 +324,7 @@ describe('HarbourSwap', function () {
   it('multi sell heavy', async () => {
     const { swap, currency, token } = this;
     await _setupMulti(this, 5, eth(2), 10, eth(2));
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
 
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(10), eth(20));
@@ -338,7 +350,7 @@ describe('HarbourSwap', function () {
     await _setupMulti(this, 0, 0, 10, eth(1), {
       start_sell: 8,
     });
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
 
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(30), eth(62.3));
@@ -363,7 +375,7 @@ describe('HarbourSwap', function () {
     await _setupMulti(this, 10, eth(1), 0, 0, {
       start_buy: 8,
     });
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
 
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(62.3), eth(30));
@@ -382,7 +394,7 @@ describe('HarbourSwap', function () {
   it('multi flat', async () => {
     const { swap, currency, token } = this;
     await _setupMulti(this, 10, eth(1), 10, eth(1));
-    const priceRatio = new BN(1).shln(128);
+    const priceRatio = new BN(RATIO);
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(10), eth(10));
 
@@ -400,13 +412,15 @@ describe('HarbourSwap', function () {
 
   it('cross flat', async () => {
     const { swap, currency, token } = this;
+    const buyRatio = new BN(2).mul(RATIO);
+    const sellRatio = new BN(RATIO);
+
     await _setupMulti(this, 0, eth(1), 5, eth(1));
+    const high_price = _makePrice(buyRatio);
     await _setupMulti(this, 5, eth(1), 0, eth(1), {
-      price_bucket: 2,
-      price_shift: 128,
+      price_bucket: high_price.price_bucket,
+      price_exp: high_price.price_exp,
     });
-    const buyRatio = new BN(2).shln(128);
-    const sellRatio = new BN(1).shln(128);
 
     await _dumpOrders(this, sellRatio);
     await _dumpOrders(this, buyRatio);
@@ -431,13 +445,15 @@ describe('HarbourSwap', function () {
   });
   it('cross buy heavy', async () => {
     const { swap, currency, token } = this;
+    const buyRatio = new BN(2).mul(RATIO);
+    const sellRatio = new BN(RATIO);
     await _setupMulti(this, 0, 0, 5, eth(1));
+
+    const high_price = _makePrice(buyRatio);
     await _setupMulti(this, 5, eth(2), 0, 0, {
-      price_bucket: 2,
-      price_shift: 128,
+      price_bucket: high_price.price_bucket,
+      price_exp: high_price.price_exp,
     });
-    const buyRatio = new BN(2).shln(128);
-    const sellRatio = new BN(1).shln(128);
 
     await _dumpOrders(this, sellRatio);
     await _dumpOrders(this, buyRatio);
@@ -462,13 +478,15 @@ describe('HarbourSwap', function () {
   });
   it('cross sell heavy', async () => {
     const { swap, currency, token } = this;
+    const buyRatio = new BN(2).mul(RATIO);
+    const sellRatio = new BN(RATIO);
+
     await _setupMulti(this, 0, 0, 5, eth(2));
+    const high_price = _makePrice(buyRatio);
     await _setupMulti(this, 5, eth(1), 0, 0, {
-      price_bucket: 2,
-      price_shift: 128,
+      price_bucket: high_price.price_bucket,
+      price_exp: high_price.price_exp,
     });
-    const buyRatio = new BN(2).shln(128);
-    const sellRatio = new BN(1).shln(128);
 
     await _dumpOrders(this, sellRatio);
     await _dumpOrders(this, buyRatio);
@@ -500,14 +518,15 @@ describe('HarbourSwap', function () {
     sell_amount,
     extra
   ) {
+    const default_ratio = _makePrice(RATIO);
     extra = Object.assign(
       {
         sell_fee_add: 1,
         buy_fee_add: 1,
         start_buy: 0,
         start_sell: 0,
-        price_bucket: 1,
-        price_shift: 128,
+        price_bucket: default_ratio.price_bucket,
+        price_exp: default_ratio.price_exp,
       },
       extra || {}
     );
@@ -519,7 +538,7 @@ describe('HarbourSwap', function () {
         token.address,
         currency.address,
         extra.price_bucket,
-        extra.price_shift,
+        extra.price_exp,
         0,
         1e10,
         sell_amount,
@@ -535,7 +554,7 @@ describe('HarbourSwap', function () {
         token.address,
         currency.address,
         extra.price_bucket,
-        extra.price_shift,
+        extra.price_exp,
         0,
         1e10,
         buy_amount,
@@ -555,13 +574,13 @@ describe('HarbourSwap', function () {
       extra || {}
     );
     const { swap, currency, token } = contracts;
-    const priceRatio = new BN(1).shln(128);
-
+    const priceRatio = new BN(RATIO);
+    const sell_ratio = _makePrice(priceRatio);
     const post_sell = await swap.postSell(
       token.address,
       currency.address,
-      1,
-      128,
+      sell_ratio.price_bucket,
+      sell_ratio.price_exp,
       0,
       1e10,
       sell_amount,
@@ -572,8 +591,8 @@ describe('HarbourSwap', function () {
     const post_buy = await swap.postBuy(
       token.address,
       currency.address,
-      1,
-      128,
+      sell_ratio.price_bucket,
+      sell_ratio.price_exp,
       0,
       1e10,
       buy_amount,
@@ -676,7 +695,7 @@ describe('HarbourSwap', function () {
     if (market.buyOrderCount.toNumber() === 0) {
       console.log('buy_order(' + price + '): none!');
     }
-    for (let i = 0; i < market.sellOrderCount.toNumber() ; i++) {
+    for (let i = 0; i < market.sellOrderCount.toNumber(); i++) {
       const sell = await swap.getSellOrder(
         token.address,
         currency.address,
@@ -698,7 +717,11 @@ describe('HarbourSwap', function () {
   async function _dumpBalance(contracts, address, name) {
     const { currency, token } = contracts;
     console.log(name, 'token balance:', feth(await token.balanceOf(address)));
-    console.log(name, 'currency balance:', feth(await currency.balanceOf(address)));
+    console.log(
+      name,
+      'currency balance:',
+      feth(await currency.balanceOf(address))
+    );
   }
 });
 
@@ -710,8 +733,21 @@ async function _getSettleBlock() {
   return settle_block;
 }
 
-const RATIO = parseFloat(new BN(1).shln(128).toString());
+const RATIO_FLOAT = parseFloat(RATIO.toString());
 function _price(ratio) {
-  const price = parseFloat(ratio.toString()) / RATIO;
+  const price = parseFloat(ratio.toString()) / RATIO_FLOAT;
   return price;
+}
+
+function _makePrice(priceRatio) {
+  let price_exp = 0;
+  let price_bucket = new BN(priceRatio);
+  while (price_bucket.gtn(255)) {
+    price_exp++;
+    price_bucket = price_bucket.divn(10);
+  }
+  return {
+    price_bucket: price_bucket.toNumber(),
+    price_exp,
+  };
 }

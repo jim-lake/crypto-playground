@@ -97,7 +97,7 @@ abstract contract AdminRole is Context {
 }
 
 contract HarbourSwap is AdminRole, ReentrancyGuard {
-  uint256 private constant RATIO = 2**128;
+  uint256 public constant RATIO = 3 * (10**38);
   uint256 private constant BPS = 1000;
   uint8 private constant SETTLE_BOTH = 0;
   uint8 private constant SETTLE_SELL = 1;
@@ -293,13 +293,13 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     address token,
     address currency,
     uint8 priceBucket,
-    uint8 priceShift,
+    uint8 priceExp,
     uint48 startBlock,
     uint48 endBlock,
     uint256 quantity,
     bool feeAdd
-  ) public payable {
-    uint256 priceRatio = uint256(priceBucket) << priceShift;
+  ) public payable returns (uint256 index) {
+    uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
     uint256 fee = (quantity * exchangeFeeBps) / BPS;
@@ -310,23 +310,25 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     IERC20(token).transferFrom(_msgSender(), address(this), quantity + fee);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
+    index = bucket.sellOrderList.length;
     bucket.sellOrderList.push(
       SellOrder(startBlock, endBlock, _msgSender(), quantity)
     );
     emit SellOrderPost(token, currency, priceRatio, quantity);
+    return index;
   }
 
   function postBuy(
     address token,
     address currency,
     uint8 priceBucket,
-    uint8 priceShift,
+    uint8 priceExp,
     uint48 startBlock,
     uint48 endBlock,
     uint256 quantity,
     bool feeAdd
-  ) public payable {
-    uint256 priceRatio = uint256(priceBucket) << priceShift;
+  ) public payable returns (uint256 index) {
+    uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
     uint256 fee_token = (quantity * exchangeFeeBps) / BPS;
@@ -341,10 +343,12 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     IERC20(currency).transferFrom(_msgSender(), address(this), tx_amount);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
+    index = bucket.buyOrderList.length;
     bucket.buyOrderList.push(
       BuyOrder(startBlock, endBlock, _msgSender(), quantity)
     );
     emit BuyOrderPost(token, currency, priceRatio, quantity);
+    return index;
   }
 
   function _checkOrderBlocks(uint48 startBlock, uint48 endBlock)
