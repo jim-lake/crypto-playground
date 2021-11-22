@@ -109,9 +109,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "index",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "name": "BuyOrderPost",
@@ -295,9 +295,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint32",
+        "internalType": "uint256",
         "name": "index",
-        "type": "uint32"
+        "type": "uint256"
       }
     ],
     "name": "SellOrderPost",
@@ -502,7 +502,7 @@
     ],
     "name": "postBuy",
     "outputs": [
-      { "internalType": "uint32", "name": "index", "type": "uint32" }
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "stateMutability": "payable",
     "type": "function"
@@ -520,7 +520,7 @@
     ],
     "name": "postSell",
     "outputs": [
-      { "internalType": "uint32", "name": "index", "type": "uint32" }
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "stateMutability": "payable",
     "type": "function"

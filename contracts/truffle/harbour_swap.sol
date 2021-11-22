@@ -176,7 +176,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint256 indexed priceRatio,
     uint256 buyQuantity,
     address sender,
-    uint32 index
+    uint256 index
   );
   event BuyOrderCancel(
     address indexed token,
@@ -191,7 +191,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint256 indexed priceRatio,
     uint256 sellQuantity,
     address sender,
-    uint32 index
+    uint256 index
   );
   event SellOrderCancel(
     address indexed token,
@@ -304,7 +304,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint48 endBlock,
     uint256 quantity,
     bool feeAdd
-  ) public payable returns (uint32 index) {
+  ) public payable returns (uint256 index) {
     uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
@@ -316,7 +316,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     IERC20(token).transferFrom(_msgSender(), address(this), quantity + fee);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
-    index = uint32(bucket.sellOrderList.length);
+    index = bucket.sellOrderList.length;
     bucket.sellOrderList.push(
       SellOrder(startBlock, endBlock, _msgSender(), quantity)
     );
@@ -340,7 +340,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint48 endBlock,
     uint256 quantity,
     bool feeAdd
-  ) public payable returns (uint32 index) {
+  ) public payable returns (uint256 index) {
     uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
@@ -356,7 +356,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     IERC20(currency).transferFrom(_msgSender(), address(this), tx_amount);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
-    index = uint32(bucket.buyOrderList.length);
+    index = bucket.buyOrderList.length;
     bucket.buyOrderList.push(
       BuyOrder(startBlock, endBlock, _msgSender(), quantity)
     );
