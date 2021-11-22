@@ -174,25 +174,31 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     address indexed token,
     address indexed currency,
     uint256 indexed priceRatio,
-    uint256 buyQuantity
+    uint256 buyQuantity,
+    address sender,
+    uint32 index
   );
   event BuyOrderCancel(
     address indexed token,
     address indexed currency,
     uint256 indexed priceRatio,
-    uint256 buyQuantity
+    uint256 buyQuantity,
+    address sender
   );
   event SellOrderPost(
     address indexed token,
     address indexed currency,
     uint256 indexed priceRatio,
-    uint256 sellQuantity
+    uint256 sellQuantity,
+    address sender,
+    uint32 index
   );
   event SellOrderCancel(
     address indexed token,
     address indexed currency,
     uint256 indexed priceRatio,
-    uint256 sellQuantity
+    uint256 sellQuantity,
+    address sender
   );
   event Settled(
     address indexed token,
@@ -298,7 +304,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint48 endBlock,
     uint256 quantity,
     bool feeAdd
-  ) public payable returns (uint256 index) {
+  ) public payable returns (uint32 index) {
     uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
@@ -310,11 +316,18 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     IERC20(token).transferFrom(_msgSender(), address(this), quantity + fee);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
-    index = bucket.sellOrderList.length;
+    index = uint32(bucket.sellOrderList.length);
     bucket.sellOrderList.push(
       SellOrder(startBlock, endBlock, _msgSender(), quantity)
     );
-    emit SellOrderPost(token, currency, priceRatio, quantity);
+    emit SellOrderPost(
+      token,
+      currency,
+      priceRatio,
+      quantity,
+      _msgSender(),
+      index
+    );
     return index;
   }
 
@@ -327,7 +340,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint48 endBlock,
     uint256 quantity,
     bool feeAdd
-  ) public payable returns (uint256 index) {
+  ) public payable returns (uint32 index) {
     uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
@@ -343,11 +356,18 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     IERC20(currency).transferFrom(_msgSender(), address(this), tx_amount);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
-    index = bucket.buyOrderList.length;
+    index = uint32(bucket.buyOrderList.length);
     bucket.buyOrderList.push(
       BuyOrder(startBlock, endBlock, _msgSender(), quantity)
     );
-    emit BuyOrderPost(token, currency, priceRatio, quantity);
+    emit BuyOrderPost(
+      token,
+      currency,
+      priceRatio,
+      quantity,
+      _msgSender(),
+      index
+    );
     return index;
   }
 
@@ -406,7 +426,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     }
     feeBalance[currency] -= fee;
     IERC20(currency).transfer(_msgSender(), currency_qty + fee);
-    emit BuyOrderCancel(token, currency, priceRatio, qty);
+    emit BuyOrderCancel(token, currency, priceRatio, qty, _msgSender());
   }
 
   function cancelSell(
@@ -445,7 +465,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     }
     feeBalance[token] -= fee;
     IERC20(token).transfer(_msgSender(), qty + fee);
-    emit SellOrderCancel(token, currency, priceRatio, qty);
+    emit SellOrderCancel(token, currency, priceRatio, qty, _msgSender());
   }
 
   function _settleBuyAll(

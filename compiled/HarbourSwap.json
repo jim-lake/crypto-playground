@@ -63,6 +63,12 @@
         "internalType": "uint256",
         "name": "buyQuantity",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
     "name": "BuyOrderCancel",
@@ -94,6 +100,18 @@
         "internalType": "uint256",
         "name": "buyQuantity",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "index",
+        "type": "uint32"
       }
     ],
     "name": "BuyOrderPost",
@@ -231,6 +249,12 @@
         "internalType": "uint256",
         "name": "sellQuantity",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
     "name": "SellOrderCancel",
@@ -262,6 +286,18 @@
         "internalType": "uint256",
         "name": "sellQuantity",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint32",
+        "name": "index",
+        "type": "uint32"
       }
     ],
     "name": "SellOrderPost",
@@ -297,6 +333,13 @@
     ],
     "name": "Settled",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "RATIO",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -451,14 +494,16 @@
       { "internalType": "address", "name": "token", "type": "address" },
       { "internalType": "address", "name": "currency", "type": "address" },
       { "internalType": "uint8", "name": "priceBucket", "type": "uint8" },
-      { "internalType": "uint8", "name": "priceShift", "type": "uint8" },
+      { "internalType": "uint8", "name": "priceExp", "type": "uint8" },
       { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
       { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
       { "internalType": "uint256", "name": "quantity", "type": "uint256" },
       { "internalType": "bool", "name": "feeAdd", "type": "bool" }
     ],
     "name": "postBuy",
-    "outputs": [],
+    "outputs": [
+      { "internalType": "uint32", "name": "index", "type": "uint32" }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
@@ -467,14 +512,16 @@
       { "internalType": "address", "name": "token", "type": "address" },
       { "internalType": "address", "name": "currency", "type": "address" },
       { "internalType": "uint8", "name": "priceBucket", "type": "uint8" },
-      { "internalType": "uint8", "name": "priceShift", "type": "uint8" },
+      { "internalType": "uint8", "name": "priceExp", "type": "uint8" },
       { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
       { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
       { "internalType": "uint256", "name": "quantity", "type": "uint256" },
       { "internalType": "bool", "name": "feeAdd", "type": "bool" }
     ],
     "name": "postSell",
-    "outputs": [],
+    "outputs": [
+      { "internalType": "uint32", "name": "index", "type": "uint32" }
+    ],
     "stateMutability": "payable",
     "type": "function"
   },
