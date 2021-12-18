@@ -40,7 +40,7 @@ describe('HarbourRedeem', function () {
 
     await _dumpTokenBalances(this);
 
-    const set = await redeem.setRedeem(token.address, 1, reward.address, 1, {
+    const set = await redeem.setRedeem(1, token.address, 1, reward.address, 1, {
       from: holder,
     });
     console.log('set gasUsed:', set.receipt.gasUsed);
@@ -60,7 +60,7 @@ describe('HarbourRedeem', function () {
 
     await _dumpTokenBalances(this);
 
-    const set = await redeem.setRedeem(token.address, 1, reward.address, 1, {
+    const set = await redeem.setRedeem(1, token.address, 1, reward.address, 1, {
       from: holder,
     });
     console.log('set gasUsed:', set.receipt.gasUsed);
@@ -80,7 +80,27 @@ describe('HarbourRedeem', function () {
 
     await _dumpTokenBalances(this);
 
-    const set = await redeem.setRedeem(token.address, 1, ZERO, 0, {
+    const set = await redeem.setRedeem(1, token.address, 1, ZERO, 0, {
+      from: holder,
+    });
+    console.log('set gasUsed:', set.receipt.gasUsed);
+
+    const send_take = await token.methods[
+      'safeTransferFrom(address,address,uint256,bytes)'
+    ](user, redeem.address, 1, '0xf00f', {
+      from: user,
+    });
+    console.log('send_take gasUsed:', send_take.receipt.gasUsed);
+
+    await _dumpTokenBalances(this);
+  });
+
+  it('no swap no burn', async () => {
+    const { token, reward, redeem } = this;
+
+    await _dumpTokenBalances(this);
+
+    const set = await redeem.setRedeem(0, token.address, 1, ZERO, 0, {
       from: holder,
     });
     console.log('set gasUsed:', set.receipt.gasUsed);

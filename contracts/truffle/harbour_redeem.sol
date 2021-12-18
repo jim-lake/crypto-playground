@@ -14,9 +14,7 @@ interface IERC721 {
     uint256 tokenId
   ) external;
 
-  function burn(
-    uint256 tokenId
-  ) external;
+  function burn(uint256 tokenId) external;
 }
 
 interface IERC721Receiver {
@@ -122,16 +120,19 @@ abstract contract CreatorWithdraw is Context, AdminRole {
 }
 
 contract HarbourRedeem is AdminRole, CreatorWithdraw, IERC721Receiver {
+  address public immutable BURN = 0x000000000000000000000000000000000000dEaD;
+
   struct DestToken {
     bool isValid;
+    bool burn;
     address from;
     address contractAddr;
     uint256 tokenId;
   }
   mapping(address => mapping(uint256 => DestToken)) public tokenMap;
 
-  constructor() {
-  }
+  // solhint-disable-next-line no-empty-blocks
+  constructor() {}
 
   event SetRedeem(
     address indexed contractAddr,
@@ -149,6 +150,7 @@ contract HarbourRedeem is AdminRole, CreatorWithdraw, IERC721Receiver {
   );
 
   function setRedeem(
+    bool burn,
     address contractAddr,
     uint256 tokenId,
     address destContract,
@@ -156,6 +158,7 @@ contract HarbourRedeem is AdminRole, CreatorWithdraw, IERC721Receiver {
   ) external onlyAdmin {
     tokenMap[contractAddr][tokenId] = DestToken(
       true,
+      burn,
       _msgSender(),
       destContract,
       destTokenId
@@ -185,25 +188,26 @@ contract HarbourRedeem is AdminRole, CreatorWithdraw, IERC721Receiver {
       IERC721(contractAddr).ownerOf(tokenId) == _msgSender(),
       'not_owner'
     );
-    IERC721(contractAddr).burn(tokenId);
-    return _redeem(contractAddr, tokenId, _msgSender(), data);
+    return _redeem(contractAddr, _msgSender(), _msgSender(), tokenId, data);
   }
 
   function _redeem(
     address contractAddr,
-    uint256 tokenId,
+    address tokenOwner,
     address sender,
+    uint256 tokenId,
     bytes memory data
   ) internal returns (address newContract, uint256 newTokenId) {
     DestToken storage dest = tokenMap[contractAddr][tokenId];
     require(dest.isValid, 'not_valid');
+    if (dest.burn) {
+      IERC721(contractAddr).burn(tokenId);
+    } else {
+      IERC721(contractAddr).transferFrom(tokenOwner, BURN, tokenId);
+    }
 
     if (dest.contractAddr != address(0)) {
-      IERC721(dest.contractAddr).transferFrom(
-        dest.from,
-        sender,
-        dest.tokenId
-      );
+      IERC721(dest.contractAddr).transferFrom(dest.from, sender, dest.tokenId);
       emit Redeem(
         contractAddr,
         tokenId,
@@ -224,8 +228,7 @@ contract HarbourRedeem is AdminRole, CreatorWithdraw, IERC721Receiver {
     uint256 tokenId,
     bytes memory data
   ) external virtual override returns (bytes4) {
-    IERC721(_msgSender()).burn(tokenId);
-    _redeem(_msgSender(), tokenId, from, data);
+    _redeem(_msgSender(), address(this), from, tokenId, data);
     return this.onERC721Received.selector;
   }
 }

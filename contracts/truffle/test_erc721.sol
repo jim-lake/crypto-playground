@@ -10,8 +10,12 @@ contract TestERC721 is ERC721 {
   function mint(address to, uint256 tokenId) external {
     _mint(to, tokenId);
   }
+
   function burn(uint256 tokenId) external returns (bool) {
-    require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: burn caller is not owner nor approved");
+    require(
+      _isApprovedOrOwner(_msgSender(), tokenId),
+      'ERC721: burn caller is not owner nor approved'
+    );
     _burn(tokenId);
     return true;
   }
