@@ -476,3 +476,16 @@ contract HarbourTrackedToken is
     _mint(_msgSender(), fixedSupply);
   }
 }
+
+contract HarbourTrackedTokenMintable is
+  ERC667Tracked,
+  ERC20Detailed,
+  ERC20Mintable,
+  Owned,
+  CreatorWithdraw
+{
+  constructor(
+    string memory name,
+    string memory symbol
+  ) ERC20Detailed(name, symbol, 18) {}
+}
