@@ -497,8 +497,7 @@
       { "internalType": "uint8", "name": "priceExp", "type": "uint8" },
       { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
       { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
-      { "internalType": "uint256", "name": "quantity", "type": "uint256" },
-      { "internalType": "bool", "name": "feeAdd", "type": "bool" }
+      { "internalType": "uint256", "name": "quantity", "type": "uint256" }
     ],
     "name": "postBuy",
     "outputs": [
@@ -515,8 +514,7 @@
       { "internalType": "uint8", "name": "priceExp", "type": "uint8" },
       { "internalType": "uint48", "name": "startBlock", "type": "uint48" },
       { "internalType": "uint48", "name": "endBlock", "type": "uint48" },
-      { "internalType": "uint256", "name": "quantity", "type": "uint256" },
-      { "internalType": "bool", "name": "feeAdd", "type": "bool" }
+      { "internalType": "uint256", "name": "quantity", "type": "uint256" }
     ],
     "name": "postSell",
     "outputs": [

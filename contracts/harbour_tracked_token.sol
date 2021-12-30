@@ -484,8 +484,7 @@ contract HarbourTrackedTokenMintable is
   Owned,
   CreatorWithdraw
 {
-  constructor(
-    string memory name,
-    string memory symbol
-  ) ERC20Detailed(name, symbol, 18) {}
+  constructor(string memory name, string memory symbol)
+    ERC20Detailed(name, symbol, 18)
+  {}
 }

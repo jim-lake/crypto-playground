@@ -141,13 +141,14 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     onlyAdmin
     returns (bool)
   {
+    require(feeBalance[coin] >= amount, 'bad_fee_withdraw');
+    feeBalance[coin] -= amount;
+
     if (coin == address(0)) {
       // solhint-disable-next-line avoid-low-level-calls
       (bool success, ) = exchangeFeeAddress.call{value: amount}('');
       return success;
     } else {
-      require(feeBalance[coin] >= amount, 'bad_fee_withdraw');
-      feeBalance[coin] -= amount;
       IERC20(coin).transfer(exchangeFeeAddress, amount);
       return true;
     }
@@ -302,18 +303,12 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint8 priceExp,
     uint48 startBlock,
     uint48 endBlock,
-    uint256 quantity,
-    bool feeAdd
+    uint256 quantity
   ) public payable returns (uint256 index) {
     uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
-    uint256 fee = (quantity * exchangeFeeBps) / BPS;
-    feeBalance[token] += fee;
-    if (!feeAdd) {
-      quantity -= fee;
-    }
-    IERC20(token).transferFrom(_msgSender(), address(this), quantity + fee);
+    IERC20(token).transferFrom(_msgSender(), address(this), quantity);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     index = bucket.sellOrderList.length;
@@ -338,22 +333,21 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     uint8 priceExp,
     uint48 startBlock,
     uint48 endBlock,
-    uint256 quantity,
-    bool feeAdd
+    uint256 quantity
   ) public payable returns (uint256 index) {
     uint256 priceRatio = uint256(priceBucket) * (10**priceExp);
     startBlock = _getStartBlock(startBlock);
 
-    uint256 fee_token = (quantity * exchangeFeeBps) / BPS;
-    uint256 fee_currency = (fee_token * priceRatio) / RATIO;
     uint256 tx_amount = (quantity * priceRatio) / RATIO;
-    if (feeAdd) {
-      tx_amount += fee_currency;
+    if (currency == address(0)) {
+      require(msg.value >= tx_amount, 'invalid_value');
+      uint256 delta = msg.value - tx_amount;
+      if (delta > 0) {
+        feeBalance[currency] += delta;
+      }
     } else {
-      quantity -= fee_token;
+      IERC20(currency).transferFrom(_msgSender(), address(this), tx_amount);
     }
-    feeBalance[currency] += fee_currency;
-    IERC20(currency).transferFrom(_msgSender(), address(this), tx_amount);
 
     MarketBucket storage bucket = _markets[token][currency][priceRatio];
     index = bucket.buyOrderList.length;
@@ -390,6 +384,27 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     return (isRefundable, needForce);
   }
 
+  function _transferCoin(
+    address coin,
+    address dest,
+    uint256 quantity,
+    bool take_fee
+  ) internal {
+    uint256 dest_tx = quantity;
+    if (take_fee) {
+      uint256 fee = (dest_tx * exchangeFeeBps) / BPS;
+      dest_tx -= fee;
+      feeBalance[coin] += fee;
+    }
+    if (coin == address(0)) {
+      // solhint-disable-next-line avoid-low-level-calls
+      (bool success, ) = dest.call{value: dest_tx}('');
+      require(success, 'tx_failed');
+    } else {
+      IERC20(coin).transfer(dest, dest_tx);
+    }
+  }
+
   function cancelBuy(
     address token,
     address currency,
@@ -410,10 +425,6 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     );
     require(forceCancel || !need_force, 'need_force');
     uint256 currency_qty = (qty * priceRatio) / RATIO;
-    uint256 fee = 0;
-    if (is_refundable && !forceCancel) {
-      fee = (currency_qty * exchangeFeeBps) / BPS;
-    }
     if (index == bucket.buyOrderList.length - 1) {
       BuyOrder[] storage list = bucket.buyOrderList;
       // solhint-disable-next-line no-inline-assembly
@@ -424,8 +435,12 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     } else {
       order.quantity = 0;
     }
-    feeBalance[currency] -= fee;
-    IERC20(currency).transfer(_msgSender(), currency_qty + fee);
+    _transferCoin(
+      currency,
+      _msgSender(),
+      currency_qty,
+      !is_refundable || forceCancel
+    );
     emit BuyOrderCancel(token, currency, priceRatio, qty, _msgSender());
   }
 
@@ -448,11 +463,6 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
       order.endBlock
     );
     require(forceCancel || !need_force, 'need_force');
-
-    uint256 fee = 0;
-    if (is_refundable && !forceCancel) {
-      fee = (qty * exchangeFeeBps) / BPS;
-    }
     if (index == bucket.sellOrderList.length - 1) {
       SellOrder[] storage list = bucket.sellOrderList;
       // solhint-disable-next-line no-inline-assembly
@@ -463,8 +473,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     } else {
       order.quantity = 0;
     }
-    feeBalance[token] -= fee;
-    IERC20(token).transfer(_msgSender(), qty + fee);
+    _transferCoin(token, _msgSender(), qty, !is_refundable || forceCancel);
     emit SellOrderCancel(token, currency, priceRatio, qty, _msgSender());
   }
 
@@ -486,7 +495,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
         if (qty > 0) {
           order.quantity = 0;
           buy_qty += qty;
-          IERC20(token).transfer(order.buyer, qty);
+          _transferCoin(token, order.buyer, qty, true);
         }
       } else {
         is_trimming = false;
@@ -523,7 +532,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
           order.quantity = 0;
           sell_qty += qty;
           uint256 amount = (priceRatio * qty) / RATIO;
-          IERC20(currency).transfer(order.seller, amount);
+          _transferCoin(currency, order.seller, amount, true);
         }
       } else {
         is_trimming = false;
@@ -602,7 +611,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
         bucket.sellOrderList[i].quantity -= order.sellQuantity;
         sell_qty += order.sellQuantity;
         uint256 amount = (priceRatio * order.sellQuantity) / RATIO;
-        IERC20(currency).transfer(order.account, amount);
+        _transferCoin(currency, order.account, amount, true);
       }
     }
     return sell_qty;
@@ -634,7 +643,7 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
       if (order.sellQuantity > 0) {
         bucket.buyOrderList[i].quantity -= order.sellQuantity;
         buy_qty += order.sellQuantity;
-        IERC20(token).transfer(order.account, order.sellQuantity);
+        _transferCoin(token, order.account, order.sellQuantity, true);
       }
     }
     return buy_qty;

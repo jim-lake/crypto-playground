@@ -1,4 +1,4 @@
-const { accounts, contract } = require('@openzeppelin/test-environment');
+const { accounts, contract, web3 } = require('@openzeppelin/test-environment');
 const {
   BN,
   time,
@@ -13,6 +13,8 @@ const { parseUnits, formatEther } = ethers.utils;
 
 const HarbourSwap = contract.fromArtifact('HarbourSwap');
 const TestERC20 = contract.fromArtifact('TestERC20');
+
+const ZERO = '0x0000000000000000000000000000000000000000';
 
 const ETH = new BN(10).pow(new BN(18));
 const RATIO = new BN(3).mul(new BN(10).pow(new BN(38)));
@@ -29,7 +31,7 @@ function feth(val) {
 }
 
 describe('HarbourSwap', function () {
-  const [owner, buyer, seller] = accounts;
+  const [owner, buyer, seller, ignore] = accounts;
   const extra_sellers = accounts.slice(10, 20);
   const extra_buyers = accounts.slice(20, 30);
   this.timeout(30 * 1000);
@@ -47,7 +49,7 @@ describe('HarbourSwap', function () {
     await this.currency.approve(this.swap.address, eth(10000), { from: buyer });
   });
 
-  it('simple exact', async () => {
+  it('simple exact single', async () => {
     const { swap, currency, token } = this;
     await _setupOrders(this, eth(1), eth(1));
     const priceRatio = new BN(RATIO);
@@ -62,6 +64,9 @@ describe('HarbourSwap', function () {
 
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
 
+    await _verifyBalance(this, buyer, '0', eth(99));
+    await _verifyBalance(this, seller, eth(99), '0');
+
     const settle = await swap.settleBucketExact(
       token.address,
       currency.address,
@@ -75,10 +80,92 @@ describe('HarbourSwap', function () {
     await _dumpBalance(this, swap.address, 'swap');
     await _dumpBalance(this, buyer, 'buyer');
     await _dumpBalance(this, seller, 'seller');
-    await _verifyBalance(this, buyer, eth(1), eth(100 - 1 - 0.01));
-    await _verifyBalance(this, seller, eth(100 - 1 - 0.01), eth(1));
+    await _verifyBalance(this, buyer, eth(0.99), eth(99));
+    await _verifyBalance(this, seller, eth(99), eth(0.99));
     await _verifyMarket(this, priceRatio, '0', '0');
     await _verifyBalance(this, swap.address, eth(0.01), eth(0.01));
+  });
+  it('simple exact coin', async () => {
+    const { swap, token } = this;
+    const currency = { address: ZERO };
+    const that = { swap, token, currency };
+
+    const priceRatio = new BN(RATIO);
+    const sell_ratio = _makePrice(priceRatio);
+    const post_sell = await swap.postSell(
+      token.address,
+      ZERO,
+      sell_ratio.price_bucket,
+      sell_ratio.price_exp,
+      0,
+      1e10,
+      eth(1),
+      { from: seller }
+    );
+    console.log('postSell.gas:', post_sell.receipt.gasUsed);
+    const post_buy = await swap.postBuy(
+      token.address,
+      ZERO,
+      sell_ratio.price_bucket,
+      sell_ratio.price_exp,
+      0,
+      1e10,
+      eth(1),
+      { from: buyer, value: eth(1) }
+    );
+    console.log('postBuy.gas:', post_buy.receipt.gasUsed);
+
+    const market_data = await swap.getMarketData(
+      token.address,
+      ZERO,
+      priceRatio
+    );
+
+    await _dumpOrders(that, priceRatio);
+    await _dumpBalance(that, swap.address, 'before swap');
+    await _dumpBalance(that, buyer, 'before buyer');
+    await _dumpBalance(that, seller, 'before seller');
+    await _verifyMarket(that, priceRatio, eth(1), eth(1));
+
+    const settle = await swap.settleBucketExact(
+      token.address,
+      currency.address,
+      priceRatio,
+      await _getSettleBlock()
+    );
+    console.log('settle gasUsed:', settle.receipt.gasUsed);
+    await _dumpOrders(that, priceRatio);
+    await _dumpFeeBalance(that);
+    await _dumpBalance(that, swap.address, 'swap');
+    await _dumpBalance(that, buyer, 'buyer');
+    await _dumpBalance(that, seller, 'seller');
+  });
+  it('simple exact second run', async () => {
+    const { swap, currency, token } = this;
+    const priceRatio = new BN(RATIO);
+    await _setupOrders(this, eth(1), eth(1));
+    const settle1 = await swap.settleBucketExact(
+      token.address,
+      currency.address,
+      priceRatio,
+      await _getSettleBlock()
+    );
+    console.log('settle1 gasUsed:', settle1.receipt.gasUsed);
+
+    await _setupOrders(this, eth(1), eth(1));
+    const settle2 = await swap.settleBucketExact(
+      token.address,
+      currency.address,
+      priceRatio,
+      await _getSettleBlock()
+    );
+    console.log('settle2 gasUsed:', settle2.receipt.gasUsed);
+
+    await _dumpOrders(this, priceRatio);
+    await _dumpFeeBalance(this);
+    await _dumpBalance(this, swap.address, 'swap');
+    await _dumpBalance(this, buyer, 'buyer');
+    await _dumpBalance(this, seller, 'seller');
   });
 
   it('simple single seller', async () => {
@@ -100,10 +187,10 @@ describe('HarbourSwap', function () {
     console.log('settle gasUsed:', settle.receipt.gasUsed);
 
     await _dumpOrders(this, priceRatio);
-    await _verifyBalance(this, buyer, eth(1), eth(100 - 1 - 0.01));
-    await _verifyBalance(this, seller, eth(100 - 10 - 0.1), eth(1));
+    await _verifyBalance(this, buyer, eth(0.99), eth(100 - 1));
+    await _verifyBalance(this, seller, eth(100 - 10), eth(0.99));
     await _verifyMarket(this, priceRatio, '0', eth(10 - 1));
-    await _verifyBalance(this, swap.address, eth(9.1), eth(0.01));
+    await _verifyBalance(this, swap.address, eth(9.01), eth(0.01));
   });
 
   it('simple single buyer', async () => {
@@ -123,10 +210,10 @@ describe('HarbourSwap', function () {
     console.log('settle gasUsed:', settle.receipt.gasUsed);
 
     await _dumpOrders(this, priceRatio);
-    await _verifyBalance(this, buyer, eth(1), eth(100 - 9 - 0.09));
-    await _verifyBalance(this, seller, eth(100 - 1 - 0.01), eth(1));
+    await _verifyBalance(this, buyer, eth(0.99), eth(100 - 9));
+    await _verifyBalance(this, seller, eth(100 - 1), eth(0.99));
     await _verifyMarket(this, priceRatio, eth(9 - 1), '0');
-    await _verifyBalance(this, swap.address, eth(0.01), eth(8.09));
+    await _verifyBalance(this, swap.address, eth(0.01), eth(8.01));
   });
 
   it('simple no fee add', async () => {
@@ -137,7 +224,7 @@ describe('HarbourSwap', function () {
       buy_fee_add: 0,
     });
     await _dumpOrders(this, priceRatio);
-    await _verifyMarket(this, priceRatio, eth(1 - 0.01), eth(1 - 0.01));
+    await _verifyMarket(this, priceRatio, eth(1), eth(1));
 
     await expect(await token.balanceOf(buyer)).to.be.bignumber.equal('0');
     await expect(await currency.balanceOf(seller)).to.be.bignumber.equal('0');
@@ -163,8 +250,8 @@ describe('HarbourSwap', function () {
     await _setupOrders(this, eth(1), eth(1));
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
-    await _verifyBalance(this, buyer, eth(0), eth(100 - 1 - 0.01));
-    await _verifyBalance(this, seller, eth(100 - 1 - 0.01), eth(0));
+    await _verifyBalance(this, buyer, eth(0), eth(100 - 1));
+    await _verifyBalance(this, seller, eth(100 - 1), eth(0));
 
     await time.advanceBlockTo((await time.latestBlock()).addn(2));
     await cancelBoth(this, priceRatio, 1);
@@ -182,8 +269,8 @@ describe('HarbourSwap', function () {
     await _setupOrders(this, eth(1), eth(1));
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
-    await _verifyBalance(this, buyer, eth(0), eth(100 - 1 - 0.01));
-    await _verifyBalance(this, seller, eth(100 - 1 - 0.01), eth(0));
+    await _verifyBalance(this, buyer, eth(0), eth(100 - 1));
+    await _verifyBalance(this, seller, eth(100 - 1), eth(0));
 
     await time.advanceBlockTo((await time.latestBlock()).addn(2));
     await expectRevert(
@@ -207,9 +294,9 @@ describe('HarbourSwap', function () {
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
 
-    await _verifyBalance(this, buyer, '0', eth(100 - 1 - 0.01));
-    await _verifyBalance(this, seller, eth(100 - 1 - 0.01), '0');
-    await _verifyBalance(this, swap.address, eth(1 + 0.01), eth(1 + 0.01));
+    await _verifyBalance(this, buyer, '0', eth(100 - 1));
+    await _verifyBalance(this, seller, eth(100 - 1), '0');
+    await _verifyBalance(this, swap.address, eth(1), eth(1));
   });
 
   it('cancel no-force', async () => {
@@ -218,8 +305,8 @@ describe('HarbourSwap', function () {
     await _setupOrders(this, eth(1), eth(1));
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, eth(1), eth(1));
-    await _verifyBalance(this, buyer, eth(0), eth(100 - 1 - 0.01));
-    await _verifyBalance(this, seller, eth(100 - 1 - 0.01), eth(0));
+    await _verifyBalance(this, buyer, eth(0), eth(100 - 1));
+    await _verifyBalance(this, seller, eth(100 - 1), eth(0));
 
     await time.advanceBlockTo((await time.latestBlock()).addn(20));
     console.log('after block:', String(await time.latestBlock()));
@@ -241,7 +328,7 @@ describe('HarbourSwap', function () {
       buy_fee_add: 0,
     });
     await _dumpOrders(this, priceRatio);
-    await _verifyMarket(this, priceRatio, eth(1 - 0.01), eth(1 - 0.01));
+    await _verifyMarket(this, priceRatio, eth(1), eth(1));
     await _verifyBalance(this, buyer, eth(0), eth(100 - 1));
     await _verifyBalance(this, seller, eth(100 - 1), eth(0));
 
@@ -252,14 +339,9 @@ describe('HarbourSwap', function () {
 
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, '0', '0');
-    await _verifyBalance(this, buyer, '0', eth(100 - 0.01 * 0.01));
-    await _verifyBalance(this, seller, eth(100 - 0.01 * 0.01), '0');
-    await _verifyBalance(
-      this,
-      swap.address,
-      eth(0.01 * 0.01),
-      eth(0.01 * 0.01)
-    );
+    await _verifyBalance(this, buyer, '0', eth(100));
+    await _verifyBalance(this, seller, eth(100), '0');
+    await _verifyBalance(this, swap.address, '0', '0');
     await _dumpFeeBalance(this);
   });
 
@@ -271,7 +353,7 @@ describe('HarbourSwap', function () {
       buy_fee_add: 0,
     });
     await _dumpOrders(this, priceRatio);
-    await _verifyMarket(this, priceRatio, eth(1 - 0.01), eth(1 - 0.01));
+    await _verifyMarket(this, priceRatio, eth(1), eth(1));
     await _verifyBalance(this, buyer, eth(0), eth(100 - 1));
     await _verifyBalance(this, seller, eth(100 - 1), eth(0));
 
@@ -339,7 +421,7 @@ describe('HarbourSwap', function () {
 
     await _dumpOrders(this, priceRatio);
     await _verifyMarket(this, priceRatio, '0', eth(10));
-    await _verifyBalance(this, swap.address, eth(10.2), eth(0.1));
+    await _verifyBalance(this, swap.address, eth(10.1), eth(0.1));
   });
   it('multi sell heavy wierd', async () => {
     const { swap, currency, token } = this;
@@ -521,8 +603,6 @@ describe('HarbourSwap', function () {
     const default_ratio = _makePrice(RATIO);
     extra = Object.assign(
       {
-        sell_fee_add: 1,
-        buy_fee_add: 1,
         start_buy: 0,
         start_sell: 0,
         price_bucket: default_ratio.price_bucket,
@@ -542,7 +622,6 @@ describe('HarbourSwap', function () {
         0,
         1e10,
         sell_amount,
-        extra.sell_fee_add,
         { from: extra_sellers[i] }
       );
       console.log('postSell.gas:', post_sell.receipt.gasUsed);
@@ -558,7 +637,6 @@ describe('HarbourSwap', function () {
         0,
         1e10,
         buy_amount,
-        extra.buy_fee_add,
         { from: extra_buyers[i] }
       );
       console.log('postBuy.gas:', post_buy.receipt.gasUsed);
@@ -566,13 +644,7 @@ describe('HarbourSwap', function () {
   }
 
   async function _setupOrders(contracts, buy_amount, sell_amount, extra) {
-    extra = Object.assign(
-      {
-        sell_fee_add: 1,
-        buy_fee_add: 1,
-      },
-      extra || {}
-    );
+    extra = extra || {};
     const { swap, currency, token } = contracts;
     const priceRatio = new BN(RATIO);
     const sell_ratio = _makePrice(priceRatio);
@@ -584,7 +656,6 @@ describe('HarbourSwap', function () {
       0,
       1e10,
       sell_amount,
-      extra.sell_fee_add,
       { from: seller }
     );
     console.log('postSell.gas:', post_sell.receipt.gasUsed);
@@ -596,7 +667,6 @@ describe('HarbourSwap', function () {
       0,
       1e10,
       buy_amount,
-      extra.buy_fee_add,
       { from: buyer }
     );
     console.log('postBuy.gas:', post_buy.receipt.gasUsed);
@@ -639,9 +709,15 @@ describe('HarbourSwap', function () {
     await expect(await token.balanceOf(addr)).to.be.bignumber.equal(
       token_balance
     );
-    await expect(await currency.balanceOf(addr)).to.be.bignumber.equal(
-      currency_balance
-    );
+    if (currency.address === ZERO) {
+      await expect(await web3.eth.getBalance(addr)).to.be.bignumber.equal(
+        currency_balance
+      );
+    } else {
+      await expect(await currency.balanceOf(addr)).to.be.bignumber.equal(
+        currency_balance
+      );
+    }
   }
 
   async function _verifyMarket(contracts, priceRatio, buy, sell) {
@@ -717,11 +793,19 @@ describe('HarbourSwap', function () {
   async function _dumpBalance(contracts, address, name) {
     const { currency, token } = contracts;
     console.log(name, 'token balance:', feth(await token.balanceOf(address)));
-    console.log(
-      name,
-      'currency balance:',
-      feth(await currency.balanceOf(address))
-    );
+    if (currency.address === ZERO) {
+      console.log(
+        name,
+        'gas currency balance:',
+        feth(await web3.eth.getBalance(address))
+      );
+    } else {
+      console.log(
+        name,
+        'currency balance:',
+        feth(await currency.balanceOf(address))
+      );
+    }
   }
 });
 
