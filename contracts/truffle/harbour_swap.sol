@@ -131,9 +131,9 @@ contract HarbourSwap is AdminRole, ReentrancyGuard {
     emit FeeUpdate(feeAddress, fee);
   }
 
-  // solhint-disable-next-line no-empty-blocks
   receive() external payable {
-    // thank you
+    // thanks!
+    feeBalance[address(0)] += msg.value;
   }
 
   function withdraw(address coin, uint256 amount)
