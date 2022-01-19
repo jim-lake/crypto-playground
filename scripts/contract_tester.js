@@ -9,6 +9,7 @@ const {
   http_provider_url,
   gas_override,
   gas_limit,
+  chain_params,
 } = require('./settings.js');
 
 if (argv.length < 3) {
@@ -21,7 +22,7 @@ if (argv.length < 3) {
 const _origLog = console.log;
 console.log = console.error;
 
-const GAS_LIMIT_ETH = gas_limit || 0.01;
+const GAS_LIMIT_ETH = gas_limit || 0.1;
 const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
 const contract_abi_path = argv[0];
@@ -68,8 +69,6 @@ async function getContractTx() {
       null,
       'CRS43J3ZNGDM6ZU8YYCZSINCHNCZUG8S2Y'
     );
-    const ethUSD = await etherscanProvider.getEtherPrice();
-
     const feeData = await infuraProvider.getFeeData();
     const {
       gasPrice: remoteGasPrice,
@@ -79,21 +78,26 @@ async function getContractTx() {
     let gasData = null;
     let gasEth;
     console.error('');
-    if (!gas_override && maxFeePerGas && maxPriorityFeePerGas) {
+    if (
+      !gas_override &&
+      maxFeePerGas &&
+      maxPriorityFeePerGas &&
+      chain_params.hardfork === 'london'
+    ) {
       gasData = {
         maxFeePerGas: maxFeePerGas.toString(),
         maxPriorityFeePerGas: maxPriorityFeePerGas.toString(),
       };
-      _printGas('priorityFee:', gas, maxPriorityFeePerGas, ethUSD);
-      gasEth = _printGas('maxFee:', gas, maxFeePerGas, ethUSD);
+      _printGas('priorityFee:', gas, maxPriorityFeePerGas);
+      gasEth = _printGas('maxFee:', gas, maxFeePerGas);
     } else {
-      _printGas('remoteGasPrice:', gas, remoteGasPrice, ethUSD);
+      _printGas('remoteGasPrice:', gas, remoteGasPrice);
       const gasPrice =
         gas_override !== undefined ? gas_override : remoteGasPrice;
       gasData = {
         gasPrice: String(gasPrice),
       };
-      gasEth = _printGas('picked gasPrice:', gas, gasData.gasPrice, ethUSD);
+      gasEth = _printGas('picked gasPrice:', gas, gasData.gasPrice);
     }
     console.error('');
 
@@ -140,15 +144,13 @@ function _fixupArg(value, spec) {
   }
   return value;
 }
-function _printGas(label, gas, gasPrice, ethUSD) {
+function _printGas(label, gas, gasPrice) {
   const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
-  const gasUSD = ethUSD * gasEth;
   console.error(
     label,
     web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)',
     'TX Total Cost in Eth:',
-    gasEth + ' (eth)',
-    'USD: $' + gasUSD.toFixed(4)
+    gasEth + ' (eth)'
   );
   return gasEth;
 }

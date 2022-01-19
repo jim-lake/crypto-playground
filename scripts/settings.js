@@ -76,6 +76,27 @@ if (chain_data.CHAIN_ID) {
       },
     ],
   };
+  if (chain_data.EIP1559) {
+    params.customChains[0].hardforks.push(
+      {
+        name: 'muirGlacier',
+        block: 0,
+        forkHash: '0xe029e991',
+      },
+      {
+        name: 'berlin',
+        block: 0,
+        forkHash: '0x0eb440f6',
+      },
+      {
+        name: 'london',
+        block: 0,
+        forkHash: '0xb715077d',
+      }
+    );
+    params.hardfork = 'london';
+  }
+
   exports.chain_params = params;
   common = new Common.default(params);
   console.error('custom chain id:', chain_data.CHAIN_ID);

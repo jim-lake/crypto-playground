@@ -46,17 +46,24 @@ if (!keyId) {
 console.error('KeyId:', keyId);
 
 tx.gas = parseInt(tx.gas);
-if (tx.gasPrice) {
-  tx.gasPrice = parseInt(tx.gasPrice);
-}
-if (tx.maxFeePerGas) {
-  tx.maxFeePerGas = parseInt(tx.maxFeePerGas);
-  tx.chainId = common.chainId();
-  tx.type = 2;
-  delete tx.chain;
-}
-if (tx.maxPriorityFeePerGas) {
-  tx.maxPriorityFeePerGas = parseInt(tx.maxPriorityFeePerGas);
+if (chain_params.hardfork === 'london' && tx.maxFeePerGas) {
+  console.error('kms signer: eip1559 flow');
+  if (tx.maxFeePerGas) {
+    tx.maxFeePerGas = parseInt(tx.maxFeePerGas);
+    tx.chainId = common.chainId();
+    tx.type = 2;
+    delete tx.chain;
+  }
+  if (tx.maxPriorityFeePerGas) {
+    tx.maxPriorityFeePerGas = parseInt(tx.maxPriorityFeePerGas);
+  }
+} else {
+  console.error('kms signer: classic flow');
+  if (tx.gasPrice) {
+    tx.gasPrice = parseInt(tx.gasPrice);
+  }
+  delete tx.maxFeePerGas;
+  delete tx.maxPriorityFeePerGas;
 }
 
 sign();

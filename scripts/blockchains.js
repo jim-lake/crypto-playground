@@ -49,6 +49,7 @@ module.exports = {
     CHAIN_ID: 137,
     NAME: 'Polygon',
     SYMBOL: 'MATIC',
+    EIP1559: false,
   },
   mumbai: {
     CHAIN_ID: 80001,
