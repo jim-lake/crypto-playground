@@ -1,4 +1,4 @@
-pragma solidity ^0.8.3;
+pragma solidity ^0.8.9;
 
 // SPDX-License-Identifier: MIT
 
@@ -290,6 +290,17 @@ abstract contract IERC721 is IERC165 {
   ) public virtual;
 }
 
+interface IERC721Enumerable {
+  function totalSupply() external view returns (uint256);
+
+  function tokenByIndex(uint256 _index) external view returns (uint256);
+
+  function tokenOfOwnerByIndex(address _owner, uint256 _index)
+    external
+    view
+    returns (uint256);
+}
+
 abstract contract IERC721Receiver {
   function onERC721Received(
     address operator,
@@ -323,7 +334,7 @@ abstract contract ERC165 is IERC165 {
   }
 }
 
-contract ERC721 is Context, ERC165, IERC721 {
+contract ERC721 is Context, ERC165, IERC721, IERC721Enumerable {
   using SafeMath for uint256;
   using Address for address;
   using Counters for Counters.Counter;
@@ -340,9 +351,11 @@ contract ERC721 is Context, ERC165, IERC721 {
   mapping(address => mapping(address => bool)) private _operatorApprovals;
 
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
+  bytes4 private constant _INTERFACE_ID_ERC721_ENUMERABLE = 0x780e9d63;
 
   constructor() {
     _registerInterface(_INTERFACE_ID_ERC721);
+    _registerInterface(_INTERFACE_ID_ERC721_ENUMERABLE);
   }
 
   function totalSupply() public view returns (uint256) {
@@ -360,6 +373,10 @@ contract ERC721 is Context, ERC165, IERC721 {
     require(owner != address(0), 'ERC721: owner query for nonexistent token');
 
     return owner;
+  }
+
+  function tokenByIndex(uint256 _index) public pure returns (uint256) {
+    return _index;
   }
 
   function tokenOfOwnerByIndex(address owner, uint256 index)
@@ -714,7 +731,7 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
   }
 }
 
-contract HarbourNFTv3 is ERC721MetadataMintable {
+contract HarbourNFTEnumerable is ERC721MetadataMintable {
   bytes4 private constant _INTERFACE_ID_ERC2981 = 0xc155531d;
   bytes4 private constant _INTERFACE_ID_CONTRACT_URI = 0xe8a3d485;
   bytes4 private constant _INTERFACE_ID_FEES = 0xb7799584;

@@ -69,21 +69,10 @@ async function getDeployTx() {
     });
 
     const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
-    const etherscanProvider = new ethers.providers.EtherscanProvider(
-      null,
-      'CRS43J3ZNGDM6ZU8YYCZSINCHNCZUG8S2Y'
-    );
-    const ethUSD = await etherscanProvider.getEtherPrice();
-    const gasUSD = ethUSD * gasEth;
-
     console.error(
       'GasPrice: ' + web3.utils.fromWei(gasPrice.toString(), 'gwei') + ' (gwei)'
     );
-    console.error(
-      'TX Total Cost in Eth:',
-      gasEth + ' (eth)',
-      'USD: $' + gasUSD.toFixed(4)
-    );
+    console.error('TX Total Cost in Eth:', gasEth + ' (eth)');
     if (gasEth > GAS_LIMIT_ETH) {
       console.error(
         'Gas cost over limit in eth, gasEth:',

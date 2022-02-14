@@ -13,9 +13,7 @@ const {
 } = require('./settings.js');
 
 if (argv.length < 3) {
-  console.log(
-    'Usage: contract_tester.js <abi> <contract_addr> <from> <method> [args]'
-  );
+  console.log('Usage: eth_send.js <from> <to> <amount>');
   process.exit(-1);
 }
 
@@ -25,60 +23,30 @@ console.log = console.error;
 const GAS_LIMIT_ETH = gas_limit || 0.1;
 const infuraProvider = new ethers.providers.JsonRpcProvider(http_provider_url);
 
-const contract_abi_path = argv[0];
-const contract_addr = argv[1];
-const from_addr = argv[2];
-const method = argv[3];
+const from_addr = argv[0];
+const to_addr = argv[1];
+let amount = argv[2];
+if (amount.indexOf('eth')) {
+  amount = ethers.utils.parseUnits(amount.split('eth')[0], 'ether').toString();
+}
 
-console.error('Reading contract abi from path:', contract_abi_path);
-const contract_abi = JSON.parse(fs.readFileSync(contract_abi_path, 'utf8'));
+getTx();
 
-const contract = new ethers.Contract(
-  contract_addr,
-  contract_abi,
-  infuraProvider
-);
-const contract_interface = new ethers.utils.Interface(contract_abi);
-
-const call_inputs = contract_interface.getFunction(method).inputs;
-const call_args = argv.slice(4).map((arg, i) => {
-  const spec = call_inputs[i];
-  return _fixupArg(arg, spec);
-});
-console.error('call_args:', ...call_args);
-
-getContractTx();
-
-async function getContractTx() {
+async function getTx() {
   try {
-    if (contract_interface.getFunction(method).stateMutability === 'view') {
-      const ret = await contract.functions[method](...call_args, {
-        from: from_addr,
-      });
-      console.error('static call ret:', ret);
-      process.exit(0);
-    }
-
     const nonce = await infuraProvider.getTransactionCount(from_addr);
-    const gas = await contract.estimateGas[method](...call_args, {
-      from: from_addr,
-      nonce,
-    });
 
-    const etherscanProvider = new ethers.providers.EtherscanProvider(
-      null,
-      'CRS43J3ZNGDM6ZU8YYCZSINCHNCZUG8S2Y'
-    );
-    console.log('gasPrice:', await infuraProvider.getGasPrice());
+    console.log('gasPrice:', (await infuraProvider.getGasPrice()).toString());
     const feeData = await infuraProvider.getFeeData();
     const {
       gasPrice: remoteGasPrice,
       maxPriorityFeePerGas,
       maxFeePerGas,
     } = feeData;
-    console.log('feeData.gasPrice:', remoteGasPrice);
+    console.log('feeData.gasPrice:', remoteGasPrice.toString());
     let gasData = null;
     let gasEth;
+    const gas = ethers.BigNumber.from('21000');
     console.error('');
     if (
       !gas_override &&
@@ -113,18 +81,17 @@ async function getContractTx() {
       throw 'too_expensive';
     }
 
-    const fake_tx = await contract.populateTransaction[method](...call_args);
     _origLog(
       JSON.stringify(
         {
           from: from_addr,
-          to: contract_addr,
-          value: 0,
+          to: to_addr,
+          value: ethers.BigNumber.from(amount).toHexString(),
           gas: gas.toString(),
           ...gasData,
-          data: fake_tx.data,
           nonce,
           chain,
+          data: '',
         },
         null,
         ' '
@@ -135,17 +102,6 @@ async function getContractTx() {
   }
 }
 
-function _fixupArg(value, spec) {
-  let ret = value;
-  if (spec.type === 'uint256' && value.indexOf('gwei') !== -1) {
-    value = ethers.utils.parseUnits(value.split('gwei')[0], 'gwei').toString();
-  } else if (spec.type === 'uint256' && value.indexOf('eth') !== -1) {
-    value = ethers.utils.parseUnits(value.split('eth')[0], 'ether').toString();
-  } else if (spec.type === 'address' && value === '0x0') {
-    value = '0x0000000000000000000000000000000000000000';
-  }
-  return value;
-}
 function _printGas(label, gas, gasPrice) {
   const gasEth = parseFloat(ethers.utils.formatEther(gas.mul(gasPrice)));
   console.error(
