@@ -12,6 +12,7 @@ const ethers = require('ethers');
 const { parseUnits, formatEther } = ethers.utils;
 
 const HarbourEnglishAuction = contract.fromArtifact('HarbourEnglishAuction');
+const ProxyBidder = contract.fromArtifact('ProxyBidder');
 const TestERC721 = contract.fromArtifact('TestERC721');
 const TestERC20 = contract.fromArtifact('TestERC20');
 
@@ -70,9 +71,8 @@ describe('HarbourEnglishAuction', function () {
     const post = await auction.post(this.token.address, 1, 1, AUCTION_BLOCKS, {
       from: seller,
     });
-    console.log('post gasUsed:', post.receipt.gasUsed);
-
     console.log('\n---- after post');
+    console.log('post gasUsed:', post.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
     await _dumpTokens(this);
@@ -80,26 +80,24 @@ describe('HarbourEnglishAuction', function () {
     const bid1 = await auction.bid(this.token.address, 1, eth(1), {
       from: bidder1,
     });
-    console.log('bid1 gasUsed:', bid1.receipt.gasUsed);
-
     console.log('\n---- after bid1');
+    console.log('bid1 gasUsed:', bid1.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
 
     const bid2 = await auction.bid(this.token.address, 1, eth(2), {
       from: bidder2,
     });
-    console.log('bid2 gasUsed:', bid1.receipt.gasUsed);
-
     console.log('\n---- after bid2');
+    console.log('bid2 gasUsed:', bid1.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
 
     await _advanceToClose(this, 5);
 
     const close = await auction.close(this.token.address, 1);
-    console.log('close gasUsed:', close.receipt.gasUsed);
     console.log('\n---- after close');
+    console.log('close gasUsed:', close.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
     await _dumpTokens(this);
@@ -111,18 +109,16 @@ describe('HarbourEnglishAuction', function () {
     const post = await auction.post(this.token.address, 1, 1, AUCTION_BLOCKS, {
       from: seller,
     });
-    console.log('post gasUsed:', post.receipt.gasUsed);
-
     console.log('\n---- after post');
+    console.log('post gasUsed:', post.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
 
     const cancel = await auction.cancel(this.token.address, 1, {
       from: seller,
     });
-    console.log('cancel gasUsed:', cancel.receipt.gasUsed);
-
     console.log('\n---- after cancel');
+    console.log('cancel gasUsed:', cancel.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
   });
@@ -137,9 +133,8 @@ describe('HarbourEnglishAuction', function () {
     const bid1 = await auction.bid(this.token.address, 1, eth(1), {
       from: bidder1,
     });
-    console.log('bid1 gasUsed:', bid1.receipt.gasUsed);
-
     console.log('\n---- after bid1');
+    console.log('bid1 gasUsed:', bid1.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
 
@@ -147,16 +142,79 @@ describe('HarbourEnglishAuction', function () {
     const bid2 = await auction.bid(this.token.address, 1, eth(2), {
       from: bidder2,
     });
-    console.log('bid2 gasUsed:', bid1.receipt.gasUsed);
-
     console.log('\n---- after bid2');
+    console.log('bid2 gasUsed:', bid1.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
 
     await _advanceToClose(this, 5);
     const close = await auction.close(this.token.address, 1);
-    console.log('close gasUsed:', close.receipt.gasUsed);
     console.log('\n---- after close');
+    console.log('close gasUsed:', close.receipt.gasUsed);
+    await _dumpAuction(this);
+    await _dumpBalances(this);
+    await _dumpTokens(this);
+  });
+
+  it('proxy single', async () => {
+    const { auction, currency, token } = this;
+
+    const proxy1 = await ProxyBidder.new({ from: bidder1 });
+
+    const createBid1 = await proxy1.createBid(this.token.address, 1, eth(10), {
+      from: bidder1,
+    });
+    console.log('createBid1 gasUsed:', createBid1.receipt.gasUsed);
+
+    const post = await auction.post(this.token.address, 1, 1, AUCTION_BLOCKS, {
+      from: seller,
+    });
+    console.log('post gasUsed:', post.receipt.gasUsed);
+
+    const addProxy = await auction.addProxy(
+      this.token.address,
+      1,
+      proxy1.address,
+      { from: bidder1 }
+    );
+    console.log('addProxy gasUsed:', addProxy.receipt.gasUsed);
+
+    await _dumpAuction(this);
+    const bid2 = await auction.bid(this.token.address, 1, eth(2), {
+      from: bidder2,
+    });
+    console.log('\n---- after bid2');
+    console.log('bid2 gasUsed:', bid2.receipt.gasUsed);
+    await _dumpAuction(this);
+    await _dumpBalances(this);
+
+    await _advanceToClose(this, 5);
+
+    const autoBid = await auction.runProxies(this.token.address, 1, eth(3), {
+      gas: 1000 * 10000,
+    });
+    console.log('\n---- after autoBid');
+    console.log('autoBid gasUsed:', autoBid.receipt.gasUsed);
+    await _dumpAuction(this);
+    await _dumpBalances(this);
+
+    const autoBid2 = await auction.runProxies(
+      this.token.address,
+      1,
+      eth(2.002),
+      {
+        gas: 1000 * 10000,
+      }
+    );
+    console.log('\n---- after autoBid2');
+    console.log('autoBid2 gasUsed:', autoBid.receipt.gasUsed);
+    await _dumpAuction(this);
+    await _dumpBalances(this);
+    await _advanceToClose(this, 5);
+
+    const close = await auction.close(this.token.address, 1);
+    console.log('\n---- after close');
+    console.log('close gasUsed:', close.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
     await _dumpTokens(this);
@@ -175,7 +233,9 @@ describe('HarbourEnglishAuction', function () {
       'bidder:',
       data.bidder,
       'close:',
-      data.closeBlock.toNumber()
+      data.closeBlock.toNumber(),
+      'auto bidders:',
+      data.autoBidderCount.toNumber()
     );
   }
   async function _dumpBalances(that) {
@@ -214,15 +274,30 @@ describe('HarbourEnglishAuction', function () {
   }
   async function _advanceToClose(that, delta) {
     const { auction, token } = that;
+    const block_number = (await time.latestBlock()).toNumber();
     const data = await auction.getAuction(token.address, 1);
     let close_block = data.closeBlock.toNumber();
     if (delta) {
       close_block += delta;
     }
-
-    console.log('advance to close:', data.closeBlock.toNumber(), 'delta:', delta || 0);
-    await time.advanceBlockTo(close_block);
-    return close_block;
+    if (close_block >= block_number) {
+      console.log(
+        'advance to close:',
+        data.closeBlock.toNumber(),
+        'delta:',
+        delta || 0
+      );
+      await time.advanceBlockTo(close_block);
+    } else {
+      console.log(
+        'didnt advance: close_block:',
+        close_block,
+        'delta:',
+        delta,
+        'block_number:',
+        block_number
+      );
+    }
   }
 });
 
