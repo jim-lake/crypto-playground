@@ -1,6 +1,5 @@
-pragma solidity ^0.8.3;
-
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.3;
 
 library SafeMath {
   function add(uint256 a, uint256 b) internal pure returns (uint256) {
@@ -680,11 +679,32 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
   }
 }
 
-contract HarbourNFT is ERC721MetadataMintable {
+abstract contract Owned is Context, AdminRole {
+  address private _owner;
+
+  constructor() {
+    _owner = _msgSender();
+  }
+
+  function owner() public view returns (address) {
+    return _owner;
+  }
+
+  function getOwner() public view returns (address) {
+    return _owner;
+  }
+
+  function setOwner(address newOwner) public onlyAdmin {
+    _owner = newOwner;
+  }
+}
+
+contract HarbourNFT is ERC721MetadataMintable, Owned {
   bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
   bytes4 private constant _INTERFACE_ID_CONTRACT_URI = 0xe8a3d485;
   bytes4 private constant _INTERFACE_ID_FEES = 0xb7799584;
   bytes4 private constant _INTERFACE_ID_ROYALTIES = 0x44c74bcc;
+  bytes4 private constant _INTERFACE_ID_RARABLEV2 = 0xcad96cca;
 
   string private _contractURI;
   address payable private _royaltyReceiver;
@@ -706,6 +726,7 @@ contract HarbourNFT is ERC721MetadataMintable {
     _registerInterface(_INTERFACE_ID_ERC2981);
     _registerInterface(_INTERFACE_ID_FEES);
     _registerInterface(_INTERFACE_ID_ROYALTIES);
+    _registerInterface(_INTERFACE_ID_RARABLEV2);
 
     _contractURI = argContractURI;
     _royaltyReceiver = royaltyReceiver;
@@ -768,6 +789,13 @@ contract HarbourNFT is ERC721MetadataMintable {
   }
 
   function getRoyalties(uint256) public view returns (Part[] memory) {
+    Part[] memory result = new Part[](1);
+    result[0].account = _royaltyReceiver;
+    result[0].value = _royaltyValue;
+    return result;
+  }
+
+  function getRaribleV2Royalties(uint256) public view returns (Part[] memory) {
     Part[] memory result = new Part[](1);
     result[0].account = _royaltyReceiver;
     result[0].value = _royaltyValue;

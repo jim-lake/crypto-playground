@@ -210,12 +210,16 @@ abstract contract Owned is Context, AdminRole {
     _owner = _msgSender();
   }
 
+  function owner() public view returns (address) {
+    return _owner;
+  }
+
   function getOwner() public view returns (address) {
     return _owner;
   }
 
-  function setOwner(address owner) public onlyAdmin {
-    _owner = owner;
+  function setOwner(address newOwner) public onlyAdmin {
+    _owner = newOwner;
   }
 }
 
