@@ -122,6 +122,33 @@ describe('HarbourEnglishAuction', function () {
     await _dumpAuction(this);
     await _dumpBalances(this);
   });
+  it('cancel bids', async () => {
+    const { auction, currency, token } = this;
+
+    const post = await auction.post(this.token.address, 1, 1, AUCTION_BLOCKS, {
+      from: seller,
+    });
+    console.log('\n---- after post');
+    console.log('post gasUsed:', post.receipt.gasUsed);
+    await _dumpAuction(this);
+    await _dumpBalances(this);
+
+    const bid1 = await auction.bid(this.token.address, 1, eth(1), {
+      from: bidder1,
+    });
+    console.log('\n---- after bid1');
+    console.log('bid1 gasUsed:', bid1.receipt.gasUsed);
+    await _dumpAuction(this);
+    await _dumpBalances(this);
+
+    const cancel = await auction.cancel(this.token.address, 1, {
+      from: seller,
+    });
+    console.log('\n---- after cancel');
+    console.log('cancel gasUsed:', cancel.receipt.gasUsed);
+    await _dumpAuction(this);
+    await _dumpBalances(this);
+  });
   it('bid advance', async () => {
     const { auction, currency, token } = this;
 
@@ -190,26 +217,19 @@ describe('HarbourEnglishAuction', function () {
 
     await _advanceToClose(this, 5);
 
-    const autoBid = await auction.runProxies(this.token.address, 1, eth(3), {
-      gas: 1000 * 10000,
-    });
+    const autoBid = await auction.runProxies(
+      this.token.address,
+      1,
+      eth(2.001),
+      {
+        gas: 1000 * 1000,
+      }
+    );
     console.log('\n---- after autoBid');
     console.log('autoBid gasUsed:', autoBid.receipt.gasUsed);
     await _dumpAuction(this);
     await _dumpBalances(this);
 
-    const autoBid2 = await auction.runProxies(
-      this.token.address,
-      1,
-      eth(2.002),
-      {
-        gas: 1000 * 10000,
-      }
-    );
-    console.log('\n---- after autoBid2');
-    console.log('autoBid2 gasUsed:', autoBid.receipt.gasUsed);
-    await _dumpAuction(this);
-    await _dumpBalances(this);
     await _advanceToClose(this, 5);
 
     const close = await auction.close(this.token.address, 1);

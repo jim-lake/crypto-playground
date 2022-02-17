@@ -135,9 +135,9 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
   }
   struct Auction {
     uint256 currentBid;
-    address seller;
     address bidder;
     uint48 closeBlock;
+    address seller;
   }
   struct PayoutResult {
     address payable royaltyAddress;
@@ -253,9 +253,9 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
     }
     _auctionByTokenTokenId[token][tokenId] = Auction(
       minBid,
-      msg.sender,
       address(0),
-      uint48(block.number + blocks)
+      uint48(block.number + blocks),
+      msg.sender
     );
     emit Post(token, tokenId, msg.sender, minBid);
   }
@@ -268,12 +268,17 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
     }
     if (auction.bidder != address(0)) {
       IERC20(currency).transfer(auction.bidder, auction.currentBid);
+      auction.bidder = address(0);
     }
+    emit Cancel(token, tokenId, auction.seller);
     auction.closeBlock = 0;
     auction.seller = address(0);
-    auction.bidder = address(0);
-    auction.currentBid = 0;
-    emit Cancel(token, tokenId, auction.seller);
+    AutoBidder[] storage bidders = _autoBiddersByTokenTokenId[token][tokenId];
+    if (bidders.length > 0) {
+      assembly {
+        sstore(bidders.slot, 0)
+      }
+    }
   }
 
   function bid(
@@ -300,14 +305,14 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
   }
 
   function close(address token, uint256 tokenId) public nonReentrant {
-    Auction storage auction = _auctionByTokenTokenId[token][tokenId];
+    Auction memory auction = _auctionByTokenTokenId[token][tokenId];
     require(auction.closeBlock < block.number, 'auction_live');
-    auction.closeBlock = 0;
     require(IERC721(token).ownerOf(tokenId) == auction.seller, 'not_owner');
     require(auction.bidder != address(0), 'no_bidder');
-
-    AutoBidder[] storage bidders = _autoBiddersByTokenTokenId[token][tokenId];
-    require(bidders.length == 0, 'has_auto_bidders');
+    require(
+      _autoBiddersByTokenTokenId[token][tokenId].length == 0,
+      'has_auto_bidders'
+    );
 
     PayoutResult memory payout = _getPayouts(
       token,
@@ -323,13 +328,8 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
     IERC20(currency).transfer(auction.seller, payout.sellerAmount);
     IERC721(token).transferFrom(auction.seller, auction.bidder, tokenId);
 
+    delete _auctionByTokenTokenId[token][tokenId];
     emit Close(token, tokenId, auction.currentBid, auction.bidder);
-    auction.currentBid = 0;
-    auction.seller = address(0);
-    auction.bidder = address(0);
-    assembly {
-      sstore(bidders.slot, 0)
-    }
   }
 
   function addProxy(
@@ -337,6 +337,8 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
     uint256 tokenId,
     address proxy
   ) public nonReentrant {
+    Auction storage auction = _auctionByTokenTokenId[token][tokenId];
+    require(auction.closeBlock > block.number, 'auction_closed');
     _autoBiddersByTokenTokenId[token][tokenId].push(
       AutoBidder(msg.sender, proxy)
     );
@@ -345,33 +347,34 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
   function runProxies(
     address token,
     uint256 tokenId,
-    uint256 nextBid
+    uint256 tryBid
   ) public nonReentrant {
-    require(nextBid % bidQuanta == 0, 'bad_quanta');
+    require(tryBid % bidQuanta == 0, 'bad_quanta');
     Auction storage auction = _auctionByTokenTokenId[token][tokenId];
     require(auction.seller != address(0), 'auction_complete');
-    require(nextBid > auction.currentBid, 'bid_too_low');
+    require(tryBid > auction.currentBid, 'bid_too_low');
     require(block.number > auction.closeBlock, 'auction_not_closing');
     AutoBidder[] storage bidders = _autoBiddersByTokenTokenId[token][tokenId];
     uint256 bidder_count = bidders.length;
     require(bidder_count > 0, 'no_autobidders');
 
+    uint256 nextBid = tryBid;
     uint256 start_i = _indexBiddersByTokenTokenId[token][tokenId];
-    address last_bidder = auction.bidder;
     uint256 winner_i;
     uint256 takers = 0;
     for (uint256 j = 0; j < bidder_count; j++) {
       uint256 i = (start_i + j) % bidder_count;
       address proxy = bidders[i].proxy;
       if (gasleft() < 70000) {
+        // abort so we incrementally knock out proxies
         break;
       } else if (proxy == address(0)) {
         // noop
-      } else if (last_bidder == bidders[i].bidder) {
+      } else if (auction.bidder == bidders[i].bidder) {
         // noop
       } else {
         try
-          IAutoBidder(proxy).onAutoBid{gas: 3000}(token, tokenId, nextBid)
+          IAutoBidder(proxy).onAutoBid{gas: 10000}(token, tokenId, nextBid)
         returns (bool success) {
           if (success) {
             takers = takers + 1;
@@ -385,56 +388,42 @@ contract HarbourEnglishAuction is ReentrancyGuard, AdminRole {
         }
       }
     }
-    if (takers == 0) {
-      if (nextBid == auction.currentBid + bidQuanta) {
-        // no proxy bids and we checked exact quanta
+
+    if (takers <= 1) {
+      // prevents bid inflation by proxy runner
+      require(tryBid == auction.currentBid + bidQuanta, 'bad_increment');
+    }
+
+    if (gasleft() > 70000) {
+      // definitionally went through the whole list
+
+      if (takers == 0) {
         assembly {
           sstore(bidders.slot, 0)
         }
-        auction.closeBlock = uint48(block.number + minCloseBlocks);
-      }
-    } else if (gasleft() < 70000) {
-      // make sure to incrementally make progress
-    } else {
-      // prevents bid inflation by proxy runner
-      uint256 newBid = takers > 1
-        ? nextBid - bidQuanta
-        : auction.currentBid + bidQuanta;
-      address bidder = bidders[winner_i].bidder;
-      bool success = false;
-      try IERC20(currency).transferFrom(bidder, address(this), newBid) returns (
-        bool tx_success
-      ) {
-        success = tx_success;
-      } catch {}
-      if (success) {
-        if (auction.bidder != address(0)) {
-          IERC20(currency).transfer(auction.bidder, auction.currentBid);
-        }
-        auction.bidder = bidder;
-        auction.currentBid = newBid;
-        _indexBiddersByTokenTokenId[token][tokenId] =
-          (start_i + 1) %
-          bidder_count;
-        emit Bid(token, tokenId, newBid, bidder);
       } else {
-        bidders[winner_i].proxy = address(0);
+        uint256 newBid = nextBid - bidQuanta;
+        address bidder = bidders[winner_i].bidder;
+        try IERC20(currency).transferFrom(bidder, address(this), newBid) {
+          if (auction.bidder != address(0)) {
+            IERC20(currency).transfer(auction.bidder, auction.currentBid);
+          }
+          auction.bidder = bidder;
+          auction.currentBid = newBid;
+          _indexBiddersByTokenTokenId[token][tokenId] = start_i + 1;
+          auction.closeBlock = uint48(block.number + minCloseBlocks);
+
+          if (takers == 1) {
+            assembly {
+              sstore(bidders.slot, 0)
+            }
+          }
+          emit Bid(token, tokenId, newBid, bidder);
+        } catch {
+          bidders[winner_i].proxy = address(0);
+        }
       }
     }
-  }
-
-  function _runAutoBidder(
-    address token,
-    uint256 tokenId,
-    address proxy,
-    uint256 nextBid
-  ) internal returns (bool) {
-    try
-      IAutoBidder(proxy).onAutoBid{gas: 3000}(token, tokenId, nextBid)
-    returns (bool success) {
-      return success;
-    } catch {}
-    return false;
   }
 
   function getAuction(address token, uint256 tokenId)
