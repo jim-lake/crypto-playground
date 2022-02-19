@@ -122,9 +122,8 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
   struct Sale {
     uint256 price;
     uint256[] tokenIds;
-    uint256 quantityLeft;
     address token;
-    address currency;
+    address coin;
     address seller;
   }
 
@@ -132,7 +131,7 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
   event Post(
     uint256 indexed saleIndex,
     address indexed token,
-    address indexed currency,
+    address indexed coin,
     uint256 price,
     uint256 quantity
   );
@@ -146,7 +145,7 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
   event Cancel(
     uint256 indexed saleIndex,
     address indexed token,
-    address indexed currency,
+    address indexed coin,
     uint256 quantity
   );
 
@@ -159,7 +158,7 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
 
   function post(
     address token,
-    address currency,
+    address coin,
     uint256 price,
     uint256[] memory tokenIds
   ) public returns (uint256 saleIndex) {
@@ -167,83 +166,49 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
       require(IERC721(token).ownerOf(tokenIds[i]) == msg.sender, 'not_owner');
     }
     saleIndex = nextSaleIndex;
-    nextSaleIndex = saleIndex + 1;
-    _saleByIndex[saleIndex] = Sale(
-      price,
-      tokenIds,
-      tokenIds.length,
-      token,
-      currency,
-      msg.sender
-    );
-    emit Post(saleIndex, token, currency, price, tokenIds.length);
+    nextSaleIndex++;
+    _saleByIndex[saleIndex] = Sale(price, tokenIds, token, coin, msg.sender);
+    emit Post(saleIndex, token, coin, price, tokenIds.length);
     return saleIndex;
   }
 
   function cancel(uint256 saleIndex) public {
     Sale storage sale = _saleByIndex[saleIndex];
     require(sale.seller == msg.sender, 'not_seller');
-    emit Cancel(saleIndex, sale.token, sale.currency, sale.quantityLeft);
-    sale.quantityLeft = 0;
-  }
-
-  function buy(uint256 saleIndex) public returns (uint256 tokenId) {
-    Sale storage sale = _saleByIndex[saleIndex];
-    require(sale.quantityLeft > 0, 'sold_out');
-    uint256 purchaseIndex = sale.quantityLeft - 1;
-    sale.quantityLeft = purchaseIndex;
-    tokenId = sale.tokenIds[purchaseIndex];
-    (uint256 royaltyFee, address payable royaltyAddress) = _getRoyalty(
-      sale.token,
-      tokenId,
-      sale.price,
-      sale.seller
-    );
-    uint256 seller_amount = sale.price - royaltyFee;
-    IERC20(sale.currency).transferFrom(msg.sender, sale.seller, seller_amount);
-    if (royaltyFee > 0) {
-      IERC20(sale.currency).transferFrom(
-        msg.sender,
-        royaltyAddress,
-        royaltyFee
-      );
-    }
-    IERC721(sale.token).transferFrom(sale.seller, msg.sender, tokenId);
-    emit Buy(saleIndex, sale.token, tokenId, sale.price, msg.sender);
-    return tokenId;
-  }
-
-  function onTokenTransfer(
-    address sender,
-    uint256 value,
-    bytes memory data
-  ) public {
-    require(data.length >= 32, 'bad data');
-    uint256 saleIndex;
+    uint256[] storage tokenIds = _saleByIndex[saleIndex].tokenIds;
+    emit Cancel(saleIndex, sale.token, sale.coin, tokenIds.length);
+    // solhint-disable-next-line no-inline-assembly
     assembly {
-      saleIndex := mload(data)
+      sstore(tokenIds.slot, 0)
     }
+  }
 
-    Sale storage sale = _saleByIndex[saleIndex];
-    require(sale.quantityLeft > 0, 'sold_out');
-    require(msg.sender == sale.currency, 'wrong_currency');
-    require(value >= sale.price, 'price_mismatch');
-    uint256 purchaseIndex = sale.quantityLeft - 1;
-    sale.quantityLeft = purchaseIndex;
-    uint256 tokenId = sale.tokenIds[purchaseIndex];
-    (uint256 royaltyFee, address payable royaltyAddress) = _getRoyalty(
-      sale.token,
-      tokenId,
-      sale.price,
-      sale.seller
-    );
-    uint256 seller_amount = sale.price - royaltyFee;
-    IERC20(msg.sender).transfer(sale.seller, seller_amount);
-    if (royaltyFee > 0) {
-      IERC20(msg.sender).transfer(royaltyAddress, royaltyFee);
+  function buy(uint256 saleIndex) public payable returns (uint256 tokenId) {
+    uint256 quantityLeft = _saleByIndex[saleIndex].tokenIds.length;
+    require(quantityLeft > 0, 'sold_out');
+    address coin = _saleByIndex[saleIndex].coin;
+    uint256 price = _saleByIndex[saleIndex].price;
+    if (coin == address(0)) {
+      require(msg.value >= price, 'bad_payment_amount');
     }
-    IERC721(sale.token).transferFrom(sale.seller, sender, tokenId);
-    emit Buy(saleIndex, sale.token, tokenId, sale.price, sender);
+    address seller = _saleByIndex[saleIndex].seller;
+    address token = _saleByIndex[saleIndex].token;
+    tokenId = _saleByIndex[saleIndex].tokenIds[quantityLeft - 1];
+    _saleByIndex[saleIndex].tokenIds.pop();
+    (uint256 royaltyFee, address payable royaltyAddress) = _getRoyalty(
+      token,
+      tokenId,
+      price,
+      seller
+    );
+    uint256 seller_amount = price - royaltyFee;
+    _transferCoin(coin, msg.sender, seller, seller_amount);
+    if (royaltyFee > 0) {
+      _transferCoin(coin, msg.sender, royaltyAddress, royaltyFee);
+    }
+    IERC721(token).transferFrom(seller, msg.sender, tokenId);
+    emit Buy(saleIndex, token, tokenId, price, msg.sender);
+    return tokenId;
   }
 
   function getSale(uint256 saleIndex)
@@ -251,13 +216,28 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
     view
     returns (
       address token,
-      address currency,
+      address coin,
       uint256 price,
       uint256 quantityLeft
     )
   {
     Sale storage sale = _saleByIndex[saleIndex];
-    return (sale.token, sale.currency, sale.price, sale.quantityLeft);
+    return (sale.token, sale.coin, sale.price, sale.tokenIds.length);
+  }
+
+  function _transferCoin(
+    address coin,
+    address src,
+    address dest,
+    uint256 value
+  ) internal {
+    if (coin == address(0)) {
+      // solhint-disable-next-line avoid-low-level-calls
+      (bool success, ) = dest.call{value: value}('');
+      require(success, 'tx_failed');
+    } else {
+      IERC20(coin).transferFrom(src, dest, value);
+    }
   }
 
   function _getRoyalty(
@@ -275,6 +255,7 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
         royaltyAddress = payable(addr);
         royaltyFee = fee;
       }
+      // solhint-disable-next-line no-empty-blocks
     } catch {}
     require(price > royaltyFee, 'erc2981_invalid_royalty');
     return (royaltyFee, royaltyAddress);

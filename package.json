@@ -7,7 +7,7 @@
     "pretty-abi": "prettier --parser json \"compiled/**/*.json\" --write",
     "test": "mocha --exit --recursive",
     "build": "truffle compile",
-    "lint-contract": "solhint"
+    "lint": "solhint"
   },
   "dependencies": {
     "@ethereumjs/common": "2.5.0",
