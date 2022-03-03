@@ -9,7 +9,8 @@ const {
 
 const { expect } = require('chai');
 const ethers = require('ethers');
-const { parseUnits, formatEther } = ethers.utils;
+const { parseUnits, formatEther, formatBytes32String, parseBytes32String } =
+  ethers.utils;
 
 const HarbourStore = contract.fromArtifact('HarbourStore');
 const TestERC721 = contract.fromArtifact('TestERC721');
@@ -18,6 +19,7 @@ const TestERC20 = contract.fromArtifact('TestERC20');
 
 const ZERO = '0x0000000000000000000000000000000000000000';
 const TOKEN_IDS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SKU0 = formatBytes32String('nft_sku0');
 
 const ETH = new BN(10).pow(new BN(18));
 const RATIO = new BN(3).mul(new BN(10).pow(new BN(38)));
@@ -34,7 +36,7 @@ function feth(val) {
 }
 
 describe('HarbourStore', function () {
-  const [owner, seller, buyer, buyer2, proxy, royalty] = accounts;
+  const [owner, seller, buyer, buyer2, proxy, baseline, royalty] = accounts;
   this.timeout(30 * 1000);
 
   beforeEach(async () => {
@@ -55,13 +57,7 @@ describe('HarbourStore', function () {
     });
     this.store = await HarbourStore.new({ from: owner });
 
-    /*
-    const tokens = TOKEN_IDS.map((val) =>
-      this.token.mint(seller, val, { from: owner })
-    );
-    await Promise.all(tokens);
-    */
-    await this.token.mintMultipleWithTokenURI(seller, 1, 10, '', {
+    await this.token.mintMultipleWithTokenURI(this.store.address, 1, 10, '', {
       from: owner,
     });
     await this.currency.transfer(royalty, eth(1), { from: owner });
@@ -69,21 +65,25 @@ describe('HarbourStore', function () {
     await this.currency.transfer(buyer, eth(100), { from: owner });
     await this.currency.transfer(buyer2, eth(100), { from: owner });
     await this.currency.transfer(this.store.address, eth(1), { from: owner });
-    await this.token.setApprovalForAll(this.store.address, 1, { from: seller });
     await this.currency.approve(this.store.address, eth(10000), {
       from: buyer,
     });
     await this.currency.approve(this.store.address, eth(10000), {
       from: buyer2,
     });
-    await this.token.setApprovalForAll(proxy, 1, { from: seller });
-    await this.currency.approve(proxy, eth(10000), {
-      from: buyer,
-    });
+
+    await this.store.addAdmin(seller, { from: owner });
   });
 
   it('baseline', async () => {
     const { store, currency, token } = this;
+
+    await this.token.mintMultipleWithTokenURI(baseline, 100, 10, '', {
+      from: owner,
+    });
+    await this.currency.approve(proxy, eth(10000), {
+      from: buyer,
+    });
 
     await _dumpTokens(this);
     await _dumpBalances(this);
@@ -92,8 +92,8 @@ describe('HarbourStore', function () {
       from: proxy,
     });
     console.log('c_tx gasUsed:', c_tx.receipt.gasUsed);
-    const t_tx = await this.token.transferFrom(seller, buyer, 1, {
-      from: proxy,
+    const t_tx = await this.token.transferFrom(baseline, buyer, 100, {
+      from: baseline,
     });
     console.log('t_tx gasUsed:', t_tx.receipt.gasUsed);
     await _dumpTokens(this);
@@ -105,6 +105,7 @@ describe('HarbourStore', function () {
 
     await _dumpTokens(this);
     const post = await store.post(
+      SKU0,
       this.token.address,
       this.currency.address,
       eth(1),
@@ -113,37 +114,36 @@ describe('HarbourStore', function () {
         from: seller,
       }
     );
-    const saleIndex = post.receipt.logs[0].args.saleIndex;
     console.log('\n---- after post');
     console.log('post gasUsed:', post.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpBalances(this);
     await _dumpTokens(this);
 
-    const buy1 = await store.buy(saleIndex, {
+    const buy1 = await store.buy(SKU0, {
       from: buyer,
     });
     console.log('\n---- after buy1:');
     console.log('buy1 gasUsed:', buy1.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpBalances(this);
     await _dumpTokens(this);
 
-    const buy2 = await store.buy(saleIndex, {
+    const buy2 = await store.buy(SKU0, {
       from: buyer,
     });
     console.log('\n---- after buy2');
     console.log('buy1 gasUsed:', buy2.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpBalances(this);
     await _dumpTokens(this);
 
-    const buy3 = await store.buy(saleIndex, {
+    const buy3 = await store.buy(SKU0, {
       from: buyer2,
     });
     console.log('\n---- after buy3');
     console.log('buy1 gasUsed:', buy3.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpBalances(this);
     await _dumpTokens(this);
   });
@@ -152,33 +152,39 @@ describe('HarbourStore', function () {
     const { store, currency, token } = this;
 
     await _dumpTokens(this);
-    const post = await store.post(this.token.address, ZERO, eth(1), TOKEN_IDS, {
-      from: seller,
-    });
-    const saleIndex = post.receipt.logs[0].args.saleIndex;
+    const post = await store.post(
+      SKU0,
+      this.token.address,
+      ZERO,
+      eth(1),
+      TOKEN_IDS,
+      {
+        from: seller,
+      }
+    );
     console.log('\n---- after post');
     console.log('post gasUsed:', post.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpEthBalances(this);
     await _dumpTokens(this);
 
-    const buy1 = await store.buy(saleIndex, {
+    const buy1 = await store.buy(SKU0, {
       from: buyer,
       value: eth(1),
     });
     console.log('\n---- after buy1:');
     console.log('buy1 gasUsed:', buy1.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpEthBalances(this);
     await _dumpTokens(this);
 
-    const buy2 = await store.buy(saleIndex, {
+    const buy2 = await store.buy(SKU0, {
       from: buyer2,
       value: eth(1),
     });
     console.log('\n---- after buy2');
     console.log('buy1 gasUsed:', buy2.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpEthBalances(this);
     await _dumpTokens(this);
   });
@@ -186,25 +192,31 @@ describe('HarbourStore', function () {
     const { store, currency, token } = this;
 
     await _dumpTokens(this);
-    const post = await store.post(this.token.address, ZERO, eth(1), TOKEN_IDS, {
-      from: seller,
-    });
-    const saleIndex = post.receipt.logs[0].args.saleIndex;
+    const post = await store.post(
+      SKU0,
+      this.token.address,
+      ZERO,
+      eth(1),
+      TOKEN_IDS,
+      {
+        from: seller,
+      }
+    );
     console.log('\n---- after post');
     console.log('post gasUsed:', post.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpEthBalances(this);
     await _dumpTokens(this);
 
     await expectRevert(
-      store.buy(saleIndex, {
+      store.buy(SKU0, {
         from: buyer,
         value: eth(0.5),
       }),
       'bad_payment_amount'
     );
     console.log('\n---- after buy fail:');
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpEthBalances(this);
     await _dumpTokens(this);
   });
@@ -214,6 +226,7 @@ describe('HarbourStore', function () {
 
     await _dumpTokens(this);
     const post = await store.post(
+      SKU0,
       this.token.address,
       this.currency.address,
       eth(1),
@@ -222,38 +235,37 @@ describe('HarbourStore', function () {
         from: seller,
       }
     );
-    const saleIndex = post.receipt.logs[0].args.saleIndex;
     console.log('\n---- after post');
     console.log('post gasUsed:', post.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpBalances(this);
     await _dumpTokens(this);
 
-    const buy1 = await store.buy(saleIndex, {
+    const buy1 = await store.buy(SKU0, {
       from: buyer,
     });
     console.log('\n---- after buy1:');
     console.log('buy1 gasUsed:', buy1.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpBalances(this);
     await _dumpTokens(this);
 
-    const cancel = await store.cancel(saleIndex, {
+    const cancel = await store.cancel(SKU0, {
       from: seller,
     });
     console.log('\n---- after cancel');
     console.log('cancel gasUsed:', cancel.receipt.gasUsed);
-    await _dumpStore(this, saleIndex);
+    await _dumpStore(this, SKU0);
     await _dumpBalances(this);
     await _dumpTokens(this);
   });
 
-  async function _dumpStore(that, index) {
+  async function _dumpStore(that, sku) {
     const { store, currency, token } = that;
-    const data = await store.getSale(index);
+    const data = await store.getSale(sku);
     console.log(
       'sale:',
-      index.toNumber(),
+      parseBytes32String(sku),
       'price:',
       feth(data.price),
       'left:',
@@ -322,11 +334,3 @@ describe('HarbourStore', function () {
     );
   }
 });
-
-async function _getSettleBlock() {
-  const block_number = (await time.latestBlock()).toNumber();
-  const settle_block = block_number - (block_number % 5) + 5;
-  console.log('block_number:', block_number, 'settle_block:', settle_block);
-  await time.advanceBlockTo(settle_block);
-  return settle_block;
-}

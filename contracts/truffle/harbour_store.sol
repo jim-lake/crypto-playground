@@ -124,94 +124,84 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
     uint256[] tokenIds;
     address token;
     address coin;
-    address seller;
   }
 
   event Created();
   event Post(
-    uint256 indexed saleIndex,
+    bytes32 indexed sku,
     address indexed token,
     address indexed coin,
     uint256 price,
     uint256 quantity
   );
   event Buy(
-    uint256 indexed saleIndex,
+    bytes32 indexed sku,
     address indexed token,
     uint256 indexed tokenId,
     uint256 price,
     address buyer
   );
   event Cancel(
-    uint256 indexed saleIndex,
+    bytes32 indexed sku,
     address indexed token,
     address indexed coin,
     uint256 quantity
   );
 
-  uint256 public nextSaleIndex = 1;
-  mapping(uint256 => Sale) private _saleByIndex;
+  mapping(bytes32 => Sale) private _saleBySku;
 
   constructor() {
     emit Created();
   }
 
   function post(
+    bytes32 sku,
     address token,
     address coin,
     uint256 price,
     uint256[] memory tokenIds
-  ) public returns (uint256 saleIndex) {
-    for (uint256 i = 0; i < tokenIds.length; i++) {
-      require(IERC721(token).ownerOf(tokenIds[i]) == msg.sender, 'not_owner');
-    }
-    saleIndex = nextSaleIndex;
-    nextSaleIndex++;
-    _saleByIndex[saleIndex] = Sale(price, tokenIds, token, coin, msg.sender);
-    emit Post(saleIndex, token, coin, price, tokenIds.length);
-    return saleIndex;
+  ) public onlyAdmin {
+    _saleBySku[sku] = Sale(price, tokenIds, token, coin);
+    emit Post(sku, token, coin, price, tokenIds.length);
   }
 
-  function cancel(uint256 saleIndex) public {
-    Sale storage sale = _saleByIndex[saleIndex];
-    require(sale.seller == msg.sender, 'not_seller');
-    uint256[] storage tokenIds = _saleByIndex[saleIndex].tokenIds;
-    emit Cancel(saleIndex, sale.token, sale.coin, tokenIds.length);
+  function cancel(bytes32 sku) public onlyAdmin {
+    Sale storage sale = _saleBySku[sku];
+    uint256[] storage tokenIds = _saleBySku[sku].tokenIds;
+    emit Cancel(sku, sale.token, sale.coin, tokenIds.length);
     // solhint-disable-next-line no-inline-assembly
     assembly {
       sstore(tokenIds.slot, 0)
     }
   }
 
-  function buy(uint256 saleIndex) public payable returns (uint256 tokenId) {
-    uint256 quantityLeft = _saleByIndex[saleIndex].tokenIds.length;
+  function buy(bytes32 sku) public payable returns (uint256 tokenId) {
+    uint256 quantityLeft = _saleBySku[sku].tokenIds.length;
     require(quantityLeft > 0, 'sold_out');
-    address coin = _saleByIndex[saleIndex].coin;
-    uint256 price = _saleByIndex[saleIndex].price;
+    address coin = _saleBySku[sku].coin;
+    uint256 price = _saleBySku[sku].price;
     if (coin == address(0)) {
       require(msg.value >= price, 'bad_payment_amount');
     }
-    address seller = _saleByIndex[saleIndex].seller;
-    address token = _saleByIndex[saleIndex].token;
-    tokenId = _saleByIndex[saleIndex].tokenIds[quantityLeft - 1];
-    _saleByIndex[saleIndex].tokenIds.pop();
+    address token = _saleBySku[sku].token;
+    tokenId = _saleBySku[sku].tokenIds[quantityLeft - 1];
+    _saleBySku[sku].tokenIds.pop();
     (uint256 royaltyFee, address payable royaltyAddress) = _getRoyalty(
       token,
       tokenId,
-      price,
-      seller
+      price
     );
     uint256 seller_amount = price - royaltyFee;
-    _transferCoin(coin, msg.sender, seller, seller_amount);
+    _transferCoin(coin, msg.sender, address(this), seller_amount);
     if (royaltyFee > 0) {
       _transferCoin(coin, msg.sender, royaltyAddress, royaltyFee);
     }
-    IERC721(token).transferFrom(seller, msg.sender, tokenId);
-    emit Buy(saleIndex, token, tokenId, price, msg.sender);
+    IERC721(token).transferFrom(address(this), msg.sender, tokenId);
+    emit Buy(sku, token, tokenId, price, msg.sender);
     return tokenId;
   }
 
-  function getSale(uint256 saleIndex)
+  function getSale(bytes32 sku)
     public
     view
     returns (
@@ -221,7 +211,7 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
       uint256 quantityLeft
     )
   {
-    Sale storage sale = _saleByIndex[saleIndex];
+    Sale storage sale = _saleBySku[sku];
     return (sale.token, sale.coin, sale.price, sale.tokenIds.length);
   }
 
@@ -232,9 +222,11 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
     uint256 value
   ) internal {
     if (coin == address(0)) {
-      // solhint-disable-next-line avoid-low-level-calls
-      (bool success, ) = dest.call{value: value}('');
-      require(success, 'tx_failed');
+      if (dest != address(this)) {
+        // solhint-disable-next-line avoid-low-level-calls
+        (bool success, ) = dest.call{value: value}('');
+        require(success, 'tx_failed');
+      }
     } else {
       IERC20(coin).transferFrom(src, dest, value);
     }
@@ -243,15 +235,14 @@ contract HarbourStore is CreatorWithdraw, AdminRole {
   function _getRoyalty(
     address token,
     uint256 tokenId,
-    uint256 price,
-    address seller
+    uint256 price
   ) internal view returns (uint256 royaltyFee, address payable royaltyAddress) {
     royaltyFee = 0;
     try IERC2981(token).royaltyInfo(tokenId, price) returns (
       address addr,
       uint256 fee
     ) {
-      if (royaltyAddress != seller) {
+      if (royaltyAddress != address(this)) {
         royaltyAddress = payable(addr);
         royaltyFee = fee;
       }
