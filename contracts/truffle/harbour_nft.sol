@@ -1,68 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.3;
-
-library SafeMath {
-  function add(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a + b;
-    require(c >= a, 'SafeMath: addition overflow');
-
-    return c;
-  }
-
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    return sub(a, b, 'SafeMath: subtraction overflow');
-  }
-
-  function sub(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
-    require(b <= a, errorMessage);
-    uint256 c = a - b;
-
-    return c;
-  }
-
-  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-    if (a == 0) {
-      return 0;
-    }
-
-    uint256 c = a * b;
-    require(c / a == b, 'SafeMath: multiplication overflow');
-
-    return c;
-  }
-
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    return div(a, b, 'SafeMath: division by zero');
-  }
-
-  function div(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
-    require(b > 0, errorMessage);
-    uint256 c = a / b;
-
-    return c;
-  }
-
-  function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-    return mod(a, b, 'SafeMath: modulo by zero');
-  }
-
-  function mod(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
-    require(b != 0, errorMessage);
-    return a % b;
-  }
-}
+pragma solidity ^0.8.9;
 
 library Address {
   function isContract(address account) internal view returns (bool) {
@@ -79,26 +16,6 @@ library Address {
       codehash := extcodehash(account)
     }
     return (codehash != accountHash && codehash != 0x0);
-  }
-}
-
-library Counters {
-  using SafeMath for uint256;
-
-  struct Counter {
-    uint256 _value; // default: 0
-  }
-
-  function current(Counter storage counter) internal view returns (uint256) {
-    return counter._value;
-  }
-
-  function increment(Counter storage counter) internal {
-    counter._value += 1;
-  }
-
-  function decrement(Counter storage counter) internal {
-    counter._value = counter._value.sub(1);
   }
 }
 
@@ -127,18 +44,7 @@ library Roles {
   }
 }
 
-abstract contract Context {
-  function _msgSender() internal view returns (address) {
-    return msg.sender;
-  }
-
-  function _msgData() internal view returns (bytes memory) {
-    this;
-    return msg.data;
-  }
-}
-
-abstract contract AdminRole is Context {
+abstract contract AdminRole {
   using Roles for Roles.Role;
 
   event AdminAdded(address indexed account);
@@ -147,12 +53,12 @@ abstract contract AdminRole is Context {
   Roles.Role private _admins;
 
   constructor() {
-    _addAdmin(_msgSender());
+    _addAdmin(msg.sender);
   }
 
   modifier onlyAdmin() {
     require(
-      isAdmin(_msgSender()),
+      isAdmin(msg.sender),
       'AdminRole: caller does not have the Admin role'
     );
     _;
@@ -167,7 +73,7 @@ abstract contract AdminRole is Context {
   }
 
   function renounceAdmin() public {
-    _removeAdmin(_msgSender());
+    _removeAdmin(msg.sender);
   }
 
   function _addAdmin(address account) internal {
@@ -181,7 +87,7 @@ abstract contract AdminRole is Context {
   }
 }
 
-abstract contract MinterRole is Context, AdminRole {
+abstract contract MinterRole is AdminRole {
   using Roles for Roles.Role;
 
   event MinterAdded(address indexed account);
@@ -190,12 +96,12 @@ abstract contract MinterRole is Context, AdminRole {
   Roles.Role private _minters;
 
   constructor() {
-    _addMinter(_msgSender());
+    _addMinter(msg.sender);
   }
 
   modifier onlyMinter() {
     require(
-      isMinter(_msgSender()),
+      isMinter(msg.sender),
       'MinterRole: caller does not have the Minter role'
     );
     _;
@@ -210,7 +116,7 @@ abstract contract MinterRole is Context, AdminRole {
   }
 
   function renounceMinter() public {
-    _removeMinter(_msgSender());
+    _removeMinter(msg.sender);
   }
 
   function _addMinter(address account) internal {
@@ -322,19 +228,17 @@ abstract contract ERC165 is IERC165 {
   }
 }
 
-contract ERC721 is Context, ERC165, IERC721 {
-  using SafeMath for uint256;
+contract ERC721 is ERC165, IERC721 {
   using Address for address;
-  using Counters for Counters.Counter;
 
   // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
   // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
   bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
 
-  Counters.Counter private _totalSupply;
+  uint256 private _totalSupply;
   mapping(uint256 => address) private _tokenOwner;
   mapping(uint256 => address) private _tokenApprovals;
-  mapping(address => Counters.Counter) private _ownedTokensCount;
+  mapping(address => uint256) private _ownedTokensCount;
   mapping(address => mapping(address => bool)) private _operatorApprovals;
 
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -344,13 +248,13 @@ contract ERC721 is Context, ERC165, IERC721 {
   }
 
   function totalSupply() public view returns (uint256) {
-    return _totalSupply.current();
+    return _totalSupply;
   }
 
   function balanceOf(address owner) public view override returns (uint256) {
     require(owner != address(0), 'ERC721: balance query for the zero address');
 
-    return _ownedTokensCount[owner].current();
+    return _ownedTokensCount[owner];
   }
 
   function ownerOf(uint256 tokenId) public view override returns (address) {
@@ -365,7 +269,7 @@ contract ERC721 is Context, ERC165, IERC721 {
     require(to != owner, 'ERC721: approval to current owner');
 
     require(
-      _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
+      msg.sender == owner || isApprovedForAll(owner, msg.sender),
       'ERC721: approve caller is not owner nor approved for all'
     );
 
@@ -380,10 +284,10 @@ contract ERC721 is Context, ERC165, IERC721 {
   }
 
   function setApprovalForAll(address to, bool approved) public override {
-    require(to != _msgSender(), 'ERC721: approve to caller');
+    require(to != msg.sender, 'ERC721: approve to caller');
 
-    _operatorApprovals[_msgSender()][to] = approved;
-    emit ApprovalForAll(_msgSender(), to, approved);
+    _operatorApprovals[msg.sender][to] = approved;
+    emit ApprovalForAll(msg.sender, to, approved);
   }
 
   function isApprovedForAll(address owner, address operator)
@@ -402,7 +306,7 @@ contract ERC721 is Context, ERC165, IERC721 {
   ) public override {
     //solhint-disable-next-line max-line-length
     require(
-      _isApprovedOrOwner(_msgSender(), tokenId),
+      _isApprovedOrOwner(msg.sender, tokenId),
       'ERC721: transfer caller is not owner nor approved'
     );
 
@@ -424,7 +328,7 @@ contract ERC721 is Context, ERC165, IERC721 {
     bytes memory _data
   ) public override {
     require(
-      _isApprovedOrOwner(_msgSender(), tokenId),
+      _isApprovedOrOwner(msg.sender, tokenId),
       'ERC721: transfer caller is not owner nor approved'
     );
     _safeTransferFrom(from, to, tokenId, _data);
@@ -481,8 +385,8 @@ contract ERC721 is Context, ERC165, IERC721 {
     require(!_exists(tokenId), 'ERC721: token already minted');
 
     _tokenOwner[tokenId] = to;
-    _ownedTokensCount[to].increment();
-    _totalSupply.increment();
+    _ownedTokensCount[to]++;
+    _totalSupply++;
 
     emit Transfer(address(0), to, tokenId);
   }
@@ -490,8 +394,8 @@ contract ERC721 is Context, ERC165, IERC721 {
   function _burn(uint256 tokenId) internal {
     address owner = _tokenOwner[tokenId];
     _clearApproval(tokenId);
-    _totalSupply.decrement();
-    _ownedTokensCount[owner].decrement();
+    _totalSupply--;
+    _ownedTokensCount[owner]--;
     _tokenOwner[tokenId] = address(0);
     emit Transfer(owner, address(0), tokenId);
   }
@@ -509,8 +413,8 @@ contract ERC721 is Context, ERC165, IERC721 {
 
     _clearApproval(tokenId);
 
-    _ownedTokensCount[from].decrement();
-    _ownedTokensCount[to].increment();
+    _ownedTokensCount[from]--;
+    _ownedTokensCount[to]++;
 
     _tokenOwner[tokenId] = to;
 
@@ -528,7 +432,7 @@ contract ERC721 is Context, ERC165, IERC721 {
     }
 
     bytes4 retval = IERC721Receiver(to).onERC721Received(
-      _msgSender(),
+      msg.sender,
       from,
       tokenId,
       _data
@@ -555,7 +459,7 @@ abstract contract IERC721Metadata is IERC721 {
     returns (string memory);
 }
 
-abstract contract ERC721Metadata is Context, ERC165, ERC721, IERC721Metadata {
+abstract contract ERC721Metadata is ERC165, ERC721, IERC721Metadata {
   string private _name;
   string private _symbol;
   string private _baseURI;
@@ -657,7 +561,7 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
 
   function burn(uint256 tokenId) public returns (bool) {
     require(
-      _isApprovedOrOwner(_msgSender(), tokenId),
+      _isApprovedOrOwner(msg.sender, tokenId),
       'ERC721: burn caller is not owner nor approved'
     );
     _burn(tokenId);
@@ -679,11 +583,11 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
   }
 }
 
-abstract contract Owned is Context, AdminRole {
+abstract contract Owned is AdminRole {
   address private _owner;
 
   constructor() {
-    _owner = _msgSender();
+    _owner = msg.sender;
   }
 
   function owner() public view returns (address) {
