@@ -154,7 +154,8 @@
     "name": "getRedeem",
     "outputs": [
       { "internalType": "address", "name": "destContract", "type": "address" },
-      { "internalType": "uint256", "name": "destTokenId", "type": "uint256" }
+      { "internalType": "uint256", "name": "destTokenId", "type": "uint256" },
+      { "internalType": "string", "name": "tokenURI", "type": "string" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -228,27 +229,6 @@
     "name": "setRedeemMultiple",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "stringMap",
-    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "", "type": "address" },
-      { "internalType": "uint256", "name": "", "type": "uint256" }
-    ],
-    "name": "tokenMap",
-    "outputs": [
-      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-      { "internalType": "address", "name": "contractAddr", "type": "address" },
-      { "internalType": "uint48", "name": "stringId", "type": "uint48" }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {

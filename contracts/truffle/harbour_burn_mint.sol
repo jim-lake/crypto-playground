@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.9;
 
 interface IERC20 {
   function transfer(address recipient, uint256 amount) external returns (bool);
@@ -120,8 +120,8 @@ contract HarbourBurnMint is AdminRole, CreatorWithdraw, IERC721Receiver {
     address contractAddr;
     uint48 stringId;
   }
-  mapping(address => mapping(uint256 => DestToken)) public tokenMap;
-  mapping(uint256 => string) public stringMap;
+  mapping(address => mapping(uint256 => DestToken)) private _tokenMap;
+  mapping(uint256 => string) private _stringMap;
   uint48 public redeemCount;
 
   // solhint-disable-next-line no-empty-blocks
@@ -157,8 +157,8 @@ contract HarbourBurnMint is AdminRole, CreatorWithdraw, IERC721Receiver {
     string memory tokenURI
   ) external onlyAdmin {
     uint48 stringId = redeemCount++;
-    stringMap[stringId] = tokenURI;
-    tokenMap[contractAddr][tokenId] = DestToken(
+    _stringMap[stringId] = tokenURI;
+    _tokenMap[contractAddr][tokenId] = DestToken(
       destTokenId,
       destContract,
       stringId
@@ -175,10 +175,10 @@ contract HarbourBurnMint is AdminRole, CreatorWithdraw, IERC721Receiver {
     uint256 count
   ) external onlyAdmin {
     uint48 stringId = redeemCount++;
-    stringMap[stringId] = tokenURI;
+    _stringMap[stringId] = tokenURI;
 
     for (uint256 i = 0; i < count; i++) {
-      tokenMap[contractAddr][startTokenId + i] = DestToken(
+      _tokenMap[contractAddr][startTokenId + i] = DestToken(
         startDestTokenId + i,
         destContract,
         stringId
@@ -196,10 +196,14 @@ contract HarbourBurnMint is AdminRole, CreatorWithdraw, IERC721Receiver {
   function getRedeem(address contractAddr, uint256 tokenId)
     external
     view
-    returns (address destContract, uint256 destTokenId)
+    returns (
+      address destContract,
+      uint256 destTokenId,
+      string memory tokenURI
+    )
   {
-    DestToken storage dest = tokenMap[contractAddr][tokenId];
-    return (dest.contractAddr, dest.tokenId);
+    DestToken storage dest = _tokenMap[contractAddr][tokenId];
+    return (dest.contractAddr, dest.tokenId, _stringMap[dest.stringId]);
   }
 
   function redeem(
@@ -217,14 +221,14 @@ contract HarbourBurnMint is AdminRole, CreatorWithdraw, IERC721Receiver {
     uint256 tokenId,
     bytes memory data
   ) internal returns (address newContract, uint256 newTokenId) {
-    DestToken storage dest = tokenMap[contractAddr][tokenId];
+    DestToken storage dest = _tokenMap[contractAddr][tokenId];
     require(dest.contractAddr != address(0), 'not_valid');
     IERC721(contractAddr).burn(tokenId);
 
     IERC721(dest.contractAddr).mintWithTokenURI(
       sender,
       dest.tokenId,
-      stringMap[dest.stringId]
+      _stringMap[dest.stringId]
     );
     emit Redeem(
       contractAddr,
