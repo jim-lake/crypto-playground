@@ -384,6 +384,32 @@
   },
   {
     "inputs": [
+      { "internalType": "address", "name": "maker", "type": "address" },
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "internalType": "uint256", "name": "price", "type": "uint256" },
+      { "internalType": "address", "name": "erc20", "type": "address" },
+      { "internalType": "address", "name": "newTokenOwner", "type": "address" }
+    ],
+    "name": "takeOffer",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address payable", "name": "maker", "type": "address" },
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "internalType": "address", "name": "newTokenOwner", "type": "address" }
+    ],
+    "name": "takeOfferUnwrapped",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "address payable", "name": "maker", "type": "address" },
       { "internalType": "address", "name": "token", "type": "address" },
       { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
@@ -402,5 +428,16 @@
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  }
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "erc721", "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "withdrawToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "stateMutability": "payable", "type": "receive" }
 ]
