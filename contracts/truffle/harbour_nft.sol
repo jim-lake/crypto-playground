@@ -459,17 +459,29 @@ abstract contract IERC721Metadata is IERC721 {
     returns (string memory);
 }
 
-abstract contract ERC721Metadata is ERC165, ERC721, IERC721Metadata {
+abstract contract ERC721MetadataMintable is
+  ERC165,
+  ERC721,
+  MinterRole,
+  IERC721Metadata
+{
   string private _name;
   string private _symbol;
   string private _baseURI;
-  mapping(uint256 => string) private _tokenURIs;
+  uint256 private _stringId = 0;
+  mapping(uint256 => string) private _stringIdUriMap;
+  mapping(uint256 => uint256) private _tokenIdStringIdMap;
 
   bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
 
-  constructor(string memory argName, string memory argSymbol) {
+  constructor(
+    string memory argName,
+    string memory argSymbol,
+    string memory argBaseURI
+  ) {
     _name = argName;
     _symbol = argSymbol;
+    _baseURI = argBaseURI;
 
     _registerInterface(_INTERFACE_ID_ERC721_METADATA);
   }
@@ -482,54 +494,8 @@ abstract contract ERC721Metadata is ERC165, ERC721, IERC721Metadata {
     return _symbol;
   }
 
-  function tokenURI(uint256 tokenId)
-    external
-    view
-    virtual
-    override
-    returns (string memory)
-  {
-    return _getTokenURI(tokenId);
-  }
-
-  function _getTokenURI(uint256 tokenId) internal view returns (string memory) {
-    require(
-      _exists(tokenId),
-      'ERC721Metadata: URI query for nonexistent token'
-    );
-
-    string memory _tokenURI = _tokenURIs[tokenId];
-
-    if (bytes(_tokenURI).length == 0) {
-      return '';
-    } else {
-      return string(abi.encodePacked(_baseURI, _tokenURI));
-    }
-  }
-
   function baseURI() external view returns (string memory) {
     return _baseURI;
-  }
-
-  function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
-    require(_exists(tokenId), 'ERC721Metadata: URI set of nonexistent token');
-    _tokenURIs[tokenId] = _tokenURI;
-  }
-
-  function _setBaseURI(string memory newBaseURI) internal {
-    _baseURI = newBaseURI;
-  }
-}
-
-contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
-  mapping(uint256 => uint256) private _tokenTokenMap;
-
-  constructor(
-    string memory name,
-    string memory symbol,
-    string memory baseURI
-  ) ERC721Metadata(name, symbol) {
-    _setBaseURI(baseURI);
   }
 
   function mintWithTokenURI(
@@ -538,7 +504,9 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
     string memory _tokenURI
   ) public onlyMinter returns (bool) {
     _mint(to, tokenId);
-    _setTokenURI(tokenId, _tokenURI);
+    uint256 stringId = ++_stringId;
+    _stringIdUriMap[stringId] = _tokenURI;
+    _tokenIdStringIdMap[tokenId] = stringId;
     return true;
   }
 
@@ -548,13 +516,13 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
     uint256 count,
     string memory _tokenURI
   ) public onlyMinter returns (bool) {
-    _mint(to, startTokenId);
-    _setTokenURI(startTokenId, _tokenURI);
+    uint256 stringId = ++_stringId;
+    _stringIdUriMap[stringId] = _tokenURI;
 
-    for (uint256 i = 1; i < count; i++) {
+    for (uint256 i = 0; i < count; i++) {
       uint256 tokenId = startTokenId + i;
       _mint(to, tokenId);
-      _tokenTokenMap[tokenId] = startTokenId;
+      _tokenIdStringIdMap[tokenId] = stringId;
     }
     return true;
   }
@@ -574,11 +542,11 @@ contract ERC721MetadataMintable is ERC721, ERC721Metadata, MinterRole {
     override
     returns (string memory)
   {
-    uint256 _baseTokenId = _tokenTokenMap[tokenId];
-    if (_baseTokenId == 0) {
-      return _getTokenURI(tokenId);
+    string memory _tokenURI = _stringIdUriMap[_tokenIdStringIdMap[tokenId]];
+    if (bytes(_tokenURI).length == 0) {
+      return '';
     } else {
-      return _getTokenURI(_baseTokenId);
+      return string(abi.encodePacked(_baseURI, _tokenURI));
     }
   }
 }

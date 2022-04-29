@@ -6,7 +6,11 @@ const config = require('../config.json');
 const fs = require('fs');
 const argv = process.argv.slice(2);
 
-const mnemonic = config.SIGN_MNEMONIC;
+const mnemonic = process.env.SIGN_MNEMONIC || config.SIGN_MNEMONIC;
+if (!mnemonic) {
+  console.error('No mnemonic found');
+  process.exit(-2);
+}
 
 const path = "m/44'/60'/0'/0/0";
 const seed = Bip39.mnemonicToSeedSync(mnemonic);
@@ -34,7 +38,7 @@ if (!tx || !tx.gas) {
   console.error(
     'bad transaction provided, please sign a filename or provide data on the stdin'
   );
-  process.exit(-1);
+  process.exit(-3);
 }
 
 tx.gasLimit = parseInt(tx.gas);

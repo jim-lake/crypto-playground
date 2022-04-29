@@ -54,7 +54,7 @@ async function getDeployTx() {
     console.error('fixed_args:', ...fixed_args);
     const tx = contractFactory.getDeployTransaction(...fixed_args);
 
-    const remoteGasPrice = await infuraProvider.getGasPrice();
+    const remoteGasPrice = (await infuraProvider.getGasPrice()).mul(12).div(10);
     const gasPrice = gas_override || remoteGasPrice;
 
     const nonce = await infuraProvider.getTransactionCount(from_addr);
