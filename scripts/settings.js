@@ -20,7 +20,7 @@ const chain_data = BlockChains[chain];
 
 const contract_addr = chain_data.DNC_CONTRACT;
 const http_provider_url = chain_data.HTTP_PROVIDER;
-const gas_override = chain_data.GAS_OVERRIDE;
+const gas_override = process.env.GAS_OVERRIDE || chain_data.GAS_OVERRIDE;
 
 let common;
 if (chain_data.CHAIN_ID) {
