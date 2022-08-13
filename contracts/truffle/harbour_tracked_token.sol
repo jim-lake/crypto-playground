@@ -2,74 +2,6 @@ pragma solidity ^0.8.9;
 
 // SPDX-License-Identifier: MIT
 
-library SafeMath {
-  function add(uint256 a, uint256 b) internal pure returns (uint256) {
-    uint256 c = a + b;
-    require(c >= a, 'SafeMath: addition overflow');
-
-    return c;
-  }
-
-  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-    return sub(a, b, 'SafeMath: subtraction overflow');
-  }
-
-  function sub(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
-    require(b <= a, errorMessage);
-    uint256 c = a - b;
-
-    return c;
-  }
-
-  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-    // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-    // benefit is lost if 'b' is also tested.
-    // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-    if (a == 0) {
-      return 0;
-    }
-
-    uint256 c = a * b;
-    require(c / a == b, 'SafeMath: multiplication overflow');
-
-    return c;
-  }
-
-  function div(uint256 a, uint256 b) internal pure returns (uint256) {
-    return div(a, b, 'SafeMath: division by zero');
-  }
-
-  function div(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
-    // Solidity only automatically asserts when dividing by 0
-    require(b > 0, errorMessage);
-    uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-
-    return c;
-  }
-
-  function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-    return mod(a, b, 'SafeMath: modulo by zero');
-  }
-
-  function mod(
-    uint256 a,
-    uint256 b,
-    string memory errorMessage
-  ) internal pure returns (uint256) {
-    require(b != 0, errorMessage);
-    return a % b;
-  }
-}
-
 library Roles {
   struct Role {
     mapping(address => bool) bearer;
@@ -135,22 +67,11 @@ interface IERC677Receiver {
   ) external;
 }
 
-interface ITrackedToken is IERC20 {
+interface ITrackedToken {
   function lastSendBlockOf(address account) external view returns (uint256);
 }
 
-abstract contract Context {
-  function _msgSender() internal view returns (address) {
-    return msg.sender;
-  }
-
-  function _msgData() internal view returns (bytes memory) {
-    this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
-    return msg.data;
-  }
-}
-
-abstract contract AdminRole is Context {
+abstract contract AdminRole {
   using Roles for Roles.Role;
 
   event AdminAdded(address indexed account);
@@ -159,13 +80,13 @@ abstract contract AdminRole is Context {
   Roles.Role private _admins;
 
   constructor() {
-    _admins.add(_msgSender());
-    emit AdminAdded(_msgSender());
+    _admins.add(msg.sender);
+    emit AdminAdded(msg.sender);
   }
 
   modifier onlyAdmin() {
     require(
-      _admins.has(_msgSender()),
+      _admins.has(msg.sender),
       'AdminRole: caller does not have the Admin role'
     );
     _;
@@ -177,16 +98,16 @@ abstract contract AdminRole is Context {
   }
 
   function renounceAdmin() public onlyAdmin {
-    _admins.remove(_msgSender());
-    emit AdminRemoved(_msgSender());
+    _admins.remove(msg.sender);
+    emit AdminRemoved(msg.sender);
   }
 }
 
-abstract contract CreatorWithdraw is Context, AdminRole {
+abstract contract CreatorWithdraw is AdminRole {
   address payable private _creator;
 
   constructor() {
-    _creator = payable(_msgSender());
+    _creator = payable(msg.sender);
   }
 
   // solhint-disable-next-line no-empty-blocks
@@ -203,11 +124,11 @@ abstract contract CreatorWithdraw is Context, AdminRole {
   }
 }
 
-abstract contract Owned is Context, AdminRole {
+abstract contract Owned is AdminRole {
   address private _owner;
 
   constructor() {
-    _owner = _msgSender();
+    _owner = msg.sender;
   }
 
   function owner() public view returns (address) {
@@ -223,7 +144,7 @@ abstract contract Owned is Context, AdminRole {
   }
 }
 
-abstract contract MinterRole is Context {
+abstract contract MinterRole {
   using Roles for Roles.Role;
 
   event MinterAdded(address indexed account);
@@ -232,13 +153,13 @@ abstract contract MinterRole is Context {
   Roles.Role private _minters;
 
   constructor() {
-    _minters.add(_msgSender());
-    emit MinterAdded(_msgSender());
+    _minters.add(msg.sender);
+    emit MinterAdded(msg.sender);
   }
 
   modifier onlyMinter() {
     require(
-      _minters.has(_msgSender()),
+      _minters.has(msg.sender),
       'MinterRole: caller does not have the Minter role'
     );
     _;
@@ -250,8 +171,8 @@ abstract contract MinterRole is Context {
   }
 
   function renounceMinter() public onlyMinter {
-    _minters.remove(_msgSender());
-    emit MinterRemoved(_msgSender());
+    _minters.remove(msg.sender);
+    emit MinterRemoved(msg.sender);
   }
 }
 
@@ -283,9 +204,7 @@ abstract contract ERC20Detailed {
   }
 }
 
-abstract contract ERC20Tracked is Context, ITrackedToken {
-  using SafeMath for uint256;
-
+abstract contract ERC20Tracked is ITrackedToken, IERC20 {
   mapping(address => uint256) private _balances;
   mapping(address => uint256) private _lastSendBlock;
 
@@ -315,7 +234,7 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
     override
     returns (bool)
   {
-    _transfer(_msgSender(), recipient, amount);
+    _transfer(msg.sender, recipient, amount);
     return true;
   }
 
@@ -333,7 +252,7 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
     override
     returns (bool)
   {
-    _approve(_msgSender(), spender, amount);
+    _approve(msg.sender, spender, amount);
     return true;
   }
 
@@ -345,11 +264,8 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
     _transfer(sender, recipient, amount);
     _approve(
       sender,
-      _msgSender(),
-      _allowances[sender][_msgSender()].sub(
-        amount,
-        'ERC20: transfer amount exceeds allowance'
-      )
+      msg.sender,
+      _allowances[sender][msg.sender] - amount
     );
     return true;
   }
@@ -359,9 +275,9 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
     returns (bool)
   {
     _approve(
-      _msgSender(),
+      msg.sender,
       spender,
-      _allowances[_msgSender()][spender].add(addedValue)
+      _allowances[msg.sender][spender] + addedValue
     );
     return true;
   }
@@ -371,13 +287,15 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
     returns (bool)
   {
     _approve(
-      _msgSender(),
+      msg.sender,
       spender,
-      _allowances[_msgSender()][spender].sub(
-        subtractedValue,
-        'ERC20: decreased allowance below zero'
-      )
+      _allowances[msg.sender][spender] - subtractedValue
     );
+    return true;
+  }
+
+  function burn(uint256 amount) public returns (bool) {
+    _burn(msg.sender, amount);
     return true;
   }
 
@@ -389,11 +307,8 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
     require(sender != address(0), 'ERC20: transfer from the zero address');
     require(recipient != address(0), 'ERC20: transfer to the zero address');
 
-    _balances[sender] = _balances[sender].sub(
-      amount,
-      'ERC20: transfer amount exceeds balance'
-    );
-    _balances[recipient] = _balances[recipient].add(amount);
+    _balances[sender] = _balances[sender] - amount;
+    _balances[recipient] = _balances[recipient] + amount;
     _lastSendBlock[sender] = block.number;
     emit Transfer(sender, recipient, amount);
   }
@@ -401,20 +316,17 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
   function _mint(address account, uint256 amount) internal {
     require(account != address(0), 'ERC20: mint to the zero address');
 
-    _totalSupply = _totalSupply.add(amount);
-    _balances[account] = _balances[account].add(amount);
+    _totalSupply = _totalSupply + amount;
+    _balances[account] = _balances[account] + amount;
     emit Transfer(address(0), account, amount);
   }
 
   function _burn(address account, uint256 amount) internal {
     require(account != address(0), 'ERC20: burn from the zero address');
 
-    _balances[account] = _balances[account].sub(
-      amount,
-      'ERC20: burn amount exceeds balance'
-    );
+    _balances[account] = _balances[account] - amount;
     _lastSendBlock[account] = block.number;
-    _totalSupply = _totalSupply.sub(amount);
+    _totalSupply = _totalSupply - amount;
     emit Transfer(account, address(0), amount);
   }
 
@@ -434,11 +346,8 @@ abstract contract ERC20Tracked is Context, ITrackedToken {
     _burn(account, amount);
     _approve(
       account,
-      _msgSender(),
-      _allowances[account][_msgSender()].sub(
-        amount,
-        'ERC20: burn amount exceeds allowance'
-      )
+      msg.sender,
+      _allowances[account][msg.sender] - amount
     );
   }
 }
@@ -450,7 +359,7 @@ abstract contract ERC667Tracked is IERC677, ERC20Tracked {
     bytes memory data
   ) public returns (bool) {
     transfer(recipient, value);
-    IERC677Receiver(recipient).onTokenTransfer(_msgSender(), value, data);
+    IERC677Receiver(recipient).onTokenTransfer(msg.sender, value, data);
     return true;
   }
 }
@@ -477,7 +386,7 @@ contract HarbourTrackedToken is
     string memory symbol,
     uint256 fixedSupply
   ) ERC20Detailed(name, symbol, 18) {
-    _mint(_msgSender(), fixedSupply);
+    _mint(msg.sender, fixedSupply);
   }
 }
 
