@@ -262,11 +262,7 @@ abstract contract ERC20Tracked is ITrackedToken, IERC20 {
     uint256 amount
   ) public override returns (bool) {
     _transfer(sender, recipient, amount);
-    _approve(
-      sender,
-      msg.sender,
-      _allowances[sender][msg.sender] - amount
-    );
+    _approve(sender, msg.sender, _allowances[sender][msg.sender] - amount);
     return true;
   }
 
@@ -344,11 +340,7 @@ abstract contract ERC20Tracked is ITrackedToken, IERC20 {
 
   function _burnFrom(address account, uint256 amount) internal {
     _burn(account, amount);
-    _approve(
-      account,
-      msg.sender,
-      _allowances[account][msg.sender] - amount
-    );
+    _approve(account, msg.sender, _allowances[account][msg.sender] - amount);
   }
 }
 

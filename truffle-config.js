@@ -4,13 +4,14 @@ module.exports = {
   contracts_directory: "./contracts/truffle/",
   compilers: {
     solc: {
-      version: '0.8.9',
+      version: '0.8.16',
       settings: {
         optimizer: {
           enabled: true,
           runs: 200,
         },
         evmVersion: 'istanbul',
+        viaIR: true,
       },
     },
   },

@@ -5,7 +5,7 @@
   "scripts": {
     "pretty": "prettier \"scripts/**/*.js\" \"scripts/**/*.ts\" \"contracts/**/*.sol\" \"test/*.js\" --write",
     "pretty-abi": "prettier --parser json \"compiled/**/*.json\" --write",
-    "test": "mocha --exit --recursive",
+    "test": "node --no-deprecation ./node_modules/.bin/mocha --exit --recursive",
     "build": "truffle compile",
     "lint": "solhint"
   },
@@ -32,7 +32,7 @@
     "ethers": "5.4.7",
     "level": "6.0.1",
     "rlp": "2.2.4",
-    "solc": "0.8.9",
+    "solc": "0.8.16",
     "ts-node": "10.4.0",
     "web3": "1.2.4",
     "yargs": "15.1.0"

@@ -14,7 +14,7 @@ CONTRACT=$2
 
 echo TEMP_DIR=$TEMP_DIR
 
-$DIR/../node_modules/.bin/solcjs --abi --bin --optimize -o $TEMP_DIR $FILE
+$DIR/../node_modules/.bin/solcjs -v --abi --bin --via-ir --optimize --optimize-runs 200 -o $TEMP_DIR $FILE
 
 cp $TEMP_DIR/*$CONTRACT.abi $DIR/../compiled/$CONTRACT.json
 cp $TEMP_DIR/*$CONTRACT.bin $DIR/../compiled/$CONTRACT.bin
