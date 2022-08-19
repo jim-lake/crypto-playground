@@ -1,1 +1,497 @@
-[{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint48","name":"newMinVoteTime","type":"uint48"},{"internalType":"uint256","name":"newQuorumBps","type":"uint256"},{"internalType":"contract IERC20","name":"newFeeToken","type":"address"},{"internalType":"uint256","name":"newFeeAmount","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"contract IERC20","name":"resultToken","type":"address"},{"indexed":true,"internalType":"address","name":"resultAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"resultAmount","type":"uint256"}],"name":"Grant","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"contract IERC20","name":"resultToken","type":"address"},{"indexed":true,"internalType":"address","name":"resultAddress","type":"address"},{"indexed":false,"internalType":"uint256","name":"resultAmount","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"indexed":false,"internalType":"bool","name":"yes","type":"bool"}],"name":"ProcessProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"indexed":true,"internalType":"address","name":"proposer","type":"address"},{"indexed":true,"internalType":"uint48","name":"startTime","type":"uint48"},{"indexed":false,"internalType":"uint48","name":"endTime","type":"uint48"}],"name":"SubmitProposal","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"indexed":true,"internalType":"address","name":"voter","type":"address"},{"indexed":false,"internalType":"uint256","name":"voteCount","type":"uint256"},{"indexed":false,"internalType":"bool","name":"yes","type":"bool"}],"name":"SubmitVote","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"newQuorumBps","type":"uint256"},{"indexed":false,"internalType":"contract IERC20","name":"newProposalFeeToken","type":"address"},{"indexed":false,"internalType":"uint256","name":"newProposalFeeAmount","type":"uint256"}],"name":"Update","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"indexed":true,"internalType":"address","name":"voter","type":"address"},{"indexed":false,"internalType":"uint256","name":"voteCount","type":"uint256"},{"indexed":false,"internalType":"bool","name":"yes","type":"bool"}],"name":"ValidateVote","type":"event"},{"inputs":[],"name":"MAX_FUTURE_TIME","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"internalType":"address","name":"voter","type":"address"}],"name":"checkVote","outputs":[{"internalType":"bool","name":"","type":"bool"},{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"executeGrantProposal","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"executeMintProposal","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"executeUpdateProposal","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"feeAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"feeToken","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"getProposalResult","outputs":[{"internalType":"enum HarbourDAO.Vote","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"internalType":"address","name":"voter","type":"address"}],"name":"getProposalVote","outputs":[{"components":[{"internalType":"enum HarbourDAO.Vote","name":"vote","type":"uint8"},{"internalType":"bool","name":"processed","type":"bool"},{"internalType":"bool","name":"invalid","type":"bool"},{"internalType":"uint48","name":"blockNumber","type":"uint48"},{"internalType":"uint256","name":"voteCount","type":"uint256"}],"internalType":"struct HarbourDAO.ProposalVote","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"getProposalVoterCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"isResolvingActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"isVotingActive","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"minVoteTime","outputs":[{"internalType":"uint48","name":"","type":"uint48"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"}],"name":"processProposal","outputs":[{"internalType":"enum HarbourDAO.Vote","name":"","type":"uint8"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"proposalCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"proposals","outputs":[{"internalType":"string","name":"details","type":"string"},{"internalType":"uint256","name":"voterCount","type":"uint256"},{"internalType":"uint256","name":"totalVotes","type":"uint256"},{"internalType":"uint256","name":"validatedYesCount","type":"uint256"},{"internalType":"uint256","name":"validatedNoCount","type":"uint256"},{"internalType":"uint256","name":"invalidCount","type":"uint256"},{"internalType":"uint48","name":"startTime","type":"uint48"},{"internalType":"uint48","name":"endTime","type":"uint48"},{"internalType":"uint48","name":"resolveTime","type":"uint48"},{"internalType":"enum HarbourDAO.Vote","name":"result","type":"uint8"},{"internalType":"bool","name":"complete","type":"bool"},{"internalType":"bool","name":"executed","type":"bool"},{"internalType":"enum HarbourDAO.ProposalType","name":"proposalType","type":"uint8"},{"internalType":"contract IERC20","name":"resultToken","type":"address"},{"internalType":"address payable","name":"resultAddress","type":"address"},{"internalType":"uint256","name":"resultAmount","type":"uint256"},{"internalType":"uint256","name":"newQuorumBps","type":"uint256"},{"internalType":"contract IERC20","name":"newFeeToken","type":"address"},{"internalType":"uint256","name":"newFeeAmount","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"quorumBps","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint48","name":"startTime","type":"uint48"},{"internalType":"uint48","name":"endTime","type":"uint48"},{"internalType":"uint48","name":"resolveTime","type":"uint48"},{"internalType":"string","name":"details","type":"string"},{"internalType":"enum HarbourDAO.ProposalType","name":"proposalType","type":"uint8"},{"internalType":"address payable","name":"resultAddress","type":"address"},{"internalType":"contract IERC20","name":"resultToken","type":"address"},{"internalType":"uint256","name":"resultAmount","type":"uint256"},{"internalType":"uint256","name":"newQuorumBps","type":"uint256"},{"internalType":"contract IERC20","name":"newFeeToken","type":"address"},{"internalType":"uint256","name":"newFeeAmount","type":"uint256"}],"name":"submitProposal","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"internalType":"bool","name":"yes","type":"bool"}],"name":"submitVote","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"internalType":"address","name":"voter","type":"address"}],"name":"validateVote","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"proposalIndex","type":"uint256"},{"internalType":"address[]","name":"list","type":"address[]"}],"name":"validateVoteList","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"voteToken","outputs":[{"internalType":"contract ITrackedToken","name":"","type":"address"}],"stateMutability":"view","type":"function"}]
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint48", "name": "newMinVoteTime", "type": "uint48" },
+      { "internalType": "uint256", "name": "newQuorumBps", "type": "uint256" },
+      {
+        "internalType": "contract IERC20",
+        "name": "newFeeToken",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "newFeeAmount", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "contract IERC20",
+        "name": "resultToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "resultAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "resultAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Grant",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "contract IERC20",
+        "name": "resultToken",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "resultAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "resultAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Mint",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "proposalIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "yes",
+        "type": "bool"
+      }
+    ],
+    "name": "ProcessProposal",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "proposalIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "proposer",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint48",
+        "name": "startTime",
+        "type": "uint48"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "endTime",
+        "type": "uint48"
+      }
+    ],
+    "name": "SubmitProposal",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "proposalIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "voteCount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "yes",
+        "type": "bool"
+      }
+    ],
+    "name": "SubmitVote",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newQuorumBps",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IERC20",
+        "name": "newProposalFeeToken",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newProposalFeeAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Update",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "proposalIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "voter",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "voteCount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "yes",
+        "type": "bool"
+      }
+    ],
+    "name": "ValidateVote",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "MAX_FUTURE_TIME",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" },
+      { "internalType": "address", "name": "voter", "type": "address" }
+    ],
+    "name": "checkVote",
+    "outputs": [
+      { "internalType": "bool", "name": "", "type": "bool" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "executeGrantProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "executeMintProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "executeUpdateProposal",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeAmount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeToken",
+    "outputs": [
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "getProposalResult",
+    "outputs": [
+      { "internalType": "enum HarbourDAO.Vote", "name": "", "type": "uint8" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" },
+      { "internalType": "address", "name": "voter", "type": "address" }
+    ],
+    "name": "getProposalVote",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "enum HarbourDAO.Vote",
+            "name": "vote",
+            "type": "uint8"
+          },
+          { "internalType": "bool", "name": "processed", "type": "bool" },
+          { "internalType": "bool", "name": "invalid", "type": "bool" },
+          { "internalType": "uint48", "name": "blockNumber", "type": "uint48" },
+          { "internalType": "uint256", "name": "voteCount", "type": "uint256" }
+        ],
+        "internalType": "struct HarbourDAO.ProposalVote",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "getProposalVoterCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "isResolvingActive",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "isVotingActive",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minVoteTime",
+    "outputs": [{ "internalType": "uint48", "name": "", "type": "uint48" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" }
+    ],
+    "name": "processProposal",
+    "outputs": [
+      { "internalType": "enum HarbourDAO.Vote", "name": "", "type": "uint8" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proposalCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "proposals",
+    "outputs": [
+      { "internalType": "string", "name": "details", "type": "string" },
+      { "internalType": "uint256", "name": "voterCount", "type": "uint256" },
+      { "internalType": "uint256", "name": "totalVotes", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "validatedYesCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "validatedNoCount",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "invalidCount", "type": "uint256" },
+      { "internalType": "uint48", "name": "startTime", "type": "uint48" },
+      { "internalType": "uint48", "name": "endTime", "type": "uint48" },
+      { "internalType": "uint48", "name": "resolveTime", "type": "uint48" },
+      {
+        "internalType": "enum HarbourDAO.Vote",
+        "name": "result",
+        "type": "uint8"
+      },
+      { "internalType": "bool", "name": "complete", "type": "bool" },
+      { "internalType": "bool", "name": "executed", "type": "bool" },
+      {
+        "internalType": "enum HarbourDAO.ProposalType",
+        "name": "proposalType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "resultToken",
+        "type": "address"
+      },
+      {
+        "internalType": "address payable",
+        "name": "resultAddress",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "resultAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "newQuorumBps", "type": "uint256" },
+      {
+        "internalType": "contract IERC20",
+        "name": "newFeeToken",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "newFeeAmount", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "quorumBps",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint48", "name": "startTime", "type": "uint48" },
+      { "internalType": "uint48", "name": "endTime", "type": "uint48" },
+      { "internalType": "uint48", "name": "resolveTime", "type": "uint48" },
+      { "internalType": "string", "name": "details", "type": "string" },
+      {
+        "internalType": "enum HarbourDAO.ProposalType",
+        "name": "proposalType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address payable",
+        "name": "resultAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "resultToken",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "resultAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "newQuorumBps", "type": "uint256" },
+      {
+        "internalType": "contract IERC20",
+        "name": "newFeeToken",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "newFeeAmount", "type": "uint256" }
+    ],
+    "name": "submitProposal",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" },
+      { "internalType": "bool", "name": "yes", "type": "bool" }
+    ],
+    "name": "submitVote",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" },
+      { "internalType": "address", "name": "voter", "type": "address" }
+    ],
+    "name": "validateVote",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "proposalIndex", "type": "uint256" },
+      { "internalType": "address[]", "name": "list", "type": "address[]" }
+    ],
+    "name": "validateVoteList",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voteToken",
+    "outputs": [
+      {
+        "internalType": "contract ITrackedToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

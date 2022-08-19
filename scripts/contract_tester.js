@@ -39,7 +39,6 @@ const contract = new ethers.Contract(
   infuraProvider
 );
 const contract_interface = new ethers.utils.Interface(contract_abi);
-
 const call_inputs = contract_interface.getFunction(method).inputs;
 const call_args = argv.slice(4).map((arg, i) => {
   const spec = call_inputs[i];
@@ -143,6 +142,8 @@ function _fixupArg(value, spec) {
     value = ethers.utils.parseUnits(value.split('eth')[0], 'ether').toString();
   } else if (spec.type === 'address' && value === '0x0') {
     value = '0x0000000000000000000000000000000000000000';
+  } else if (spec.type === 'bytes') {
+    value = ethers.utils.defaultAbiCoder.encode(['uint256'], [ethers.BigNumber.from(value)]);
   }
   return value;
 }
