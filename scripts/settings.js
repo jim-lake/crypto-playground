@@ -76,7 +76,7 @@ if (chain_data.CHAIN_ID) {
       },
     ],
   };
-  if (chain_data.EIP1559) {
+  if (chain_data.EIP1559 || true) {
     params.customChains[0].hardforks.push(
       {
         name: 'muirGlacier',

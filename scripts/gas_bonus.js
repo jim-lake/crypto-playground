@@ -8,9 +8,7 @@ if (argv.length !== 1) {
 
 const tx = JSON.parse(fs.readFileSync(0, 'utf8'));
 if (!tx || !tx.gasPrice) {
-  console.error(
-    'bad transaction provided, please provide data on the stdin'
-  );
+  console.error('bad transaction provided, please provide data on the stdin');
   process.exit(-3);
 }
 

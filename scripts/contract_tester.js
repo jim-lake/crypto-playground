@@ -143,7 +143,10 @@ function _fixupArg(value, spec) {
   } else if (spec.type === 'address' && value === '0x0') {
     value = '0x0000000000000000000000000000000000000000';
   } else if (spec.type === 'bytes') {
-    value = ethers.utils.defaultAbiCoder.encode(['uint256'], [ethers.BigNumber.from(value)]);
+    value = ethers.utils.defaultAbiCoder.encode(
+      ['uint256'],
+      [ethers.BigNumber.from(value)]
+    );
   }
   return value;
 }

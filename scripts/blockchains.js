@@ -14,11 +14,19 @@ module.exports = {
     DNC_CONTRACT: '0xf220af718a8d13cce7f5a466722f2b5857cd4215',
     HTTP_PROVIDER:
       'https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    CHAIN_ID: 4,
   },
   goerli: {
     DNC_CONTRACT: '',
     HTTP_PROVIDER:
       'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    CHAIN_ID: 5,
+  },
+  sepolia: {
+    DNC_CONTRACT: '',
+    HTTP_PROVIDER:
+      'https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+    CHAIN_ID: 11155111,
   },
   sokol: {
     DNC_CONTRACT: '',

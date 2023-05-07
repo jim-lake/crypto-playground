@@ -16,7 +16,7 @@ if (!mnemonic) {
   process.exit(-99);
 }
 
-const path = "m/44'/60'/0'/0/0";
+const path = process.env.WALLET_PATH || "m/44'/60'/0'/0/0";
 const seed = Bip39.mnemonicToSeedSync(mnemonic);
 const hdwallet = HDKey.fromMasterSeed(seed);
 const wallet = hdwallet.derivePath(path).getWallet();
